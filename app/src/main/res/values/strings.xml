@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">TrackFlow</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_map">Map</string>
+
+    <!-- Fragment Titles -->
+    <string name="title_home">Activity History</string>
+    <string name="title_map">Track Route</string>
+
+    <!-- Placeholder Content -->
+    <string name="home_placeholder">Your activity history will appear here.</string>
+    <string name="map_placeholder">Map and route tracking will appear here.</string>
 </resources>

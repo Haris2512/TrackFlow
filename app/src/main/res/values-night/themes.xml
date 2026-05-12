@@ -1,7 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Base application theme (Dark). -->
     <style name="Base.Theme.TrackFlow" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- Primary brand color (dark) -->
+        <item name="colorPrimary">@color/tf_primary_dark</item>
+        <item name="colorPrimaryVariant">@color/tf_primary_variant_dark</item>
+        <item name="colorOnPrimary">@color/tf_on_primary_dark</item>
+        <!-- Secondary brand color (dark) -->
+        <item name="colorSecondary">@color/tf_secondary_dark</item>
+        <item name="colorSecondaryVariant">@color/tf_secondary_variant_dark</item>
+        <item name="colorOnSecondary">@color/tf_on_secondary_dark</item>
+        <!-- Background & Surface (dark) -->
+        <item name="android:colorBackground">@color/tf_background_dark</item>
+        <item name="colorSurface">@color/tf_surface_dark</item>
+        <item name="colorOnBackground">@color/tf_on_background_dark</item>
+        <item name="colorOnSurface">@color/tf_on_surface_dark</item>
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/tf_background_dark</item>
     </style>
 </resources>
