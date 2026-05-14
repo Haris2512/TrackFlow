@@ -64,23 +64,22 @@ public class HomeFragment extends Fragment {
     // Fungsi untuk mengambil data dari API (Networking)
     private void fetchUserProfile() {
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<UserResponse> call = apiService.getUserProfile();
+        Call<User> call = apiService.getUserProfile();
 
-        call.enqueue(new Callback<UserResponse>() {
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String firstName = response.body().getData().getFirstName();
-                    tvWelcome.setText("Halo, " + firstName + "!");
+                    // Ambil langsung getName()
+                    String name = response.body().getName();
+                    tvWelcome.setText("Halo, " + name + "!");
                 } else {
-                    // Jika API terkoneksi tapi ada data yang salah format
                     tvWelcome.setText("Error API: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<UserResponse> call, Throwable t) {
-                // Jika internet terputus atau gagal total, tampilkan alasannya di layar
+            public void onFailure(Call<User> call, Throwable t) {
                 tvWelcome.setText("Gagal: " + t.getMessage());
             }
         });
