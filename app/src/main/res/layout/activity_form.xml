@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tambah Aktivitas"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/edtTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Judul (misal: Lari Pagi)"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/edtDistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Jarak (misal: 5 KM)"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/edtDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Durasi (misal: 30 Menit)"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/edtDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tanggal (misal: 15 Mei 2026)"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Simpan Aktivitas" />
+
+</LinearLayout>
