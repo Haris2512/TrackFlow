@@ -87,16 +87,31 @@ public class MapFragment extends Fragment {
     }
 
     private void enableUserLocation() {
-        // Pasang overlay lokasi dari osmdroid
         myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireContext()), map);
         myLocationOverlay.enableMyLocation();
-        // Supaya peta selalu fokus dan mengikuti pergerakan user
         myLocationOverlay.enableFollowLocation();
 
-        map.getOverlays().add(myLocationOverlay);
-        map.getController().setZoom(18.0); // Zoom in supaya kelihatan jalannya
-    }
+        // Callback saat lokasi pertama kali ditemukan
+        myLocationOverlay.runOnFirstFix(new Runnable() {
+            @Override
+            public void run() {
+                // ini berjalan di background thread,mengubah UI di main thread
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Zoom dan fokuskan peta
+                            map.getController().animateTo(myLocationOverlay.getMyLocation());
+                            map.getController().setZoom(18.0);
+                            map.invalidate(); // Paksa render ulang
+                        }
+                    });
+                }
+            }
+        });
 
+        map.getOverlays().add(myLocationOverlay);
+    }
     private void setDefaultLocation() {
         // Kalau ditolak, default ke Kampus Unhas
         GeoPoint startPoint = new GeoPoint(-5.1353, 119.4237);
