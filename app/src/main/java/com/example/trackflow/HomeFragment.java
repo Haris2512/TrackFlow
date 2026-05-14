@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,12 +18,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
     private RecyclerView rvActivities;
     private ActivityAdapter adapter;
     private ActivityHelper activityHelper;
+    private TextView tvWelcome; //
 
     public HomeFragment() {}
 
@@ -35,6 +40,9 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Inisialisasi TextView untuk Nama (Networking)
+        tvWelcome = view.findViewById(R.id.tvWelcome); //
+
         rvActivities = view.findViewById(R.id.rvActivities);
         rvActivities.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new ActivityAdapter();
@@ -42,7 +50,6 @@ public class HomeFragment extends Fragment {
 
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAdd);
         fabAdd.setOnClickListener(v -> {
-            // Membuka FormActivity menggunakan Intent
             Intent intent = new Intent(requireContext(), FormActivity.class);
             startActivity(intent);
         });
@@ -51,10 +58,35 @@ public class HomeFragment extends Fragment {
         activityHelper.open();
 
         loadDataFromSQLite();
+        fetchUserProfile(); // (Panggil API)
+    }
+
+    // Fungsi untuk mengambil data dari API (Networking)
+    private void fetchUserProfile() {
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+        Call<UserResponse> call = apiService.getUserProfile();
+
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String firstName = response.body().getData().getFirstName();
+                    tvWelcome.setText("Halo, " + firstName + "!");
+                } else {
+                    // Jika API terkoneksi tapi ada data yang salah format
+                    tvWelcome.setText("Error API: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Jika internet terputus atau gagal total, tampilkan alasannya di layar
+                tvWelcome.setText("Gagal: " + t.getMessage());
+            }
+        });
     }
 
     private void loadDataFromSQLite() {
-        // Eksekusi di Background Thread sesuai syarat spesifikasi
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
@@ -75,9 +107,14 @@ public class HomeFragment extends Fragment {
                 cursor.close();
             }
 
-            // Lempar hasil ke Main Thread untuk update RecyclerView
             handler.post(() -> adapter.setData(list));
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadDataFromSQLite();
     }
 
     @Override
@@ -86,10 +123,5 @@ public class HomeFragment extends Fragment {
         if (activityHelper != null) {
             activityHelper.close();
         }
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadDataFromSQLite(); // Refresh list setelah kembali dari FormActivity
     }
 }
