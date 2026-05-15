@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+    implementation(libs.preference)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
@@ -54,4 +55,5 @@ dependencies {
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
 }
