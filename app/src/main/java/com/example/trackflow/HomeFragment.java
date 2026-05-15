@@ -1,6 +1,7 @@
 package com.example.trackflow;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,9 +9,11 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,7 +30,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView rvActivities;
     private ActivityAdapter adapter;
     private ActivityHelper activityHelper;
-    private TextView tvWelcome; //
+    private TextView tvWelcome;
 
     public HomeFragment() {}
 
@@ -41,7 +44,30 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Inisialisasi TextView untuk Nama (Networking)
-        tvWelcome = view.findViewById(R.id.tvWelcome); //
+        tvWelcome = view.findViewById(R.id.tvWelcome);
+
+        // Logika Switch Tema
+        Switch switchTheme = view.findViewById(R.id.switchTheme);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("ThemePref", requireContext().MODE_PRIVATE);
+
+        // Atur posisi awal switch sesuai data yang tersimpan
+        switchTheme.setChecked(sharedPreferences.getBoolean("isDark", false));
+
+        // Aksi saat switch ditekan
+        switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isDark", isChecked);
+            editor.apply();
+
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+
+            requireActivity().recreate();
+        });
+        // ========================================================
 
         rvActivities = view.findViewById(R.id.rvActivities);
         rvActivities.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -58,7 +84,7 @@ public class HomeFragment extends Fragment {
         activityHelper.open();
 
         loadDataFromSQLite();
-        fetchUserProfile(); // (Panggil API)
+        fetchUserProfile(); // Panggil API
     }
 
     // Fungsi untuk mengambil data dari API (Networking)
@@ -70,7 +96,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Ambil langsung getName()
                     String name = response.body().getName();
                     tvWelcome.setText("Halo, " + name + "!");
                 } else {
