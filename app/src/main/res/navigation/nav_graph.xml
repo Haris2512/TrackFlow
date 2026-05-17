@@ -16,5 +16,10 @@
         android:name="com.example.trackflow.MapFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/nav_record"
+        android:name="com.example.trackflow.RecordFragment"
+        android:label="Record"
+        tools:layout="@layout/fragment_record" />
 
 </navigation>

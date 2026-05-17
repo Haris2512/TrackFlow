@@ -21,6 +21,14 @@ public class FormActivity extends AppCompatActivity {
         EditText edtDuration = findViewById(R.id.edtDuration);
         EditText edtDate = findViewById(R.id.edtDate);
         Button btnSave = findViewById(R.id.btnSave);
+        // Tangkap data durasi yang dikirim dari RecordFragment
+        String incomingDuration = getIntent().getStringExtra("EXTRA_DURATION");
+
+        // Jika data ada (artinya pindah halaman lewat tombol Selesai di Stopwatch)
+        if (incomingDuration != null) {
+            // Ubah etDuration menjadi edtDuration agar sesuai dengan deklarasi di atas
+            edtDuration.setText(incomingDuration);
+        }
 
         activityHelper = ActivityHelper.getInstance(this);
         activityHelper.open();
