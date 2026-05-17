@@ -1,5 +1,6 @@
 package com.example.trackflow;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,18 +18,12 @@ public class RecordFragment extends Fragment {
 
     private TextView tvTimer;
     private Button btnStartPause, btnFinish;
-
-    // Variabel untuk logika Stopwatch
     private boolean isRunning = false;
     private int seconds = 0;
-
-    // Ini dia bintang utamanya untuk panen nilai Background Thread!
     private Handler handler;
     private Runnable runnable;
 
-    public RecordFragment() {
-        // Required empty public constructor
-    }
+    public RecordFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,58 +36,48 @@ public class RecordFragment extends Fragment {
 
         tvTimer = view.findViewById(R.id.tvTimer);
         btnStartPause = view.findViewById(R.id.btnStartPause);
+        btnFinish = view.findViewById(R.id.btnFinish); // SUDAH DIAMANKAN
+
+        // LOGIKA TIMER SUDAH DIKEMBALIKAN
+        handler = new Handler(Looper.getMainLooper());
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (isRunning) {
+                    seconds++;
+                    int minutes = seconds / 60;
+                    int secs = seconds % 60;
+                    tvTimer.setText(String.format("%02d:%02d", minutes, secs));
+                }
+                handler.postDelayed(this, 1000);
+            }
+        };
+
+        btnStartPause.setOnClickListener(v -> {
+            if (isRunning) {
+                isRunning = false;
+                btnStartPause.setText("LANJUT");
+            } else {
+                isRunning = true;
+                btnStartPause.setText("JEDA");
+                handler.post(runnable);
+            }
+        });
+
+        // HANYA ADA 1 AKSI SELESAI SEKARANG (INTENT)
         btnFinish.setOnClickListener(v -> {
             if (seconds > 0) {
-                // 1. Hentikan timer terlebih dahulu
                 isRunning = false;
                 handler.removeCallbacks(runnable);
 
-                // 2. Format waktu menjadi teks (Menit:Detik)
                 int minutes = seconds / 60;
                 int secs = seconds % 60;
                 String timeString = String.format("%02d:%02d", minutes, secs);
 
-                // 3. Kirim data waktu ke FormActivity menggunakan Intent
-                android.content.Intent intent = new android.content.Intent(requireContext(), FormActivity.class);
+                Intent intent = new Intent(requireContext(), FormActivity.class);
                 intent.putExtra("EXTRA_DURATION", timeString);
                 startActivity(intent);
 
-                // 4. Reset Stopwatch kembali ke keadaan awal
-                seconds = 0;
-                tvTimer.setText("00:00");
-                btnStartPause.setText("MULAI");
-            } else {
-                Toast.makeText(requireContext(), "Tekan MULAI terlebih dahulu!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Aksi Tombol Mulai / Jeda
-        btnStartPause.setOnClickListener(v -> {
-            if (isRunning) {
-                // Jika sedang jalan, maka Jeda (Pause)
-                isRunning = false;
-                btnStartPause.setText("LANJUT");
-            } else {
-                // Jika sedang berhenti, maka Mulai (Start)
-                isRunning = true;
-                btnStartPause.setText("JEDA");
-                handler.post(runnable); // Memicu Background Thread berjalan
-            }
-        });
-
-        // Aksi Tombol Selesai
-        btnFinish.setOnClickListener(v -> {
-            if (seconds > 0) {
-                // Hentikan Background Thread agar tidak jalan terus di belakang layar
-                isRunning = false;
-                handler.removeCallbacks(runnable);
-
-                int totalMinutes = seconds / 60;
-                Toast.makeText(requireContext(), "Misi Selesai! Waktu: " + totalMinutes + " Menit", Toast.LENGTH_LONG).show();
-
-                // (Nanti kita bisa tambahkan logika untuk melempar data ini ke FormActivity)
-
-                // Reset Stopwatch kembali ke 0
                 seconds = 0;
                 tvTimer.setText("00:00");
                 btnStartPause.setText("MULAI");
@@ -102,7 +87,6 @@ public class RecordFragment extends Fragment {
         });
     }
 
-    // WAJIB: Hentikan Thread saat fragment ditutup agar aplikasi tidak bocor memori (Memory Leak)
     @Override
     public void onDestroyView() {
         super.onDestroyView();
