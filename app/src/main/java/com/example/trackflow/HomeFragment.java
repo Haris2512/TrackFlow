@@ -1,7 +1,6 @@
 package com.example.trackflow;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,11 +8,9 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,18 +18,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
     private RecyclerView rvActivities;
     private ActivityAdapter adapter;
     private ActivityHelper activityHelper;
-    private TextView tvWelcome;
+    private TextView tvTotalDistance;
 
-    public HomeFragment() {}
+    public HomeFragment() {
+        // Required empty public constructor
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,109 +39,75 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inisialisasi TextView untuk Nama (Networking)
-        tvWelcome = view.findViewById(R.id.tvWelcome);
-
-        // Logika Switch Tema
-        Switch switchTheme = view.findViewById(R.id.switchTheme);
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("ThemePref", requireContext().MODE_PRIVATE);
-
-        // Atur posisi awal switch sesuai data yang tersimpan
-        switchTheme.setChecked(sharedPreferences.getBoolean("isDark", false));
-
-        // Aksi saat switch ditekan
-        switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isDark", isChecked);
-            editor.apply();
-
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-
-            requireActivity().recreate();
-        });
-        // ========================================================
-
         rvActivities = view.findViewById(R.id.rvActivities);
+        tvTotalDistance = view.findViewById(R.id.tvTotalDistance);
+        FloatingActionButton fabAdd = view.findViewById(R.id.fabAdd);
+
+        // Setup RecyclerView
         rvActivities.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new ActivityAdapter();
         rvActivities.setAdapter(adapter);
 
-        FloatingActionButton fabAdd = view.findViewById(R.id.fabAdd);
+        // Buka koneksi database SQLite
+        activityHelper = ActivityHelper.getInstance(requireContext());
+        activityHelper.open();
+
+        // Aksi tombol tambah (FAB) untuk input manual
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), FormActivity.class);
             startActivity(intent);
         });
-
-        activityHelper = ActivityHelper.getInstance(requireContext());
-        activityHelper.open();
-
-        loadDataFromSQLite();
-        fetchUserProfile(); // Panggil API
     }
 
-    // Fungsi untuk mengambil data dari API (Networking)
-    private void fetchUserProfile() {
-        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<User> call = apiService.getUserProfile();
-
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    String name = response.body().getName();
-                    tvWelcome.setText("Halo, " + name + "!");
-                } else {
-                    tvWelcome.setText("Error API: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                tvWelcome.setText("Gagal: " + t.getMessage());
-            }
-        });
+    // Gunakan onResume agar saat kembali dari FormActivity, list otomatis ter-refresh!
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadActivitiesAsync();
     }
 
-    private void loadDataFromSQLite() {
+    // PANEN NILAI BACKGROUND THREAD & SQLITE DI SINI
+    private void loadActivitiesAsync() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
+            // PROSES BACKGROUND: Ambil data dari SQLite
             Cursor cursor = activityHelper.queryAll();
-            ArrayList<ActivityRecord> list = new ArrayList<>();
+            // Asumsikan kamu punya kelas MappingHelper untuk mengubah Cursor jadi ArrayList
+            ArrayList<ActivityModel> list = MappingHelper.mapCursorToArrayList(cursor);
 
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.ActivityColumns._ID));
-                    String title = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.ActivityColumns.COLUMN_TITLE));
-                    String dist = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.ActivityColumns.COLUMN_DISTANCE));
-                    String dur = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.ActivityColumns.COLUMN_DURATION));
-                    String date = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.ActivityColumns.COLUMN_DATE));
-
-                    list.add(new ActivityRecord(id, title, dist, dur, date));
-                } while (cursor.moveToNext());
-                cursor.close();
-            }
-
-            handler.post(() -> adapter.setData(list));
+            // PROSES MAIN THREAD: Kirim data ke tampilan (UI)
+            handler.post(() -> {
+                if (list != null) {
+                    adapter.setData(list);
+                    calculateTotalDistance(list); // Bonus: Menghitung total KM!
+                }
+            });
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadDataFromSQLite();
+    // Fungsi canggih untuk menjumlahkan semua jarak yang ada di database
+    private void calculateTotalDistance(ArrayList<ActivityModel> list) {
+        double total = 0.0;
+        for (ActivityModel item : list) {
+            try {
+                // Menghilangkan tulisan " KM" untuk mengambil angkanya saja
+                String distStr = item.getDistance().toUpperCase().replace(" KM", "").trim();
+                total += Double.parseDouble(distStr);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // Update teks Total Petualangan di kotak atas
+        tvTotalDistance.setText(String.format("%.2f KM", total));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (activityHelper != null) {
-            activityHelper.close();
+            activityHelper.close(); // Selalu tutup DB agar tidak Memory Leak
         }
     }
 }
