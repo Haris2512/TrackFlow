@@ -15,4 +15,6 @@
 
         <item name="android:statusBarColor">@color/stitch_bg_dark</item>
     </style>
+
+    <style name="Theme.TrackFlow" parent="Base.Theme.TrackFlow" />
 </resources>
