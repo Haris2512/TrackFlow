@@ -29,13 +29,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = userList.get(position);
 
-        // Pasang Nama dan Email
-        holder.tvName.setText(user.getFirst_name() + " " + user.getLast_name());
+        holder.tvName.setText(user.getFirstName() + " " + user.getLastName());
         holder.tvEmail.setText(user.getEmail());
 
-        // Pasang Foto Profil pakai Glide (Otomatis potong jadi bulat!)
         Glide.with(holder.itemView.getContext())
-                .load(user.getAvatar())
+                .load(user.getImage()) // Mengambil 'image' dari DummyJSON
                 .circleCrop()
                 .into(holder.ivAvatar);
     }

@@ -2,10 +2,9 @@ package com.example.trackflow;
 import java.util.List;
 
 public class UserResponse {
-    // Ubah dari 'User' menjadi 'List<User>'
-    private List<User> data;
+    private List<User> users; // DummyJSON menyebut daftarnya 'users'
 
-    public List<User> getData() {
-        return data;
+    public List<User> getUsers() {
+        return users;
     }
 }
