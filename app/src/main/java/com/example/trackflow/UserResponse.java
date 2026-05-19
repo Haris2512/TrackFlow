@@ -1,9 +1,11 @@
 package com.example.trackflow;
+import java.util.List;
 
 public class UserResponse {
-    private User data;
+    // Ubah dari 'User' menjadi 'List<User>'
+    private List<User> data;
 
-    public User getData() {
+    public List<User> getData() {
         return data;
     }
 }
