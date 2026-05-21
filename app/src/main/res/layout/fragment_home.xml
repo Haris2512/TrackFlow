@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/stitch_bg_dark"
+
     android:padding="16dp">
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Halo, Experiment 626!"
-        android:textColor="@color/stitch_text_primary"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +28,7 @@
         android:text="Ohana Mode"
         android:textColor="@color/stitch_cyan_neon"
         android:thumbTint="@color/stitch_cyan_neon"
-        android:trackTint="@color/stitch_surface_dark"
+        android:trackTint="?attr/colorSurfaceVariant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,7 +39,7 @@
         android:layout_marginTop="20dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
-        app:cardBackgroundColor="@color/stitch_surface_dark"
+        app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintTop_toBottomOf="@id/tvWelcome">
 
         <LinearLayout
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0.00 KM"
-                android:textColor="@color/stitch_text_primary"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="32sp"
                 android:textStyle="bold"
                 android:layout_marginTop="4dp"/>
@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Semua data perjalanan tersimpan aman di Ohana SQLite"
-                android:textColor="@color/stitch_text_secondary"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="12sp"
                 android:layout_marginTop="8dp"/>
         </LinearLayout>
@@ -82,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Riwayat Jejak Stitch"
-        android:textColor="@color/stitch_text_primary"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_marginTop="24dp"
@@ -107,7 +107,7 @@
         android:layout_margin="16dp"
         android:src="@android:drawable/ic_input_add"
         app:backgroundTint="@color/stitch_magenta_neon"
-        app:tint="@color/stitch_text_primary"
+        app:tint="?attr/colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:elevation="6dp"/>

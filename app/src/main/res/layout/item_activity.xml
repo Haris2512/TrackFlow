@@ -6,7 +6,7 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="8dp"
     app:cardCornerRadius="16dp"
-    app:cardBackgroundColor="@color/stitch_surface_dark"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Lari Pagi"
-            android:textColor="@color/stitch_text_primary"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/ivIcon"
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="15 Mei 2026"
-            android:textColor="@color/stitch_text_secondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:text="• 30 Menit"
-            android:textColor="@color/stitch_text_secondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toEndOf="@id/tvDistance"
             app:layout_constraintTop_toTopOf="@id/tvDistance"
             app:layout_constraintBottom_toBottomOf="@id/tvDistance"/>

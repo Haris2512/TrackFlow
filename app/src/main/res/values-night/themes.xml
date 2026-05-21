@@ -1,17 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.TrackFlow" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.TrackFlow" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/stitch_cyan_neon</item>
-        <item name="colorPrimaryVariant">@color/stitch_cyan_neon</item>
         <item name="colorOnPrimary">@color/stitch_bg_dark</item>
 
         <item name="colorSecondary">@color/stitch_magenta_neon</item>
-        <item name="colorSecondaryVariant">@color/stitch_magenta_neon</item>
         <item name="colorOnSecondary">@color/stitch_text_primary</item>
 
         <item name="android:colorBackground">@color/stitch_bg_dark</item>
         <item name="colorSurface">@color/stitch_surface_dark</item>
+
         <item name="colorOnBackground">@color/stitch_text_primary</item>
         <item name="colorOnSurface">@color/stitch_text_primary</item>
+        <item name="android:textColor">@color/stitch_text_primary</item>
 
         <item name="android:statusBarColor">@color/stitch_bg_dark</item>
     </style>

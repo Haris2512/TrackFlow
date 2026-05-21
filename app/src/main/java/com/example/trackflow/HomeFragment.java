@@ -1,6 +1,8 @@
 package com.example.trackflow;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,9 +10,11 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +46,7 @@ public class HomeFragment extends Fragment {
         rvActivities = view.findViewById(R.id.rvActivities);
         tvTotalDistance = view.findViewById(R.id.tvTotalDistance);
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAdd);
+        Switch switchTheme = view.findViewById(R.id.switchTheme);
 
         // Setup RecyclerView
         rvActivities.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -56,6 +61,24 @@ public class HomeFragment extends Fragment {
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), FormActivity.class);
             startActivity(intent);
+        });
+
+        // ===== OHANA MODE (DARK/LIGHT TOGGLE) =====
+        SharedPreferences sharedPreferences = requireActivity()
+                .getSharedPreferences("TrackFlowPrefs", Context.MODE_PRIVATE);
+        boolean isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false);
+        switchTheme.setChecked(isDarkMode);
+
+        switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("DARK_MODE", isChecked);
+            editor.apply();
+
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
         });
     }
 

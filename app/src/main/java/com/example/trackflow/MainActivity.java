@@ -20,9 +20,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        // LOGIKA TEMA
-        SharedPreferences sharedPreferences = getSharedPreferences("ThemePref", MODE_PRIVATE);
-        boolean isDarkMode = sharedPreferences.getBoolean("isDark", false);
+        // LOGIKA TEMA — Harus pakai nama & key yang SAMA dengan ProfileFragment & HomeFragment
+        SharedPreferences sharedPreferences = getSharedPreferences("TrackFlowPrefs", MODE_PRIVATE);
+        boolean isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false);
 
         if (isDarkMode) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="16dp"
-    app:cardBackgroundColor="@color/stitch_surface_dark"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardElevation="4dp">
 
     <LinearLayout
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="email@domain.com"
-                android:textColor="@color/stitch_text_secondary"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
