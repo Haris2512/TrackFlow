@@ -3,32 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/nav_home"> <fragment
+    android:id="@+id/nav_home" android:name="com.example.trackflow.HomeFragment"
+    android:label="@string/title_home"
+    tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.example.trackflow.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-
-    <fragment
-        android:id="@+id/mapFragment"
-        android:name="com.example.trackflow.MapFragment"
+        android:id="@+id/nav_map" android:name="com.example.trackflow.MapFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_map" />
+
     <fragment
         android:id="@+id/nav_record"
         android:name="com.example.trackflow.RecordFragment"
         android:label="Record"
         tools:layout="@layout/fragment_record" />
+
     <fragment
         android:id="@+id/nav_community"
         android:name="com.example.trackflow.CommunityFragment"
         android:label="Komunitas"
         tools:layout="@layout/fragment_community" />
+
     <fragment
         android:id="@+id/nav_profile"
         android:name="com.example.trackflow.ProfileFragment"
         android:label="Profil"
         tools:layout="@layout/fragment_profile" />
+
 </navigation>

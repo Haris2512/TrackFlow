@@ -68,19 +68,8 @@
                 android:textStyle="bold"
                 android:layout_marginTop="4dp" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#CCCCCC"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"/>
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Mode Gelap (Dark Mode)"
-                android:textSize="16sp" />
+
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

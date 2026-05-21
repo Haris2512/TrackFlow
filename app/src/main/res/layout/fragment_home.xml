@@ -12,7 +12,7 @@
         android:id="@+id/tvWelcome"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Halo, Experiment 626!"
+        android:text="Halo"
         android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
