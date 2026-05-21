@@ -26,5 +26,9 @@
         android:name="com.example.trackflow.CommunityFragment"
         android:label="Komunitas"
         tools:layout="@layout/fragment_community" />
-
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.example.trackflow.ProfileFragment"
+        android:label="Profil"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
