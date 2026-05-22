@@ -36,35 +36,36 @@ public class RecordFragment extends Fragment {
 
         tvTimer = view.findViewById(R.id.tvTimer);
         btnStartPause = view.findViewById(R.id.btnStartPause);
-        btnFinish = view.findViewById(R.id.btnFinish); // SUDAH DIAMANKAN
+        btnFinish = view.findViewById(R.id.btnFinish);
 
-        // LOGIKA TIMER SUDAH DIKEMBALIKAN
         handler = new Handler(Looper.getMainLooper());
         runnable = new Runnable() {
             @Override
             public void run() {
-                if (isRunning) {
-                    seconds++;
-                    int minutes = seconds / 60;
-                    int secs = seconds % 60;
-                    tvTimer.setText(String.format("%02d:%02d", minutes, secs));
-                }
+                seconds++;
+                int minutes = seconds / 60;
+                int secs = seconds % 60;
+                tvTimer.setText(String.format("%02d:%02d", minutes, secs));
+                
+                // Looping dipanggil tanpa pengecekan isRunning karena akan distop manual
                 handler.postDelayed(this, 1000);
             }
         };
 
         btnStartPause.setOnClickListener(v -> {
             if (isRunning) {
+                // JEDA
                 isRunning = false;
                 btnStartPause.setText("LANJUT");
+                handler.removeCallbacks(runnable);
             } else {
+                // MULAI / LANJUT
                 isRunning = true;
                 btnStartPause.setText("JEDA");
                 handler.post(runnable);
             }
         });
 
-        // HANYA ADA 1 AKSI SELESAI SEKARANG (INTENT)
         btnFinish.setOnClickListener(v -> {
             if (seconds > 0) {
                 isRunning = false;
@@ -90,6 +91,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Bersihkan memori saat pindah halaman
         if (handler != null && runnable != null) {
             handler.removeCallbacks(runnable);
         }
