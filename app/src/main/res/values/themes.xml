@@ -1,9 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.TrackFlow" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/stitch_cyan_neon</item>
+        <item name="colorPrimary">@color/strava_orange</item>
         <item name="colorOnPrimary">#FFFFFF</item>
 
-        <item name="colorSecondary">@color/stitch_magenta_neon</item>
+        <item name="colorSecondary">@color/strava_orange_dark</item>
         <item name="colorOnSecondary">#FFFFFF</item>
 
         <item name="android:colorBackground">#F5F5F5</item>
