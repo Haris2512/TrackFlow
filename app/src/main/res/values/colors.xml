@@ -25,9 +25,14 @@
     <color name="tf_on_background_dark">#E6E1E5</color>
     <color name="tf_on_surface_dark">#E6E1E5</color>
 
-    <color name="tf_nav_active_light">#1B5E20</color>
-    <color name="tf_nav_inactive_light">#757575</color>
-    <color name="tf_nav_active_dark">#66BB6A</color>
-    <color name="tf_nav_inactive_dark">#9E9E9E</color>
+    <color name="stitch_bg_dark">#0B1528</color>
+    <color name="stitch_surface_dark">#16253D</color>
+    <color name="stitch_cyan_neon">#00E5FF</color>
+    <color name="stitch_magenta_neon">#FF2A85</color>
+    <color name="stitch_text_primary">#FFFFFF</color>
+    <color name="stitch_text_secondary">#8A9BB4</color>
 
-    <color name="stitch_bg_dark">#0B1528</color> <color name="stitch_surface_dark">#16253D</color> <color name="stitch_cyan_neon">#00E5FF</color> <color name="stitch_magenta_neon">#FF2A85</color> <color name="stitch_text_primary">#FFFFFF</color> <color name="stitch_text_secondary">#8A9BB4</color> </resources>
+    <color name="strava_orange">#FC4C02</color>
+    <color name="strava_orange_dark">#DF4302</color>
+    <color name="strava_grey">#333333</color>
+</resources>
