@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:padding="16dp">
 
     <TextView
@@ -25,9 +24,9 @@
         android:id="@+id/switchTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ohana Mode"
-        android:textColor="@color/stitch_cyan_neon"
-        android:thumbTint="@color/stitch_cyan_neon"
+        android:text="Mode Gelap"
+        android:textColor="?attr/colorOnBackground"
+        android:thumbTint="@color/strava_orange"
         android:trackTint="?attr/colorSurfaceVariant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintTop_toBottomOf="@id/tvWelcome">
 
@@ -51,8 +50,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TOTAL PETUALANGAN"
-                android:textColor="@color/stitch_cyan_neon"
+                android:text="TOTAL JARAK LARI"
+                android:textColor="@color/strava_orange"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1"/>
@@ -70,7 +69,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Semua data perjalanan tersimpan aman di Ohana SQLite"
+                android:text="Semua data perjalanan tersimpan secara lokal (SQLite)"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="12sp"
                 android:layout_marginTop="8dp"/>
@@ -81,7 +80,7 @@
         android:id="@+id/tvHomeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Riwayat Jejak Stitch"
+        android:text="Aktivitas Terbaru"
         android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -106,8 +105,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/stitch_magenta_neon"
-        app:tint="?attr/colorOnSecondary"
+        app:backgroundTint="@color/strava_orange"
+        app:tint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:elevation="6dp"/>
