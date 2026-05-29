@@ -30,6 +30,7 @@ public class HomeFragment extends Fragment {
     private TextView tvTotalDistance;
     private TextView tvWelcome;
     private SharedPreferences sharedPreferences;
+    private android.widget.ImageView ivHomeAvatar;
 
     public HomeFragment() {}
 
@@ -45,6 +46,7 @@ public class HomeFragment extends Fragment {
         RecyclerView rvActivities = view.findViewById(R.id.rvActivities);
         tvTotalDistance = view.findViewById(R.id.tvTotalDistance);
         tvWelcome = view.findViewById(R.id.tvWelcome);
+        ivHomeAvatar = view.findViewById(R.id.ivHomeAvatar);
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAdd);
         Switch switchTheme = view.findViewById(R.id.switchTheme);
 
@@ -80,6 +82,15 @@ public class HomeFragment extends Fragment {
         // Sinkronisasi sapaan nama secara real-time dari Profil
         String savedName = sharedPreferences.getString("USERNAME", "Atlet TrackFlow");
         tvWelcome.setText("Halo, " + savedName);
+        // Sinkronisasi foto profil secara real-time
+        String savedAvatarUri = sharedPreferences.getString("USER_AVATAR", null);
+        if (savedAvatarUri != null && ivHomeAvatar != null) {
+            try {
+                ivHomeAvatar.setImageURI(android.net.Uri.parse(savedAvatarUri));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         loadActivitiesAsync();
     }

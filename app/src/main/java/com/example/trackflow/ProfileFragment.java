@@ -1,17 +1,24 @@
 package com.example.trackflow;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,6 +27,29 @@ import java.util.Locale;
 public class ProfileFragment extends Fragment {
 
     private static final String PREF_NAME = "TrackFlowPrefs";
+    private ImageView ivAvatar;
+    private SharedPreferences sharedPref;
+
+    // Peluncur untuk membuka Galeri HP
+    private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri selectedImageUri = result.getData().getData();
+                    if (selectedImageUri != null) {
+                        // Minta izin baca permanen agar foto tidak hilang saat aplikasi ditutup
+                        requireContext().getContentResolver().takePersistableUriPermission(
+                                selectedImageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                        // Pasang foto ke tampilan
+                        ivAvatar.setImageURI(selectedImageUri);
+
+                        // Simpan URI foto ke memori SharedPreferences
+                        sharedPref.edit().putString("USER_AVATAR", selectedImageUri.toString()).apply();
+                    }
+                }
+            }
+    );
 
     public ProfileFragment() {}
 
@@ -36,19 +66,23 @@ public class ProfileFragment extends Fragment {
         Button btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
         TextView tvSavedName = view.findViewById(R.id.tvSavedName);
         TextView tvJoinDate = view.findViewById(R.id.tvJoinDate);
+        CardView cvAvatar = view.findViewById(R.id.cvAvatar);
+
+        // Panggil ID ImageView yang baru ditambahkan di XML
+        ivAvatar = view.findViewById(R.id.ivAvatar);
 
         Context context = getContext();
         if (context == null) return;
 
-        SharedPreferences sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
-        // 1. Load Nama (dengan pelindung anti-crash)
+        // 1. Load Nama
         if (tvSavedName != null) {
             String savedName = sharedPref.getString("USERNAME", "Belum ada nama");
             tvSavedName.setText(savedName);
         }
 
-        // 2. Load Tanggal Join (dengan pelindung anti-crash)
+        // 2. Load Tanggal Join
         if (tvJoinDate != null) {
             String joinDate = sharedPref.getString("JOIN_DATE", null);
             if (joinDate == null) {
@@ -59,7 +93,27 @@ public class ProfileFragment extends Fragment {
             tvJoinDate.setText(joinDate);
         }
 
-        // 3. Tombol Simpan (dengan pelindung anti-crash)
+        // 3. Load Foto Profil (Jika sebelumnya sudah pernah ganti foto)
+        String savedAvatarUri = sharedPref.getString("USER_AVATAR", null);
+        if (savedAvatarUri != null && ivAvatar != null) {
+            try {
+                ivAvatar.setImageURI(Uri.parse(savedAvatarUri));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 4. Aksi klik pada bingkai foto profil untuk buka Galeri
+        if (cvAvatar != null) {
+            cvAvatar.setOnClickListener(v -> {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+                galleryLauncher.launch(intent);
+            });
+        }
+
+        // 5. Tombol Simpan Nama
         if (btnSaveProfile != null && etName != null && tvSavedName != null) {
             btnSaveProfile.setOnClickListener(v -> {
                 String inputName = etName.getText().toString().trim();
