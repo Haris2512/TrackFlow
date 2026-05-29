@@ -25,14 +25,13 @@ import java.util.concurrent.Executors;
 
 public class HomeFragment extends Fragment {
 
-    private RecyclerView rvActivities;
     private ActivityAdapter adapter;
     private ActivityHelper activityHelper;
     private TextView tvTotalDistance;
+    private TextView tvWelcome;
+    private SharedPreferences sharedPreferences;
 
-    public HomeFragment() {
-        // Required empty public constructor
-    }
+    public HomeFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,94 +42,84 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rvActivities = view.findViewById(R.id.rvActivities);
+        RecyclerView rvActivities = view.findViewById(R.id.rvActivities);
         tvTotalDistance = view.findViewById(R.id.tvTotalDistance);
+        tvWelcome = view.findViewById(R.id.tvWelcome);
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAdd);
         Switch switchTheme = view.findViewById(R.id.switchTheme);
 
-        // Setup RecyclerView
+        sharedPreferences = requireActivity().getSharedPreferences("TrackFlowPrefs", Context.MODE_PRIVATE);
+
         rvActivities.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new ActivityAdapter();
         rvActivities.setAdapter(adapter);
 
-        // Buka koneksi database SQLite
         activityHelper = ActivityHelper.getInstance(requireContext());
         activityHelper.open();
 
-        // Aksi tombol tambah (FAB) untuk input manual
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), FormActivity.class);
             startActivity(intent);
         });
 
-        // ===== OHANA MODE (DARK/LIGHT TOGGLE) =====
-        SharedPreferences sharedPreferences = requireActivity()
-                .getSharedPreferences("TrackFlowPrefs", Context.MODE_PRIVATE);
+        // Toggle Dark/Light Mode
         boolean isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false);
         switchTheme.setChecked(isDarkMode);
-
         switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("DARK_MODE", isChecked);
-            editor.apply();
-
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
+            sharedPreferences.edit().putBoolean("DARK_MODE", isChecked).apply();
+            AppCompatDelegate.setDefaultNightMode(
+                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+            );
         });
     }
 
-    // Gunakan onResume agar saat kembali dari FormActivity, list otomatis ter-refresh!
     @Override
     public void onResume() {
         super.onResume();
+
+        // Sinkronisasi sapaan nama secara real-time dari Profil
+        String savedName = sharedPreferences.getString("USERNAME", "Atlet TrackFlow");
+        tvWelcome.setText("Halo, " + savedName);
+
         loadActivitiesAsync();
     }
 
-    // PANEN NILAI BACKGROUND THREAD & SQLITE DI SINI
+    // Load data SQLite via Background Thread
     private void loadActivitiesAsync() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-            // PROSES BACKGROUND: Ambil data dari SQLite
             Cursor cursor = activityHelper.queryAll();
-            // Asumsikan kamu punya kelas MappingHelper untuk mengubah Cursor jadi ArrayList
             ArrayList<ActivityModel> list = MappingHelper.mapCursorToArrayList(cursor);
 
-            // PROSES MAIN THREAD: Kirim data ke tampilan (UI)
             handler.post(() -> {
                 if (list != null) {
                     adapter.setData(list);
-                    calculateTotalDistance(list); // Bonus: Menghitung total KM!
+                    calculateTotalDistance(list);
                 }
             });
         });
     }
 
-    // Fungsi canggih untuk menjumlahkan semua jarak yang ada di database
     private void calculateTotalDistance(ArrayList<ActivityModel> list) {
         double total = 0.0;
         for (ActivityModel item : list) {
             try {
-                // Menghilangkan tulisan " KM" untuk mengambil angkanya saja
                 String distStr = item.getDistance().toUpperCase().replace(" KM", "").trim();
                 total += Double.parseDouble(distStr);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        // Update teks Total Petualangan di kotak atas
-        tvTotalDistance.setText(String.format("%.2f KM", total));
+        tvTotalDistance.setText(String.format(java.util.Locale.US, "%.2f KM", total));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (activityHelper != null) {
-            activityHelper.close(); // Selalu tutup DB agar tidak Memory Leak
+            activityHelper.close();
         }
     }
 }

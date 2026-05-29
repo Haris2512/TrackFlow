@@ -13,18 +13,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ProfileFragment extends Fragment {
 
-    private EditText etName;
-    private TextView tvSavedName;
-
-    // Nama file penyimpanannya
     private static final String PREF_NAME = "TrackFlowPrefs";
 
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
+    public ProfileFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,40 +32,40 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etName = view.findViewById(R.id.etName);
+        EditText etName = view.findViewById(R.id.etName);
         Button btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
-        tvSavedName = view.findViewById(R.id.tvSavedName);
+        TextView tvSavedName = view.findViewById(R.id.tvSavedName);
+        TextView tvJoinDate = view.findViewById(R.id.tvJoinDate);
 
-        // Buka lemari SharedPreferences dengan safely getContext()
         Context context = getContext();
         if (context == null) return;
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
-        // 1. TAMPILKAN DATA YANG SUDAH TERSIMPAN (safely check null)
-        if (tvSavedName != null && sharedPreferences != null) {
-            String savedName = sharedPreferences.getString("USERNAME", "Belum ada nama");
-            tvSavedName.setText(savedName);
+        // Load data nama
+        String savedName = sharedPref.getString("USERNAME", "Belum ada nama");
+        tvSavedName.setText(savedName);
+
+        // Load atau buat tanggal join baru (otomatis)
+        String joinDate = sharedPref.getString("JOIN_DATE", null);
+        if (joinDate == null) {
+            String currentDate = new SimpleDateFormat("MMMM yyyy", new Locale("id", "ID")).format(new Date());
+            joinDate = "Bergabung sejak " + currentDate;
+            sharedPref.edit().putString("JOIN_DATE", joinDate).apply();
         }
+        tvJoinDate.setText(joinDate);
 
-        // 2. SIMPAN NAMA BARU (safely check null)
-        if (btnSaveProfile != null && etName != null && sharedPreferences != null) {
-            btnSaveProfile.setOnClickListener(v -> {
-                String inputName = etName.getText().toString().trim();
-                if (!inputName.isEmpty()) {
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("USERNAME", inputName);
-                    editor.apply();
-
-                    if (tvSavedName != null) {
-                        tvSavedName.setText(inputName);
-                    }
-                    etName.setText(""); // Kosongkan kolom input
-                    Toast.makeText(context, "Nama tersimpan!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        // Simpan pembaruan nama
+        btnSaveProfile.setOnClickListener(v -> {
+            String inputName = etName.getText().toString().trim();
+            if (!inputName.isEmpty()) {
+                sharedPref.edit().putString("USERNAME", inputName).apply();
+                tvSavedName.setText(inputName);
+                etName.setText("");
+                Toast.makeText(context, "Profil diperbarui!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
