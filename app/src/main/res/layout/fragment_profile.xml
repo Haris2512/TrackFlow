@@ -87,37 +87,42 @@
             android:layout_marginTop="24dp"
             android:gravity="center"
             app:layout_constraintTop_toBottomOf="@id/llJoinDate">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="15" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Aktivitas" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="120" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pengikut" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="45" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mengikuti" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCalendarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kemajuan Bulan Ini"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@id/llStats"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <CalendarView
+            android:id="@+id/calendarViewProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="?attr/colorSurface"
+            android:theme="@style/ThemeOverlay.AppCompat"
+            app:layout_constraintTop_toBottomOf="@id/tvCalendarTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <View
             android:id="@+id/vDivider"
@@ -126,7 +131,7 @@
             android:background="?attr/colorOnSurfaceVariant"
             android:alpha="0.2"
             android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/llStats" />
+            app:layout_constraintTop_toBottomOf="@id/calendarViewProfile" />
 
         <TextView
             android:id="@+id/tvSettingsTitle"
@@ -174,19 +179,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pencapaian Trofi 🏆"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lari 5KM pertama bulan ini selesai!"
-                    android:textSize="12sp"
-                    android:layout_marginTop="4dp"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pencapaian Trofi 🏆" android:textStyle="bold" android:textColor="?attr/colorOnSurface" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lari 5KM pertama bulan ini selesai!" android:textSize="12sp" android:layout_marginTop="4dp" android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
