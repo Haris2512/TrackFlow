@@ -8,20 +8,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import java.util.Locale;
 
 public class RecordFragment extends Fragment {
 
-    private TextView tvTimer;
-    private Button btnStartPause, btnFinish;
+    private TextView tvStopwatch;
+    private FloatingActionButton fabPlay;
+    private LinearLayout llActionButtons;
+    private Button btnSelesai;
+    private Button btnBatal;
+
     private boolean isRunning = false;
     private int seconds = 0;
-    private Handler handler;
-    private Runnable runnable;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     public RecordFragment() {}
 
@@ -34,66 +39,82 @@ public class RecordFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        tvTimer = view.findViewById(R.id.tvTimer);
-        btnStartPause = view.findViewById(R.id.btnStartPause);
-        btnFinish = view.findViewById(R.id.btnFinish);
+        tvStopwatch = view.findViewById(R.id.tvStopwatch);
+        fabPlay = view.findViewById(R.id.fabPlay);
+        llActionButtons = view.findViewById(R.id.llActionButtons);
+        btnSelesai = view.findViewById(R.id.btnSelesai);
+        btnBatal = view.findViewById(R.id.btnBatal);
 
-        handler = new Handler(Looper.getMainLooper());
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                seconds++;
-                int minutes = seconds / 60;
-                int secs = seconds % 60;
-                tvTimer.setText(String.format("%02d:%02d", minutes, secs));
-                
-                // Looping dipanggil tanpa pengecekan isRunning karena akan distop manual
-                handler.postDelayed(this, 1000);
-            }
-        };
-
-        btnStartPause.setOnClickListener(v -> {
+        // Aksi ketika tombol oranye ditekan
+        fabPlay.setOnClickListener(v -> {
             if (isRunning) {
-                // JEDA
+                // PAUSE
                 isRunning = false;
-                btnStartPause.setText("LANJUT");
-                handler.removeCallbacks(runnable);
+                fabPlay.setImageResource(android.R.drawable.ic_media_play); // Ubah jadi icon Play
+                llActionButtons.setVisibility(View.VISIBLE); // Munculkan tombol BATAL & SELESAI
             } else {
-                // MULAI / LANJUT
+                // START / RESUME
                 isRunning = true;
-                btnStartPause.setText("JEDA");
-                handler.post(runnable);
+                fabPlay.setImageResource(android.R.drawable.ic_media_pause); // Ubah jadi icon Pause
+                llActionButtons.setVisibility(View.GONE); // Sembunyikan tombol aksi
+                runStopwatch();
             }
         });
 
-        btnFinish.setOnClickListener(v -> {
-            if (seconds > 0) {
-                isRunning = false;
-                handler.removeCallbacks(runnable);
+        // Aksi ketika tombol BATAL ditekan
+        btnBatal.setOnClickListener(v -> {
+            isRunning = false;
+            seconds = 0; // Reset waktu
+            tvStopwatch.setText("00:00:00"); // Kembalikan teks stopwatch
 
-                int minutes = seconds / 60;
-                int secs = seconds % 60;
-                String timeString = String.format("%02d:%02d", minutes, secs);
+            // Sembunyikan tombol & kembalikan icon ke posisi awal
+            llActionButtons.setVisibility(View.GONE);
+            fabPlay.setImageResource(android.R.drawable.ic_media_play);
+        });
 
-                Intent intent = new Intent(requireContext(), FormActivity.class);
-                intent.putExtra("EXTRA_DURATION", timeString);
-                startActivity(intent);
+        // Aksi ketika tombol SELESAI ditekan
+        btnSelesai.setOnClickListener(v -> {
+            isRunning = false;
+            String timeFormatted = formatTime(seconds);
 
-                seconds = 0;
-                tvTimer.setText("00:00");
-                btnStartPause.setText("MULAI");
-            } else {
-                Toast.makeText(requireContext(), "Tekan MULAI terlebih dahulu!", Toast.LENGTH_SHORT).show();
+            // Pindah ke FormActivity dan bawa waktu akhirnya
+            Intent intent = new Intent(requireContext(), FormActivity.class);
+            intent.putExtra("EXTRA_DURATION", timeFormatted);
+            startActivity(intent);
+
+            // Reset komponen setelah data dilempar
+            seconds = 0;
+            tvStopwatch.setText("00:00:00");
+            llActionButtons.setVisibility(View.GONE);
+            fabPlay.setImageResource(android.R.drawable.ic_media_play);
+        });
+    }
+
+    // Logika perhitungan waktu di belakang layar
+    private void runStopwatch() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (isRunning) {
+                    tvStopwatch.setText(formatTime(seconds));
+                    seconds++;
+                    handler.postDelayed(this, 1000); // Ulangi setiap 1 detik
+                }
             }
         });
     }
 
+    // Mengubah hitungan detik menjadi format jam:menit:detik
+    private String formatTime(int totalSeconds) {
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
+        int secs = totalSeconds % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs);
+    }
+
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        // Bersihkan memori saat pindah halaman
-        if (handler != null && runnable != null) {
-            handler.removeCallbacks(runnable);
-        }
+    public void onDestroy() {
+        super.onDestroy();
+        isRunning = false; // Pastikan waktu berhenti kalau halaman ditutup
     }
 }
