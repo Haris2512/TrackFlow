@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -30,6 +31,9 @@ public class ProfileFragment extends Fragment {
     private ImageView ivAvatar;
     private SharedPreferences sharedPref;
 
+    // Variabel penampung untuk menyimpan foto sementara (sebelum di-save)
+    private String tempAvatarUri = null;
+
     // Peluncur untuk membuka Galeri HP
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -37,15 +41,14 @@ public class ProfileFragment extends Fragment {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     Uri selectedImageUri = result.getData().getData();
                     if (selectedImageUri != null) {
-                        // Minta izin baca permanen agar foto tidak hilang saat aplikasi ditutup
                         requireContext().getContentResolver().takePersistableUriPermission(
                                 selectedImageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                        // Pasang foto ke tampilan
+                        // 1. Pasang foto ke tampilan profil sebagai "Preview"
                         ivAvatar.setImageURI(selectedImageUri);
 
-                        // Simpan URI foto ke memori SharedPreferences
-                        sharedPref.edit().putString("USER_AVATAR", selectedImageUri.toString()).apply();
+                        // 2. Simpan URI-nya ke memori sementara (Jangan simpan ke database dulu!)
+                        tempAvatarUri = selectedImageUri.toString();
                     }
                 }
             }
@@ -67,8 +70,6 @@ public class ProfileFragment extends Fragment {
         TextView tvSavedName = view.findViewById(R.id.tvSavedName);
         TextView tvJoinDate = view.findViewById(R.id.tvJoinDate);
         CardView cvAvatar = view.findViewById(R.id.cvAvatar);
-
-        // Panggil ID ImageView yang baru ditambahkan di XML
         ivAvatar = view.findViewById(R.id.ivAvatar);
 
         Context context = getContext();
@@ -76,13 +77,13 @@ public class ProfileFragment extends Fragment {
 
         sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
-        // 1. Load Nama
+        // Load Nama
         if (tvSavedName != null) {
             String savedName = sharedPref.getString("USERNAME", "Belum ada nama");
             tvSavedName.setText(savedName);
         }
 
-        // 2. Load Tanggal Join
+        // Load Tanggal Join
         if (tvJoinDate != null) {
             String joinDate = sharedPref.getString("JOIN_DATE", null);
             if (joinDate == null) {
@@ -93,7 +94,7 @@ public class ProfileFragment extends Fragment {
             tvJoinDate.setText(joinDate);
         }
 
-        // 3. Load Foto Profil (Jika sebelumnya sudah pernah ganti foto)
+        // Load Foto Profil (Jika sebelumnya sudah pernah simpan)
         String savedAvatarUri = sharedPref.getString("USER_AVATAR", null);
         if (savedAvatarUri != null && ivAvatar != null) {
             try {
@@ -103,7 +104,7 @@ public class ProfileFragment extends Fragment {
             }
         }
 
-        // 4. Aksi klik pada bingkai foto profil untuk buka Galeri
+        // Klik foto buka galeri
         if (cvAvatar != null) {
             cvAvatar.setOnClickListener(v -> {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -113,15 +114,41 @@ public class ProfileFragment extends Fragment {
             });
         }
 
-        // 5. Tombol Simpan Nama
+        // TOMBOL SIMPAN (Simpan Nama, Simpan Foto, lalu pindah halaman)
         if (btnSaveProfile != null && etName != null && tvSavedName != null) {
             btnSaveProfile.setOnClickListener(v -> {
                 String inputName = etName.getText().toString().trim();
+
                 if (!inputName.isEmpty()) {
-                    sharedPref.edit().putString("USERNAME", inputName).apply();
+                    SharedPreferences.Editor editor = sharedPref.edit();
+
+                    // 1. Simpan Nama
+                    editor.putString("USERNAME", inputName);
+
+                    // 2. Simpan Foto (Hanya jika user memilih foto baru)
+                    if (tempAvatarUri != null) {
+                        editor.putString("USER_AVATAR", tempAvatarUri);
+                    }
+
+                    // Kunci perubahan
+                    editor.apply();
+
                     tvSavedName.setText(inputName);
                     etName.setText("");
-                    Toast.makeText(context, "Profil diperbarui!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Profil berhasil diperbarui!", Toast.LENGTH_SHORT).show();
+
+                    // 3. OTOMATIS KEMBALI KE HALAMAN HOME
+                    BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_nav);
+                    if (bottomNav != null) {
+                        // Pastikan 'nav_home' ini sama dengan ID menu home kamu di res/menu/bottom_nav_menu.xml
+                        bottomNav.setSelectedItemId(R.id.nav_home);
+                    } else {
+                        // Fallback jika tidak pakai bottom nav
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.nav_host_fragment, new HomeFragment())
+                                .commit();
+                    }
+
                 } else {
                     Toast.makeText(context, "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show();
                 }
