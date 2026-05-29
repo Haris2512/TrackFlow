@@ -1,9 +1,13 @@
 package com.example.trackflow;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +23,8 @@ public class CommunityFragment extends Fragment {
 
     private RecyclerView rvUsers;
     private UserAdapter adapter;
+    private ImageView ivCommunityAvatar;
+    private SharedPreferences sharedPreferences;
 
     public CommunityFragment() {}
 
@@ -30,9 +36,30 @@ public class CommunityFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         rvUsers = view.findViewById(R.id.rvUsers);
+        ivCommunityAvatar = view.findViewById(R.id.ivCommunityAvatar);
+
+        sharedPreferences = requireActivity().getSharedPreferences("TrackFlowPrefs", Context.MODE_PRIVATE);
+
         rvUsers.setLayoutManager(new LinearLayoutManager(requireContext()));
         fetchDataFromApi();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Sinkronisasi foto profil secara real-time
+        if (sharedPreferences != null && ivCommunityAvatar != null) {
+            String savedAvatarUri = sharedPreferences.getString("USER_AVATAR", null);
+            if (savedAvatarUri != null) {
+                try {
+                    ivCommunityAvatar.setImageURI(Uri.parse(savedAvatarUri));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void fetchDataFromApi() {
@@ -42,18 +69,21 @@ public class CommunityFragment extends Fragment {
         call.enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
+                // isAdded() mencegah force close jika user pindah halaman sebelum loading selesai
+                if (isAdded() && response.isSuccessful() && response.body() != null) {
                     List<User> userList = response.body().getUsers();
                     adapter = new UserAdapter(userList);
                     rvUsers.setAdapter(adapter);
-                } else {
+                } else if (isAdded()) {
                     Toast.makeText(requireContext(), "Gagal: " + response.code(), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
-                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
