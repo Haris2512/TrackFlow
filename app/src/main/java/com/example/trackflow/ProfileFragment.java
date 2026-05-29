@@ -42,30 +42,36 @@ public class ProfileFragment extends Fragment {
 
         SharedPreferences sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
-        // Load data nama
-        String savedName = sharedPref.getString("USERNAME", "Belum ada nama");
-        tvSavedName.setText(savedName);
-
-        // Load atau buat tanggal join baru (otomatis)
-        String joinDate = sharedPref.getString("JOIN_DATE", null);
-        if (joinDate == null) {
-            String currentDate = new SimpleDateFormat("MMMM yyyy", new Locale("id", "ID")).format(new Date());
-            joinDate = "Bergabung sejak " + currentDate;
-            sharedPref.edit().putString("JOIN_DATE", joinDate).apply();
+        // 1. Load Nama (dengan pelindung anti-crash)
+        if (tvSavedName != null) {
+            String savedName = sharedPref.getString("USERNAME", "Belum ada nama");
+            tvSavedName.setText(savedName);
         }
-        tvJoinDate.setText(joinDate);
 
-        // Simpan pembaruan nama
-        btnSaveProfile.setOnClickListener(v -> {
-            String inputName = etName.getText().toString().trim();
-            if (!inputName.isEmpty()) {
-                sharedPref.edit().putString("USERNAME", inputName).apply();
-                tvSavedName.setText(inputName);
-                etName.setText("");
-                Toast.makeText(context, "Profil diperbarui!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(context, "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show();
+        // 2. Load Tanggal Join (dengan pelindung anti-crash)
+        if (tvJoinDate != null) {
+            String joinDate = sharedPref.getString("JOIN_DATE", null);
+            if (joinDate == null) {
+                String currentDate = new SimpleDateFormat("MMMM yyyy", new Locale("id", "ID")).format(new Date());
+                joinDate = "Bergabung sejak " + currentDate;
+                sharedPref.edit().putString("JOIN_DATE", joinDate).apply();
             }
-        });
+            tvJoinDate.setText(joinDate);
+        }
+
+        // 3. Tombol Simpan (dengan pelindung anti-crash)
+        if (btnSaveProfile != null && etName != null && tvSavedName != null) {
+            btnSaveProfile.setOnClickListener(v -> {
+                String inputName = etName.getText().toString().trim();
+                if (!inputName.isEmpty()) {
+                    sharedPref.edit().putString("USERNAME", inputName).apply();
+                    tvSavedName.setText(inputName);
+                    etName.setText("");
+                    Toast.makeText(context, "Profil diperbarui!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }

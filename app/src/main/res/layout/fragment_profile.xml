@@ -87,17 +87,34 @@
             android:gravity="center"
             app:layout_constraintTop_toBottomOf="@id/llJoinDate">
 
-            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content">
-                <TextView android:text="15" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
-                <TextView android:text="Aktivitas" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="15" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Aktivitas" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
-            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content">
-                <TextView android:text="120" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
-                <TextView android:text="Pengikut" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="120" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pengikut" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
-            <LinearLayout android:orientation="vertical" android:gravity="center" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content">
-                <TextView android:text="45" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
-                <TextView android:text="Mengikuti" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="45" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorOnSurface"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mengikuti" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -129,6 +146,7 @@
             android:hint="Masukkan nama panggilanmu"
             android:layout_marginTop="12dp"
             android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"
             app:layout_constraintTop_toBottomOf="@id/tvSettingsTitle" />
 
         <Button
@@ -155,8 +173,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
-                <TextView android:text="Pencapaian Trofi 🏆" android:textStyle="bold" android:textColor="?attr/colorOnSurface" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                <TextView android:text="Lari 5KM pertama bulan ini selesai!" android:textSize="12sp" android:layout_marginTop="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pencapaian Trofi 🏆"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lari 5KM pertama bulan ini selesai!"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
