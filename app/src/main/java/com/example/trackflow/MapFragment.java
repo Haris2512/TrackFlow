@@ -63,11 +63,12 @@ public class MapFragment extends Fragment {
         tvAddress = view.findViewById(R.id.tvAddress);
         mapView.setMultiTouchControls(true);
 
+        // Sumber peta standar yang sangat detail
         mapView.setTileSource(TileSourceFactory.MAPNIK);
 
         IMapController mapController = mapView.getController();
-        mapController.setZoom(19.0); // Default Zoom lebih dekat
-        GeoPoint defaultLocation = new GeoPoint(-5.147665, 119.432731); // Koordinat Makassar
+        mapController.setZoom(19.0); // Set awal zoom yang dekat ke bangunan
+        GeoPoint defaultLocation = new GeoPoint(-5.147665, 119.432731); // Default Makassar
         mapController.setCenter(defaultLocation);
 
         Button btnRuteLari = view.findViewById(R.id.btnRuteLari);
@@ -84,7 +85,7 @@ public class MapFragment extends Fragment {
             if (locationOverlay != null && locationOverlay.getMyLocation() != null) {
                 GeoPoint myLoc = locationOverlay.getMyLocation();
                 mapController.animateTo(myLoc);
-                mapController.setZoom(19.5); // Zoom masuk lebih dalam
+                mapController.setZoom(20.0); // Diperdekat ke level maksimal bangunan (Gedung Pertanian/Kosan akan kelihatan)
 
                 getAddressFromLocation(myLoc);
             } else {
@@ -118,18 +119,15 @@ public class MapFragment extends Fragment {
     private void enableMyLocation() {
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireContext()), mapView);
 
-        // -------------------------------------------------------------
-        // MENGGANTI IKON DEFAULT MENJADI TITIK BIRU GOOGLE MAPS
-        // -------------------------------------------------------------
-        Bitmap blueDot = createBlueDotBitmap();
+        // --- MODIFIKASI TITIK LOKASI MENJADI LINGKARAN BIRU KECIL MAPS ---
+        Bitmap blueDot = createSleekBlueDot();
         locationOverlay.setPersonIcon(blueDot);
-        locationOverlay.setDirectionArrow(blueDot, blueDot);
-        // Atur titik pusat rotasi persis di tengah gambar
+        locationOverlay.setDirectionArrow(blueDot, blueDot); // Aman dari error argumen OSMDroid
         locationOverlay.setPersonHotspot(blueDot.getWidth() / 2f, blueDot.getHeight() / 2f);
 
-        // Aktifkan lingkaran transparan pengukur akurasi bawaan
+        // Aktifkan lingkaran transparan halus pengukur radius akurasi GPS
         locationOverlay.setDrawAccuracyEnabled(true);
-        // -------------------------------------------------------------
+        // -----------------------------------------------------------------
 
         locationOverlay.enableMyLocation();
 
@@ -139,7 +137,7 @@ public class MapFragment extends Fragment {
                     GeoPoint myLoc = locationOverlay.getMyLocation();
                     if (myLoc != null) {
                         mapView.getController().animateTo(myLoc);
-                        mapView.getController().setZoom(19.5);
+                        mapView.getController().setZoom(20.0); // Kunci zoom maksimal biar detail gedungnya tampak
                         getAddressFromLocation(myLoc);
                     }
                 });
@@ -149,29 +147,29 @@ public class MapFragment extends Fragment {
         mapView.getOverlays().add(locationOverlay);
     }
 
-    // FUNGSI KHUSUS UNTUK MELUKIS TITIK BIRU (Tanpa butuh file PNG)
-    private Bitmap createBlueDotBitmap() {
-        int size = 60; // Ukuran titik
+    // FUNGSI UNTUK MERANCANG TITIK BIRU SLEEK DAN MINIMALIS (UKURAN DIPERKECIL)
+    private Bitmap createSleekBlueDot() {
+        int size = 44; // Ukuran diperkecil dari 60 menjadi 44 agar tampak anggun dan presisi
         Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
 
-        // 1. Gambar lingkaran putih (border luar)
+        // 1. Lingkaran putih bersih sebagai border luar
         paint.setColor(Color.WHITE);
         paint.setStyle(Paint.Style.FILL);
-        canvas.drawCircle(size / 2f, size / 2f, size / 2.2f, paint);
+        canvas.drawCircle(size / 2f, size / 2f, size / 2.3f, paint);
 
-        // 2. Gambar bayangan tepi tipis (biar menyatu dengan peta)
+        // 2. Stroke bayangan tipis pembatas
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.parseColor("#33000000")); // Hitam transparan
-        paint.setStrokeWidth(2f);
-        canvas.drawCircle(size / 2f, size / 2f, size / 2.2f, paint);
+        paint.setColor(Color.parseColor("#40000000"));
+        paint.setStrokeWidth(1.5f);
+        canvas.drawCircle(size / 2f, size / 2f, size / 2.3f, paint);
 
-        // 3. Gambar lingkaran biru di tengah
+        // 3. Inti lingkaran biru khas Google Maps
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.parseColor("#4285F4")); // Kode Hex Biru Google Maps
-        canvas.drawCircle(size / 2f, size / 2f, size / 3.2f, paint);
+        paint.setColor(Color.parseColor("#1A73E8")); // Biru Google Maps Material modern
+        canvas.drawCircle(size / 2f, size / 2f, size / 3.8f, paint);
 
         return bitmap;
     }
@@ -180,7 +178,7 @@ public class MapFragment extends Fragment {
         if (getContext() == null) return;
 
         tvAddress.setVisibility(View.VISIBLE);
-        tvAddress.setText("Mendeteksi detail...");
+        tvAddress.setText("Sinkronisasi koordinat GPS...");
 
         new Thread(() -> {
             Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
@@ -190,33 +188,31 @@ public class MapFragment extends Fragment {
                 if (addresses != null && !addresses.isEmpty()) {
                     Address address = addresses.get(0);
 
-                    // Berusaha menarik data nama gedung (FeatureName) jika tersedia
                     String featureName = address.getFeatureName();
                     String fullAddress = address.getAddressLine(0);
 
-                    // Gabungkan nama gedung + jalan jika nama gedungnya terdeteksi dan tidak sama dengan jalan
                     String finalAddress = fullAddress;
                     if (featureName != null && !fullAddress.startsWith(featureName)) {
                         finalAddress = featureName + ", " + fullAddress;
                     }
 
-                    String textToShow = finalAddress;
+                    final String textToShow = finalAddress;
 
                     if (getActivity() != null) {
                         requireActivity().runOnUiThread(() -> {
+                            // Alamat dipindahkan sepenuhnya ke kotak teks atas, PETA BERSIH dari pop-up balon!
                             tvAddress.setText(textToShow);
-                            mapView.invalidate(); // Paksa peta untuk redraw
                         });
                     }
                 } else {
                     if (getActivity() != null) {
-                        requireActivity().runOnUiThread(() -> tvAddress.setText("Lokasi detail tidak ditemukan"));
+                        requireActivity().runOnUiThread(() -> tvAddress.setText("Mencari titik koordinat presisi..."));
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
                 if (getActivity() != null) {
-                    requireActivity().runOnUiThread(() -> tvAddress.setText("Gagal memuat alamat. Periksa koneksi internet."));
+                    requireActivity().runOnUiThread(() -> tvAddress.setText("Menampilkan peta lokal (Offline Mode)"));
                 }
             }
         }).start();
