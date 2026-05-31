@@ -1,26 +1,28 @@
 package com.example.trackflow;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -29,10 +31,8 @@ public class ProfileFragment extends Fragment {
 
     private static final String PREF_NAME = "TrackFlowPrefs";
     private ImageView ivAvatar;
+    private TextView tvSavedName;
     private SharedPreferences sharedPref;
-
-    // Variabel penampung untuk menyimpan foto sementara (sebelum di-save)
-    private String tempAvatarUri = null;
 
     // Peluncur untuk membuka Galeri HP
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
@@ -44,11 +44,10 @@ public class ProfileFragment extends Fragment {
                         requireContext().getContentResolver().takePersistableUriPermission(
                                 selectedImageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                        // 1. Pasang foto ke tampilan profil sebagai "Preview"
+                        // Pasang foto dan LANGSUNG SIMPAN
                         ivAvatar.setImageURI(selectedImageUri);
-
-                        // 2. Simpan URI-nya ke memori sementara (Jangan simpan ke database dulu!)
-                        tempAvatarUri = selectedImageUri.toString();
+                        sharedPref.edit().putString("USER_AVATAR", selectedImageUri.toString()).apply();
+                        Toast.makeText(requireContext(), "Foto profil berhasil diperbarui!", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -65,12 +64,10 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        EditText etName = view.findViewById(R.id.etName);
-        Button btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
-        TextView tvSavedName = view.findViewById(R.id.tvSavedName);
-        TextView tvJoinDate = view.findViewById(R.id.tvJoinDate);
-        CardView cvAvatar = view.findViewById(R.id.cvAvatar);
+        tvSavedName = view.findViewById(R.id.tvSavedName);
         ivAvatar = view.findViewById(R.id.ivAvatar);
+        ImageView btnEditProfile = view.findViewById(R.id.btnEditProfile);
+        TextView tvJoinDate = view.findViewById(R.id.tvJoinDate);
 
         Context context = getContext();
         if (context == null) return;
@@ -94,7 +91,7 @@ public class ProfileFragment extends Fragment {
             tvJoinDate.setText(joinDate);
         }
 
-        // Load Foto Profil (Jika sebelumnya sudah pernah simpan)
+        // Load Foto Profil
         String savedAvatarUri = sharedPref.getString("USER_AVATAR", null);
         if (savedAvatarUri != null && ivAvatar != null) {
             try {
@@ -104,55 +101,75 @@ public class ProfileFragment extends Fragment {
             }
         }
 
-        // Klik foto buka galeri
-        if (cvAvatar != null) {
-            cvAvatar.setOnClickListener(v -> {
+        // Aksi ketika tombol Edit Profil (Kanan Atas) ditekan
+        if (btnEditProfile != null) {
+            btnEditProfile.setOnClickListener(v -> showEditOptionsDialog());
+        }
+    }
+
+    // Menampilkan Pilihan Edit (Nama / Foto)
+    private void showEditOptionsDialog() {
+        String[] options = {"🖼️ Ganti Foto Profil", "✏️ Ganti Nama"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Pengaturan Profil");
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                // Pilih Ganti Foto (Buka Galeri)
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
                 galleryLauncher.launch(intent);
-            });
+            } else if (which == 1) {
+                // Pilih Ganti Nama (Buka Dialog Input Nama)
+                showEditNameDialog();
+            }
+        });
+        builder.show();
+    }
+
+    // Menampilkan Pop-up Input untuk Mengganti Nama
+    private void showEditNameDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Ubah Nama Panggilan");
+
+        // Membuat kotak input secara dinamis (programmatically)
+        final EditText input = new EditText(requireContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        input.setHint("Masukkan nama baru...");
+
+        // Ambil nama lama agar user bisa melihatnya
+        String currentName = sharedPref.getString("USERNAME", "");
+        if (!currentName.equals("Belum ada nama")) {
+            input.setText(currentName);
         }
 
-        // TOMBOL SIMPAN (Simpan Nama, Simpan Foto, lalu pindah halaman)
-        if (btnSaveProfile != null && etName != null && tvSavedName != null) {
-            btnSaveProfile.setOnClickListener(v -> {
-                String inputName = etName.getText().toString().trim();
+        // Mengatur margin untuk kotak input
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        lp.setMargins(50, 0, 50, 0);
+        input.setLayoutParams(lp);
 
-                if (!inputName.isEmpty()) {
-                    SharedPreferences.Editor editor = sharedPref.edit();
+        LinearLayout container = new LinearLayout(requireContext());
+        container.addView(input);
+        builder.setView(container);
 
-                    // 1. Simpan Nama
-                    editor.putString("USERNAME", inputName);
+        // Tombol SIMPAN pada Pop-up
+        builder.setPositiveButton("SIMPAN", (dialog, which) -> {
+            String newName = input.getText().toString().trim();
+            if (!newName.isEmpty()) {
+                sharedPref.edit().putString("USERNAME", newName).apply();
+                tvSavedName.setText(newName);
+                Toast.makeText(requireContext(), "Nama berhasil diperbarui!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-                    // 2. Simpan Foto (Hanya jika user memilih foto baru)
-                    if (tempAvatarUri != null) {
-                        editor.putString("USER_AVATAR", tempAvatarUri);
-                    }
+        // Tombol BATAL pada Pop-up
+        builder.setNegativeButton("BATAL", (dialog, which) -> dialog.cancel());
 
-                    // Kunci perubahan
-                    editor.apply();
-
-                    tvSavedName.setText(inputName);
-                    etName.setText("");
-                    Toast.makeText(context, "Profil berhasil diperbarui!", Toast.LENGTH_SHORT).show();
-
-                    // 3. OTOMATIS KEMBALI KE HALAMAN HOME
-                    BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_nav);
-                    if (bottomNav != null) {
-                        // Pastikan 'nav_home' ini sama dengan ID menu home kamu di res/menu/bottom_nav_menu.xml
-                        bottomNav.setSelectedItemId(R.id.nav_home);
-                    } else {
-                        // Fallback jika tidak pakai bottom nav
-                        requireActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.nav_host_fragment, new HomeFragment())
-                                .commit();
-                    }
-
-                } else {
-                    Toast.makeText(context, "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        builder.show();
     }
 }

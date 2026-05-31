@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface">
 
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="150dp"> <TextView
         android:id="@+id/tvStopwatch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,27 +18,42 @@
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomSheetSim"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bottomSheetSim"
+        android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorSurfaceVariant"
-        android:paddingBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:paddingBottom="48dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_peekHeight="145dp" app:behavior_hideable="false"> <View
+        android:id="@+id/vHandle"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/colorOnSurfaceVariant"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <View
-            android:id="@+id/vHandle"
-            android:layout_width="40dp"
-            android:layout_height="4dp"
-            android:layout_marginTop="16dp"
-            android:background="?attr/colorOnSurfaceVariant"
-            app:layout_constraintTop_toTopOf="parent"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:backgroundTint="@color/strava_orange"
+            app:tint="#FFFFFF"
+            android:src="@android:drawable/ic_media_play"
+            app:fabCustomSize="80dp"
+            app:maxImageSize="40dp"
+            app:layout_constraintTop_toBottomOf="@id/vHandle"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:elevation="4dp"/>
 
         <LinearLayout
             android:id="@+id/llRun"
@@ -70,21 +88,6 @@
                 android:textColor="?attr/colorOnSurface"
                 android:layout_marginTop="8dp"/>
         </LinearLayout>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            app:backgroundTint="@color/strava_orange"
-            app:tint="#FFFFFF"
-            android:src="@android:drawable/ic_media_play"
-            app:fabCustomSize="80dp"
-            app:maxImageSize="40dp"
-            app:layout_constraintTop_toBottomOf="@id/vHandle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:elevation="4dp"/>
 
         <LinearLayout
             android:id="@+id/llRoute"
@@ -155,7 +158,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="36dp"
             android:paddingHorizontal="24dp"
             app:layout_constraintTop_toBottomOf="@id/llActionButtons">
 
@@ -187,8 +190,7 @@
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Petunjuk audio, jeda-otomatis" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp"/>
                 </LinearLayout>
             </LinearLayout>
-
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

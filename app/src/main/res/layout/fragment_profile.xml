@@ -11,6 +11,18 @@
         android:layout_height="wrap_content"
         android:padding="24dp">
 
+        <ImageView
+            android:id="@+id/btnEditProfile"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_edit"
+            app:tint="?attr/colorOnSurface"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/cvAvatar"
             android:layout_width="100dp"
@@ -111,48 +123,6 @@
             app:layout_constraintTop_toBottomOf="@id/llStats" />
 
         <TextView
-            android:id="@+id/tvSettingsTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pengaturan Profil"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/vDivider1"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Masukkan nama panggilanmu"
-            android:layout_marginTop="12dp"
-            android:textColor="?attr/colorOnSurface"
-            android:textColorHint="?attr/colorOnSurfaceVariant"
-            app:layout_constraintTop_toBottomOf="@id/tvSettingsTitle" />
-
-        <Button
-            android:id="@+id/btnSaveProfile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SIMPAN PROFIL"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            app:backgroundTint="@color/strava_orange"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/etName" />
-
-        <View
-            android:id="@+id/vDivider2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorOnSurfaceVariant"
-            android:alpha="0.2"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/btnSaveProfile" />
-
-        <TextView
             android:id="@+id/tvCalendarTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -161,7 +131,7 @@
             android:textSize="16sp"
             android:textColor="?attr/colorOnSurface"
             android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/vDivider2"
+            app:layout_constraintTop_toBottomOf="@id/vDivider1"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <CalendarView
@@ -178,7 +148,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="24dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp"
             app:cardBackgroundColor="?attr/colorSurfaceVariant"
