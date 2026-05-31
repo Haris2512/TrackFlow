@@ -164,7 +164,6 @@ public class HomeFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         if (activityHelper != null) {
-            activityHelper.close();
         }
     }
 }
