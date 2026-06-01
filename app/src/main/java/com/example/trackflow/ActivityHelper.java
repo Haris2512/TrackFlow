@@ -34,12 +34,11 @@ public class ActivityHelper {
 
     public void close() {
         databaseHelper.close();
-        if (database.isOpen()) {
+        if (database != null && database.isOpen()) {
             database.close();
         }
     }
 
-    // Mengambil semua data riwayat (diurutkan dari yang terbaru)
     public Cursor queryAll() {
         return database.query(
                 DATABASE_TABLE,
@@ -48,12 +47,10 @@ public class ActivityHelper {
         );
     }
 
-    // Memasukkan data aktivitas baru
     public long insert(ContentValues values) {
         return database.insert(DATABASE_TABLE, null, values);
     }
 
-    // Menghapus data berdasarkan ID
     public int deleteById(String id) {
         return database.delete(DATABASE_TABLE, DatabaseContract.ActivityColumns._ID + " = ?", new String[]{id});
     }
