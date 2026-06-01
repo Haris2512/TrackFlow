@@ -75,11 +75,33 @@ public class RecordFragment extends Fragment {
         // Aksi ketika tombol SELESAI ditekan
         btnSelesai.setOnClickListener(v -> {
             isRunning = false;
-            String timeFormatted = formatTime(seconds);
 
-            // Pindah ke FormActivity dan bawa waktu akhirnya
+            // --- REVISI LOGIKA KONVERSI STRUKTUR WAKTU TEKS ---
+            int totalMin = seconds / 60; // Konversi total detik berjalan ke menit
+            String formattedDurationForForm = "0 Menit";
+
+            if (totalMin <= 0) {
+                // Jika user baru mencoba beberapa detik lalu klik selesai, bulatkan ke 1 Menit agar data valid
+                formattedDurationForForm = "1 Menit";
+            } else if (totalMin < 60) {
+                // Jika di bawah 60 menit, simpan dalam format Menit saja
+                formattedDurationForForm = totalMin + " Menit";
+            } else {
+                // Jika menyentuh 60 menit atau lebih, pecah menjadi satuan Jam dan sisa Menit
+                int hours = totalMin / 60;
+                int remainingMinutes = totalMin % 60;
+
+                if (remainingMinutes == 0) {
+                    formattedDurationForForm = hours + " Jam";
+                } else {
+                    formattedDurationForForm = hours + " Jam " + remainingMinutes + " Menit";
+                }
+            }
+            // --------------------------------------------------
+
+            // Pindah ke FormActivity dan bawa durasi pintar yang sudah diselaraskan
             Intent intent = new Intent(requireContext(), FormActivity.class);
-            intent.putExtra("EXTRA_DURATION", timeFormatted);
+            intent.putExtra("EXTRA_DURATION", formattedDurationForForm);
             startActivity(intent);
 
             // Reset komponen setelah data dilempar
@@ -104,7 +126,7 @@ public class RecordFragment extends Fragment {
         });
     }
 
-    // Mengubah hitungan detik menjadi format jam:menit:detik
+    // Mengubah hitungan detik menjadi format jam:menit:detik untuk visual layar berjalan
     private String formatTime(int totalSeconds) {
         int hours = totalSeconds / 3600;
         int minutes = (totalSeconds % 3600) / 60;
