@@ -90,6 +90,9 @@ public class FormActivity extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", new Locale("id", "ID"));
                         edtDate.setText(sdf.format(cal.getTime()));
                     }, year, month, day);
+            // tanggal maksimal yang bisa dipilih adalah HARI INI
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+            datePickerDialog.show();
             datePickerDialog.show();
         });
 

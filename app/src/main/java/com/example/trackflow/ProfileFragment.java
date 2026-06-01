@@ -118,7 +118,6 @@ public class ProfileFragment extends Fragment {
 
         // LOGIKA KETIKA TANGGAL KALENDER DIKLIK
         calendarViewProfile.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
-            // Kita langsung kirimkan Tahun, Bulan, dan Tanggal aslinya ke mesin pencari
             checkActivityOnDate(year, month, dayOfMonth);
         });
     }
@@ -149,21 +148,53 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    // --- REVISI LOGIKA FILTER DATA AKTIVITAS BULAN INI SAJA ---
     private void calculateMonthlyProgress(ArrayList<ActivityModel> list) {
-        double totalDistance = 0.0;
-        int count = list.size();
+        double totalDistanceCurrentMonth = 0.0;
+        int countCurrentMonth = 0;
+
+        // Ambil Bulan aktif dan Tahun aktif saat ini dari HP user
+        Calendar currentCal = Calendar.getInstance();
+        int currentMonthNum = currentCal.get(Calendar.MONTH) + 1; // 1-12
+        String currentMonthName = new SimpleDateFormat("MMMM", new Locale("id", "ID")).format(currentCal.getTime()).toLowerCase(); // cth: "juni"
+        String currentYear = String.valueOf(currentCal.get(Calendar.YEAR)); // cth: "2026"
 
         for (ActivityModel item : list) {
-            try {
-                String distStr = item.getDistance().toUpperCase().replace(" KM", "").trim();
-                totalDistance += Double.parseDouble(distStr);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (item.getDate() != null) {
+                String savedDate = item.getDate().toLowerCase().trim();
+
+                // Gunakan pemecah kata untuk memastikan kecocokan bulan & tahun
+                String[] parts = savedDate.split("\\W+");
+                boolean monthMatch = false;
+                boolean yearMatch = false;
+
+                for (String part : parts) {
+                    if (part.equals(String.valueOf(currentMonthNum)) ||
+                            part.equals(String.format(Locale.US, "%02d", currentMonthNum)) ||
+                            part.equals(currentMonthName)) {
+                        monthMatch = true;
+                    }
+                    if (part.equals(currentYear)) {
+                        yearMatch = true;
+                    }
+                }
+
+                // Jika aktivitas terjadi di bulan dan tahun yang sama dengan hari ini, hitung masuk!
+                if (monthMatch && yearMatch) {
+                    countCurrentMonth++;
+                    try {
+                        String distStr = item.getDistance().toUpperCase().replace(" KM", "").trim();
+                        totalDistanceCurrentMonth += Double.parseDouble(distStr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
-        tvMonthlyCount.setText(count + " Kali");
-        tvMonthlyDistance.setText(String.format(Locale.US, "%.2f KM", totalDistance));
+        // Tampilkan hasil filter spesifik bulan berjalan saja
+        tvMonthlyCount.setText(countCurrentMonth + " Kali");
+        tvMonthlyDistance.setText(String.format(Locale.US, "%.2f KM", totalDistanceCurrentMonth));
     }
 
     // --- MESIN PENCARI TANGGAL SUPER CERDAS (MENCEGAH ERROR FORMAT) ---
@@ -172,32 +203,26 @@ public class ProfileFragment extends Fragment {
         double totalDistanceThatDay = 0.0;
         int activityCount = 0;
 
-        // Siapkan segala kemungkinan variasi tulisan untuk Tanggal
-        String targetDay1 = String.valueOf(dayOfMonth); // cth: "5"
-        String targetDay2 = String.format(Locale.US, "%02d", dayOfMonth); // cth: "05"
+        String targetDay1 = String.valueOf(dayOfMonth);
+        String targetDay2 = String.format(Locale.US, "%02d", dayOfMonth);
 
-        // Siapkan segala kemungkinan variasi tulisan untuk Bulan
-        String targetMonth1 = String.valueOf(month + 1); // cth: "5"
-        String targetMonth2 = String.format(Locale.US, "%02d", month + 1); // cth: "05"
+        String targetMonth1 = String.valueOf(month + 1);
+        String targetMonth2 = String.format(Locale.US, "%02d", month + 1);
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, dayOfMonth);
-        String targetMonthNameId = new SimpleDateFormat("MMMM", new Locale("id", "ID")).format(cal.getTime()).toLowerCase(); // cth: "mei"
-        String targetMonthNameEn = new SimpleDateFormat("MMMM", Locale.ENGLISH).format(cal.getTime()).toLowerCase(); // cth: "may"
-        String targetMonthShortId = new SimpleDateFormat("MMM", new Locale("id", "ID")).format(cal.getTime()).toLowerCase(); // cth: "mei"
+        String targetMonthNameId = new SimpleDateFormat("MMMM", new Locale("id", "ID")).format(cal.getTime()).toLowerCase();
+        String targetMonthNameEn = new SimpleDateFormat("MMMM", Locale.ENGLISH).format(cal.getTime()).toLowerCase();
+        String targetMonthShortId = new SimpleDateFormat("MMM", new Locale("id", "ID")).format(cal.getTime()).toLowerCase();
 
-        // Mulai pencarian di database
         for (ActivityModel item : allActivities) {
             if (item.getDate() != null) {
                 String savedDate = item.getDate().toLowerCase().trim();
-
-                // PEMECAH KATA: Pisahkan teks berdasarkan spasi, garis miring(/), atau strip(-)
                 String[] parts = savedDate.split("\\W+");
 
                 boolean dayMatch = false;
                 boolean monthMatch = false;
 
-                // Cek apakah di dalam potongan teks tersebut ada Tanggal dan Bulan yang cocok
                 for (String part : parts) {
                     if (part.equals(targetDay1) || part.equals(targetDay2)) {
                         dayMatch = true;
@@ -209,7 +234,6 @@ public class ProfileFragment extends Fragment {
                     }
                 }
 
-                // Jika Tanggal dan Bulan sama-sama terdeteksi, maka itu MATCH! (Tahun tidak diwajibkan)
                 if (dayMatch && monthMatch) {
                     found = true;
                     activityCount++;
@@ -221,7 +245,6 @@ public class ProfileFragment extends Fragment {
             }
         }
 
-        // Tampilkan hasilnya ke layar
         String displayDate = new SimpleDateFormat("dd MMMM yyyy", new Locale("id", "ID")).format(cal.getTime());
 
         if (found) {
