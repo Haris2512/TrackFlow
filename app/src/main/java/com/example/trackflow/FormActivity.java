@@ -12,6 +12,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -36,7 +37,7 @@ public class FormActivity extends AppCompatActivity {
         Button btnSave = findViewById(R.id.btnSave);
 
         // Komponen Tambah Menit Instan
-        LinearLayout layoutQuickDuration = findViewById(R.id.layoutQuickDuration);
+        CardView cardQuickDuration = findViewById(R.id.cardQuickDuration);
         tvDurationDisplay = findViewById(R.id.tvDurationDisplay);
         Button btnPlus5 = findViewById(R.id.btnPlus5);
         Button btnPlus10 = findViewById(R.id.btnPlus10);
@@ -53,12 +54,12 @@ public class FormActivity extends AppCompatActivity {
             edtDuration.setText(incomingDuration);
             edtDuration.setFocusable(false);
 
-            layoutQuickDuration.setVisibility(View.GONE);
+            cardQuickDuration.setVisibility(View.GONE);
             finalDurationString = incomingDuration;
         } else {
             isFromRecord = false;
             edtDuration.setVisibility(View.GONE);
-            layoutQuickDuration.setVisibility(View.VISIBLE);
+            cardQuickDuration.setVisibility(View.VISIBLE);
 
             // Aksi tombol tambah menit kilat
             btnPlus5.setOnClickListener(v -> appendMinutes(5));
@@ -70,7 +71,7 @@ public class FormActivity extends AppCompatActivity {
                 appendMinutes(0);
             });
 
-            // --- FITUR BARU: KLIK INDIKATOR UNTUK INPUT PRESISI ---
+            // Klik indikator untuk input presisi
             tvDurationDisplay.setOnClickListener(v -> showCustomDurationPicker());
         }
 
@@ -90,9 +91,9 @@ public class FormActivity extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", new Locale("id", "ID"));
                         edtDate.setText(sdf.format(cal.getTime()));
                     }, year, month, day);
-            // tanggal maksimal yang bisa dipilih adalah HARI INI
+
+            // VALIDASI: Kunci kalender agar tanggal maksimal yang bisa dipilih adalah HARI INI
             datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-            datePickerDialog.show();
             datePickerDialog.show();
         });
 
@@ -125,33 +126,33 @@ public class FormActivity extends AppCompatActivity {
         });
     }
 
-    // Mengakumulasikan tombol penambah menit instan
     private void appendMinutes(int extraMin) {
         totalMinutes += extraMin;
         formatAndDisplayDuration();
     }
 
-    // FITUR POP-UP DIALOG UNTUK MEMILIH MENIT SECARA DETIL & PERSISI
+    // REVISI: PERBAIKAN LOGIKA TRANSER DATA PADA POP-UP PICKER DIALOG
     private void showCustomDurationPicker() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Tentukan Menit Latihan");
 
-        // Bikin komponen NumberPicker lewat program Java
         final NumberPicker numberPicker = new NumberPicker(this);
         numberPicker.setMinValue(1);
-        numberPicker.setMaxValue(300); // Batas maksimal 5 jam latihan (300 menit)
-        numberPicker.setValue(totalMinutes > 0 ? totalMinutes : 30); // Default ke 30 menit jika masih 0
+        numberPicker.setMaxValue(300);
 
-        // Masukkan NumberPicker ke dalam dialog box
+        // Baca data tanpa mengubah variabel aslinya secara langsung
+        int initialValue = totalMinutes > 0 ? totalMinutes : 30;
+        numberPicker.setValue(initialValue);
+
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(numberPicker);
         linearLayout.setPadding(50, 30, 50, 10);
         builder.setView(linearLayout);
 
-        // Aksi tombol OK pada pop-up
         builder.setPositiveButton("OK", (dialog, which) -> {
-            totalMinutes = numberPicker.getValue(); // Ambil angka ganjil/apapun pilihan user
+            // Pembaruan data variabel dan layar HANYA berjalan setelah user menekan OK
+            totalMinutes = numberPicker.getValue();
             formatAndDisplayDuration();
         });
 
@@ -159,7 +160,6 @@ public class FormActivity extends AppCompatActivity {
         builder.show();
     }
 
-    // Fungsi pusat untuk menyelaraskan ke format Jam/Menit
     private void formatAndDisplayDuration() {
         if (totalMinutes <= 0) {
             totalMinutes = 0;
