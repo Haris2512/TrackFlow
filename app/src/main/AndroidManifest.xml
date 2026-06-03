@@ -18,6 +18,7 @@
         android:theme="@style/Theme.TrackFlow">
 
         <activity android:name=".FormActivity" />
+        <activity android:name=".DetailActivity" />
 
         <activity
             android:name=".SplashActivity"

@@ -33,6 +33,17 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         ActivityModel activity = listActivities.get(position);
         holder.bind(activity);
 
+        // --- KLIK ITEM UNTUK DETAIL LATIHAN ---
+        holder.itemView.setOnClickListener(v -> {
+            Context context = v.getContext();
+            android.content.Intent intent = new android.content.Intent(context, DetailActivity.class);
+            intent.putExtra("EXTRA_TITLE", activity.getTitle());
+            intent.putExtra("EXTRA_DISTANCE", activity.getDistance());
+            intent.putExtra("EXTRA_DURATION", activity.getDuration());
+            intent.putExtra("EXTRA_DATE", activity.getDate());
+            context.startActivity(intent);
+        });
+
         // ---  TEKAN LAMA (LONG CLICK) UNTUK HAPUS DATA ---
         holder.itemView.setOnLongClickListener(v -> {
             Context context = v.getContext();
