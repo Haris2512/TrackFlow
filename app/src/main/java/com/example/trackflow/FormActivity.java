@@ -3,16 +3,26 @@ package com.example.trackflow;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+
+import org.osmdroid.api.IMapController;
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -24,10 +34,16 @@ public class FormActivity extends AppCompatActivity {
     private String finalDurationString = "0 Menit";
     private boolean isFromRecord = false;
     private TextView tvDurationDisplay;
+    private MapView mapViewPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Inisialisasi konfigurasi OSMDroid sebelum setContentView
+        Context ctx = getApplicationContext();
+        Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
+        
         setContentView(R.layout.activity_form);
 
         EditText edtTitle = findViewById(R.id.edtTitle);
@@ -35,6 +51,9 @@ public class FormActivity extends AppCompatActivity {
         EditText edtDuration = findViewById(R.id.edtDuration);
         EditText edtDate = findViewById(R.id.edtDate);
         Button btnSave = findViewById(R.id.btnSave);
+        ImageView ivBack = findViewById(R.id.ivBack);
+        Button btnDiscard = findViewById(R.id.btnDiscard);
+        mapViewPreview = findViewById(R.id.mapViewPreview);
 
         // Komponen Tambah Menit Instan
         CardView cardQuickDuration = findViewById(R.id.cardQuickDuration);
@@ -45,8 +64,28 @@ public class FormActivity extends AppCompatActivity {
         Button btnPlus30 = findViewById(R.id.btnPlus30);
         Button btnResetDuration = findViewById(R.id.btnResetDuration);
 
+        // Inisialisasi Map Preview
+        if (mapViewPreview != null) {
+            mapViewPreview.setTileSource(TileSourceFactory.MAPNIK);
+            IMapController controller = mapViewPreview.getController();
+            controller.setZoom(17.0);
+            controller.setCenter(new GeoPoint(-5.147665, 119.432731)); // Default Makassar
+        }
+
+        // Tombol Back & Discard
+        if (ivBack != null) {
+            ivBack.setOnClickListener(v -> finish());
+        }
+        if (btnDiscard != null) {
+            btnDiscard.setOnClickListener(v -> {
+                Toast.makeText(this, "Aktivitas dibuang", Toast.LENGTH_SHORT).show();
+                finish();
+            });
+        }
+
         // Cek data kiriman dari RecordFragment (Stopwatch)
         String incomingDuration = getIntent().getStringExtra("EXTRA_DURATION");
+        String incomingDistance = getIntent().getStringExtra("EXTRA_DISTANCE");
 
         if (incomingDuration != null && !incomingDuration.isEmpty()) {
             isFromRecord = true;
@@ -56,6 +95,14 @@ public class FormActivity extends AppCompatActivity {
 
             cardQuickDuration.setVisibility(View.GONE);
             finalDurationString = incomingDuration;
+            
+            // Auto fill title dan distance untuk mempercepat UI
+            edtTitle.setText("Berlari Siang");
+            if (incomingDistance != null && !incomingDistance.isEmpty()) {
+                edtDistance.setText(incomingDistance);
+            } else {
+                edtDistance.setText("0.03");
+            }
         } else {
             isFromRecord = false;
             edtDuration.setVisibility(View.GONE);
@@ -92,10 +139,13 @@ public class FormActivity extends AppCompatActivity {
                         edtDate.setText(sdf.format(cal.getTime()));
                     }, year, month, day);
 
-            // VALIDASI: Kunci kalender agar tanggal maksimal yang bisa dipilih adalah HARI INI
             datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             datePickerDialog.show();
         });
+
+        // Set date default ke hari ini
+        SimpleDateFormat sdfToday = new SimpleDateFormat("dd MMMM yyyy", new Locale("id", "ID"));
+        edtDate.setText(sdfToday.format(Calendar.getInstance().getTime()));
 
         activityHelper = ActivityHelper.getInstance(this);
         activityHelper.open();
@@ -119,6 +169,14 @@ public class FormActivity extends AppCompatActivity {
             long result = activityHelper.insert(values);
             if (result > 0) {
                 Toast.makeText(this, "Aktivitas berhasil disimpan", Toast.LENGTH_SHORT).show();
+                
+                // Launch DetailActivity matching screenshot 1
+                Intent intent = new Intent(FormActivity.this, DetailActivity.class);
+                intent.putExtra("EXTRA_TITLE", title);
+                intent.putExtra("EXTRA_DISTANCE", distance + " KM");
+                intent.putExtra("EXTRA_DURATION", finalDurationString);
+                intent.putExtra("EXTRA_DATE", date);
+                startActivity(intent);
                 finish();
             } else {
                 Toast.makeText(this, "Gagal menyimpan", Toast.LENGTH_SHORT).show();
@@ -131,7 +189,6 @@ public class FormActivity extends AppCompatActivity {
         formatAndDisplayDuration();
     }
 
-    // REVISI: PERBAIKAN LOGIKA TRANSER DATA PADA POP-UP PICKER DIALOG
     private void showCustomDurationPicker() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Tentukan Menit Latihan");
@@ -140,7 +197,6 @@ public class FormActivity extends AppCompatActivity {
         numberPicker.setMinValue(1);
         numberPicker.setMaxValue(300);
 
-        // Baca data tanpa mengubah variabel aslinya secara langsung
         int initialValue = totalMinutes > 0 ? totalMinutes : 30;
         numberPicker.setValue(initialValue);
 
@@ -151,7 +207,6 @@ public class FormActivity extends AppCompatActivity {
         builder.setView(linearLayout);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
-            // Pembaruan data variabel dan layar HANYA berjalan setelah user menekan OK
             totalMinutes = numberPicker.getValue();
             formatAndDisplayDuration();
         });
@@ -177,5 +232,21 @@ public class FormActivity extends AppCompatActivity {
             }
         }
         tvDurationDisplay.setText(finalDurationString);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mapViewPreview != null) {
+            mapViewPreview.onResume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mapViewPreview != null) {
+            mapViewPreview.onPause();
+        }
     }
 }
