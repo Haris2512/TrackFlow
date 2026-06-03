@@ -4,193 +4,699 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="#121212">
 
+    <!-- Map View Background -->
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Map Overlay elements: Top Banner and Down Arrow -->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clMapOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="150dp"> <TextView
-        android:id="@+id/tvStopwatch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="00:00:00"
-        android:textSize="56sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:clickable="false"
+        android:focusable="false">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bottomSheet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorSurfaceVariant"
-        android:paddingBottom="48dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        app:behavior_peekHeight="145dp" app:behavior_hideable="false"> <View
-        android:id="@+id/vHandle"
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_marginTop="16dp"
-        android:background="?attr/colorOnSurfaceVariant"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:backgroundTint="@color/strava_orange"
-            app:tint="#FFFFFF"
-            android:src="@android:drawable/ic_media_play"
-            app:fabCustomSize="80dp"
-            app:maxImageSize="40dp"
-            app:layout_constraintTop_toBottomOf="@id/vHandle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:elevation="4dp"/>
-
+        <!-- Top Controls Container -->
         <LinearLayout
-            android:id="@+id/llRun"
-            android:layout_width="wrap_content"
+            android:id="@+id/llTopControls"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="@id/fabPlay"
-            app:layout_constraintBottom_toBottomOf="@id/fabPlay"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="36dp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/fabPlay">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                app:cardCornerRadius="28dp"
-                app:cardBackgroundColor="?attr/colorSurface"
-                app:cardElevation="0dp">
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:src="@android:drawable/ic_menu_directions"
-                    app:tint="@color/strava_orange"/>
-            </androidx.cardview.widget.CardView>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Berlari"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llRoute"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="@id/fabPlay"
-            app:layout_constraintBottom_toBottomOf="@id/fabPlay"
-            app:layout_constraintStart_toEndOf="@id/fabPlay"
             app:layout_constraintEnd_toEndOf="parent">
 
+            <!-- Back/Collapse Down Arrow Button -->
             <androidx.cardview.widget.CardView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                app:cardCornerRadius="28dp"
-                app:cardBackgroundColor="?attr/colorSurface"
-                app:cardElevation="0dp">
+                android:id="@+id/cvCollapse"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#CC1A1A1A">
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"
-                    android:src="@android:drawable/ic_menu_mapmode"
-                    app:tint="?attr/colorOnSurfaceVariant"/>
+                    android:src="@drawable/ic_arrow_down"
+                    app:tint="#FFFFFF" />
             </androidx.cardview.widget.CardView>
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Popular Heatmap Info Banner -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_heatmap_banner"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp">
+
+                <!-- Simple Gradient Map Indicator Icon -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#1AFFFFFF">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_lock"
+                        app:tint="#FF9800"/>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Text Info -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lihat apa yang populer"
+                        android:textColor="#FFFFFF"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ketuk untuk menambahkan Heatmap mingguan"
+                        android:textColor="#B0B0B0"
+                        android:textSize="9sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Stopwatch floating card in the center (Visible when tracking) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvStopwatch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#E61A1A1A"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/llTopControls"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <TextView
+                android:id="@+id/tvStopwatch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00:00"
+                android:textSize="48sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="12dp" />
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- FULLSCREEN STATS DASHBOARD OVERLAY (Screenshots 2, 3, 4) -->
+    <LinearLayout
+        android:id="@+id/llDashboardView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#121212"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <!-- Paused Yellow Status Bar (Screenshot 4) -->
+        <LinearLayout
+            android:id="@+id/llDashStatusBar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_status_yellow"
+            android:gravity="center"
+            android:visibility="gone">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tambah Rute"
+                android:text="Berhenti"
+                android:textColor="#000000"
                 android:textSize="14sp"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginTop="8dp"/>
+                android:textStyle="bold"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/llActionButtons"
-            android:layout_width="wrap_content"
+        <!-- Top Header: Large Stopwatch & Collapse Icon -->
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/fabPlay"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp">
+            android:paddingHorizontal="24dp"
+            android:paddingTop="36dp"
+            android:paddingBottom="24dp">
 
-            <Button
-                android:id="@+id/btnBatal"
+            <TextView
+                android:id="@+id/tvDashStopwatch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BATAL"
-                android:textColor="?attr/colorOnSurface"
+                android:layout_centerHorizontal="true"
+                android:text="00:00:00"
+                android:textColor="#FFFFFF"
+                android:textSize="64sp"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:id="@+id/ivDashCollapse"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_collapse"
+                app:tint="#FFFFFF"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+        </RelativeLayout>
+
+        <!-- Stats Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="24dp">
+
+            <!-- Split Average Value & Label -->
+            <TextView
+                android:id="@+id/tvDashSplitVal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="---"
+                android:textColor="#FFFFFF"
+                android:textSize="48sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rata2 split (/km)"
+                android:textColor="#888888"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="32dp"/>
+
+            <!-- Distance Value & Label -->
+            <TextView
+                android:id="@+id/tvDashDistanceVal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="#FFFFFF"
+                android:textSize="100sp"
                 android:textStyle="bold"
-                app:backgroundTint="?attr/colorSurface"
-                android:layout_marginEnd="16dp"/>
+                android:includeFontPadding="false"/>
 
-            <Button
-                android:id="@+id/btnSelesai"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SELESAI LATIHAN"
+                android:text="Jarak (km)"
+                android:textColor="#888888"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="32dp"/>
+
+            <!-- Split indicators (Screenshot 2) -->
+            <LinearLayout
+                android:layout_width="160dp"
+                android:layout_height="8dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="3"
+                android:layout_marginBottom="8dp">
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_split_pill_blue"
+                    android:layout_marginEnd="4dp" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_split_pill_gray"
+                    android:layout_marginHorizontal="2dp" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_split_pill_gray"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Split (/km)"
+                android:textColor="#888888"
+                android:textSize="14sp"/>
+
+        </LinearLayout>
+
+        <!-- Dummy space to offset the Bottom Sheet -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="185dp"/>
+    </LinearLayout>
+
+    <!-- Bottom Sheet containing actions and details -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottom_sheet"
+        android:paddingBottom="24dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_peekHeight="185dp"
+        app:behavior_hideable="false">
+
+        <!-- Drag Handle -->
+        <View
+            android:id="@+id/vHandle"
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="12dp"
+            android:background="#444444"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Button Container for Dynamic States (Prevents overlapping) -->
+        <FrameLayout
+            android:id="@+id/flActionContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/vHandle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- INITIAL STATE: Circular Action Buttons Row -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clActionRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible">
+
+                <!-- Sport Selector (Berlari) -->
+                <LinearLayout
+                    android:id="@+id/llRun"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/fabPlay">
+
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp">
+                        <!-- Circle Background -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_circle_sport" />
+                        <!-- Shoe Icon outline -->
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_shoe"
+                            app:tint="#FC4C02"/>
+                        <!-- Orange Check Badge on Top Right -->
+                        <FrameLayout
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="top|end"
+                            android:background="@drawable/bg_badge_orange">
+                            <ImageView
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_check"
+                                app:tint="#FFFFFF" />
+                        </FrameLayout>
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Berlari"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <!-- Large Play Button -->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabPlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:backgroundTint="#FC4C02"
+                    app:tint="#FFFFFF"
+                    android:src="@android:drawable/ic_media_play"
+                    app:fabCustomSize="76dp"
+                    app:maxImageSize="36dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:elevation="4dp"/>
+
+                <!-- Route Selector (Tambah Rute) -->
+                <LinearLayout
+                    android:id="@+id/llRoute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/fabPlay"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp">
+                        <!-- Circle Background -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_circle_route" />
+                        <!-- Route Icon -->
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_route"
+                            app:tint="#FFFFFF"/>
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tambah Rute"
+                        android:textSize="12sp"
+                        android:textColor="#CCCCCC"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- TRACKING ACTIVE STATE: Large Wide Horizontal Orange JEDA Button (Screenshot 2) -->
+            <Button
+                android:id="@+id/btnJeda"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginHorizontal="20dp"
+                android:text="Jeda"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
-                app:backgroundTint="@color/strava_orange" />
+                android:textSize="16sp"
+                app:backgroundTint="#FC4C02"
+                app:cornerRadius="28dp"
+                android:drawableStart="@android:drawable/ic_media_pause"
+                android:drawablePadding="8dp"
+                android:paddingStart="24dp"
+                android:visibility="gone" />
+
+            <!-- TRACKING PAUSED STATE: Lanjutkan & Selesaikan Horizontal Buttons (Screenshot 4) -->
+            <LinearLayout
+                android:id="@+id/llPauseButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:visibility="gone">
+
+                <!-- Lanjutkan (Resume) Button -->
+                <Button
+                    android:id="@+id/btnLanjutkan"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Lanjutkan"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    app:backgroundTint="#FC4C02"
+                    app:cornerRadius="28dp"
+                    android:drawableStart="@android:drawable/ic_media_play"
+                    android:drawablePadding="8dp"
+                    android:paddingStart="16dp"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- Selesaikan (Finish) Button -->
+                <Button
+                    android:id="@+id/btnSelesaikan"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Selesaikan"
+                    android:textColor="#000000"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    app:backgroundTint="#FFFFFF"
+                    app:cornerRadius="28dp"
+                    android:drawableStart="@android:drawable/ic_media_ff"
+                    app:tint="#000000"
+                    android:drawablePadding="8dp"
+                    android:paddingStart="16dp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Dummy layout to maintain backward compatibility (Originally Batal/Selesai actions) -->
+        <LinearLayout
+            android:id="@+id/llActionButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="1dp"
+            app:layout_constraintTop_toBottomOf="@id/vHandle">
+            <Button android:id="@+id/btnBatal" android:layout_width="1dp" android:layout_height="1dp" android:visibility="gone"/>
+            <Button android:id="@+id/btnSelesai" android:layout_width="1dp" android:layout_height="1dp" android:visibility="gone"/>
         </LinearLayout>
 
+        <!-- Settings List Container -->
         <LinearLayout
             android:id="@+id/llMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="36dp"
-            android:paddingHorizontal="24dp"
-            app:layout_constraintTop_toBottomOf="@id/llActionButtons">
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_menu_card"
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/flActionContainer">
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="12dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_share" app:tint="?attr/colorOnSurface"/>
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bagikan lokasi secara langsung" android:textColor="?attr/colorOnSurface" android:textSize="16sp"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mati" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp"/>
+            <!-- Row 1: Live location sharing -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="12dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_broadcast"
+                    app:tint="#CCCCCC" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bagikan lokasi secara langsung"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mati"
+                        android:textColor="#888888"
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOnSurfaceVariant" android:alpha="0.2"/>
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2C2C2C" />
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="12dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_popup_sync" app:tint="?attr/colorOnSurface"/>
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pantau putaran" android:textColor="?attr/colorOnSurface" android:textSize="16sp"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Memantau waktu putaran" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp"/>
+            <!-- Row 2: Track Laps / Laps overlay -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="12dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_laps"
+                    app:tint="#CCCCCC" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pantau putaran"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Memantau waktu putaran"
+                        android:textColor="#888888"
+                        android:textSize="12sp" />
                 </LinearLayout>
-                <Switch android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:thumbTint="@color/white"
+                    app:trackTint="#33FFFFFF"/>
             </LinearLayout>
 
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOnSurfaceVariant" android:alpha="0.2"/>
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2C2C2C" />
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="12dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_preferences" app:tint="?attr/colorOnSurface"/>
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pengaturan" android:textColor="?attr/colorOnSurface" android:textSize="16sp"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Petunjuk audio, jeda-otomatis" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp"/>
+            <!-- Row 3: Add Route option inside bottom sheet list (Screenshot 3) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="12dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_route"
+                    app:tint="#CCCCCC" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tambah Rute"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2C2C2C" />
+
+            <!-- Row 4: Heartbeat sensor -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="12dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_heartbeat"
+                    app:tint="#CCCCCC" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tambahkan sensor"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2C2C2C" />
+
+            <!-- Row 5: Settings -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="12dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="#CCCCCC" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pengaturan"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Petunjuk audio, jeda-otomatis, Live S..."
+                        android:textColor="#888888"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
