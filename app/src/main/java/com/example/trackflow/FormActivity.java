@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -64,12 +65,40 @@ public class FormActivity extends AppCompatActivity {
         Button btnPlus30 = findViewById(R.id.btnPlus30);
         Button btnResetDuration = findViewById(R.id.btnResetDuration);
 
+        // Cek data kiriman dari RecordFragment (Stopwatch)
+        String incomingDuration = getIntent().getStringExtra("EXTRA_DURATION");
+        String incomingDistance = getIntent().getStringExtra("EXTRA_DISTANCE");
+        String incomingPath = getIntent().getStringExtra("EXTRA_PATH");
+
         // Inisialisasi Map Preview
         if (mapViewPreview != null) {
             mapViewPreview.setTileSource(TileSourceFactory.MAPNIK);
             IMapController controller = mapViewPreview.getController();
             controller.setZoom(17.0);
-            controller.setCenter(new GeoPoint(-5.147665, 119.432731)); // Default Makassar
+            
+            java.util.List<GeoPoint> previewPoints = new java.util.ArrayList<>();
+            if (incomingPath != null && !incomingPath.isEmpty()) {
+                String[] parts = incomingPath.split(";");
+                for (String part : parts) {
+                    String[] latLng = part.split(",");
+                    if (latLng.length == 2) {
+                        try {
+                            previewPoints.add(new GeoPoint(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1])));
+                        } catch (Exception ignored) {}
+                    }
+                }
+            }
+
+            if (previewPoints.size() >= 2) {
+                org.osmdroid.views.overlay.Polyline routeLine = new org.osmdroid.views.overlay.Polyline();
+                routeLine.setColor(Color.parseColor("#FC4C02"));
+                routeLine.setWidth(8.0f);
+                routeLine.setPoints(previewPoints);
+                mapViewPreview.getOverlayManager().add(routeLine);
+                controller.setCenter(previewPoints.get(0));
+            } else {
+                controller.setCenter(new GeoPoint(-5.147665, 119.432731)); // Default Makassar
+            }
         }
 
         // Tombol Back & Discard
@@ -82,10 +111,6 @@ public class FormActivity extends AppCompatActivity {
                 finish();
             });
         }
-
-        // Cek data kiriman dari RecordFragment (Stopwatch)
-        String incomingDuration = getIntent().getStringExtra("EXTRA_DURATION");
-        String incomingDistance = getIntent().getStringExtra("EXTRA_DISTANCE");
 
         if (incomingDuration != null && !incomingDuration.isEmpty()) {
             isFromRecord = true;
@@ -162,9 +187,17 @@ public class FormActivity extends AppCompatActivity {
 
             ContentValues values = new ContentValues();
             values.put(DatabaseContract.ActivityColumns.COLUMN_TITLE, title);
-            values.put(DatabaseContract.ActivityColumns.COLUMN_DISTANCE, distance + " KM");
+            
+            String distToSave = distance;
+            if (!distToSave.toUpperCase().contains("KM")) {
+                distToSave = distToSave + " KM";
+            }
+            values.put(DatabaseContract.ActivityColumns.COLUMN_DISTANCE, distToSave);
             values.put(DatabaseContract.ActivityColumns.COLUMN_DURATION, finalDurationString);
             values.put(DatabaseContract.ActivityColumns.COLUMN_DATE, date);
+            if (incomingPath != null) {
+                values.put(DatabaseContract.ActivityColumns.COLUMN_PATH, incomingPath);
+            }
 
             long result = activityHelper.insert(values);
             if (result > 0) {
@@ -173,9 +206,12 @@ public class FormActivity extends AppCompatActivity {
                 // Launch DetailActivity matching screenshot 1
                 Intent intent = new Intent(FormActivity.this, DetailActivity.class);
                 intent.putExtra("EXTRA_TITLE", title);
-                intent.putExtra("EXTRA_DISTANCE", distance + " KM");
+                intent.putExtra("EXTRA_DISTANCE", distToSave);
                 intent.putExtra("EXTRA_DURATION", finalDurationString);
                 intent.putExtra("EXTRA_DATE", date);
+                if (incomingPath != null) {
+                    intent.putExtra("EXTRA_PATH", incomingPath);
+                }
                 startActivity(intent);
                 finish();
             } else {
