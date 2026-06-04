@@ -71,6 +71,8 @@ public class RecordFragment extends Fragment {
     private int seconds = 0;
     private double currentDistance = 0.0;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private java.util.ArrayList<GeoPoint> routePoints = new java.util.ArrayList<>();
+    private org.osmdroid.views.overlay.Polyline livePolyline;
 
     public RecordFragment() {}
 
@@ -176,6 +178,23 @@ public class RecordFragment extends Fragment {
         seconds = 0;
         currentDistance = 0.0;
 
+        routePoints.clear();
+        if (livePolyline != null && mapView != null) {
+            mapView.getOverlays().remove(livePolyline);
+        }
+        livePolyline = new org.osmdroid.views.overlay.Polyline();
+        livePolyline.setColor(Color.parseColor("#FC4C02"));
+        livePolyline.setWidth(12.0f);
+        if (mapView != null) {
+            mapView.getOverlays().add(livePolyline);
+        }
+
+        GeoPoint myLoc = locationOverlay != null ? locationOverlay.getMyLocation() : null;
+        if (myLoc != null) {
+            routePoints.add(myLoc);
+            livePolyline.addPoint(myLoc);
+        }
+
         tvStopwatch.setText("00:00:00");
         tvDashStopwatch.setText("00:00:00");
         tvDashDistanceVal.setText("0,00");
@@ -242,10 +261,22 @@ public class RecordFragment extends Fragment {
         // Hitung jarak terformat
         String formattedDistance = String.format(Locale.getDefault(), "%.2f", currentDistance);
 
-        // Pindah ke FormActivity dan bawa durasi pintar serta jarak
+        // Format routePoints ke string: lat,lng;lat,lng...
+        StringBuilder pathBuilder = new StringBuilder();
+        for (int i = 0; i < routePoints.size(); i++) {
+            GeoPoint pt = routePoints.get(i);
+            pathBuilder.append(pt.getLatitude()).append(",").append(pt.getLongitude());
+            if (i < routePoints.size() - 1) {
+                pathBuilder.append(";");
+            }
+        }
+        String pathString = pathBuilder.toString();
+
+        // Pindah ke FormActivity dan bawa durasi pintar, jarak, serta rute asli
         Intent intent = new Intent(requireContext(), FormActivity.class);
         intent.putExtra("EXTRA_DURATION", formattedDurationForForm);
         intent.putExtra("EXTRA_DISTANCE", formattedDistance);
+        intent.putExtra("EXTRA_PATH", pathString);
         startActivity(intent);
 
         // Reset komponen setelah data dikirim
@@ -256,6 +287,11 @@ public class RecordFragment extends Fragment {
         isRunning = false;
         seconds = 0;
         currentDistance = 0.0;
+        routePoints.clear();
+        if (livePolyline != null && mapView != null) {
+            mapView.getOverlays().remove(livePolyline);
+            livePolyline = null;
+        }
 
         tvStopwatch.setText("00:00:00");
         tvDashStopwatch.setText("00:00:00");
@@ -275,7 +311,40 @@ public class RecordFragment extends Fragment {
     private void enableMyLocation() {
         if (getContext() == null || mapView == null) return;
 
-        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireContext()), mapView);
+        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireContext()), mapView) {
+            @Override
+            public void onLocationChanged(final android.location.Location location, org.osmdroid.views.overlay.mylocation.IMyLocationProvider source) {
+                super.onLocationChanged(location, source);
+                if (location != null && isRunning && getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        GeoPoint gp = new GeoPoint(location.getLatitude(), location.getLongitude());
+                        if (routePoints.isEmpty()) {
+                            routePoints.add(gp);
+                            if (livePolyline != null) {
+                                livePolyline.addPoint(gp);
+                            }
+                        } else {
+                            GeoPoint lastPt = routePoints.get(routePoints.size() - 1);
+                            double dist = gp.distanceToAsDouble(lastPt); // in meters
+                            if (dist >= 1.5) { // only record if moved at least 1.5 meters to prevent jitter
+                                routePoints.add(gp);
+                                if (livePolyline != null) {
+                                    livePolyline.addPoint(gp);
+                                    if (mapView != null) {
+                                        mapView.invalidate();
+                                    }
+                                }
+                                // Accumulate distance
+                                currentDistance += (dist / 1000.0);
+                                if (tvDashDistanceVal != null) {
+                                    tvDashDistanceVal.setText(String.format(Locale.getDefault(), "%.2f", currentDistance));
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        };
 
         Bitmap blueDot = createSleekBlueDot();
         locationOverlay.setPersonIcon(blueDot);
@@ -335,12 +404,14 @@ public class RecordFragment extends Fragment {
                     tvStopwatch.setText(timeFormatted);
                     tvDashStopwatch.setText(timeFormatted);
 
-                    // Update jarak berjalan palsu untuk demonstrasi (0.0015 KM per detik)
-                    currentDistance = seconds * 0.00167; // contoh: 18 detik = ~0.03 KM
+                    // Update jarak berjalan: jika tidak ada pergerakan GPS riil, simulasikan agar tetap terlihat hidup
+                    if (routePoints.size() <= 1) {
+                        currentDistance = seconds * 0.00167; // contoh: 18 detik = ~0.03 KM
+                    }
                     tvDashDistanceVal.setText(String.format(Locale.getDefault(), "%.2f", currentDistance));
 
                     // Update split pace
-                    if (seconds > 2) {
+                    if (seconds > 2 && currentDistance > 0.0) {
                         double paceInSeconds = (double) seconds / currentDistance;
                         int paceMin = (int) (paceInSeconds / 60);
                         int paceSec = (int) (paceInSeconds % 60);
