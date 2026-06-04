@@ -123,22 +123,49 @@ public class DetailActivity extends AppCompatActivity {
             IMapController controller = mapViewDetail.getController();
             controller.setZoom(19.0);
 
-            // Koordinat simulasi lintasan lari di Makassar
-            GeoPoint pStart = new GeoPoint(-5.148665, 119.432731);
-            GeoPoint pMid = new GeoPoint(-5.147665, 119.433231);
-            GeoPoint pEnd = new GeoPoint(-5.146665, 119.433731);
+            // Ambil koordinat GPS dari Intent jika ada
+            String pathStr = getIntent().getStringExtra("EXTRA_PATH");
+            List<GeoPoint> points = new ArrayList<>();
+            if (pathStr != null && !pathStr.isEmpty()) {
+                String[] parts = pathStr.split(";");
+                for (String part : parts) {
+                    String[] latLng = part.split(",");
+                    if (latLng.length == 2) {
+                        try {
+                            points.add(new GeoPoint(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1])));
+                        } catch (Exception ignored) {}
+                    }
+                }
+            }
 
-            controller.setCenter(pMid);
+            // Fallback ke rute melingkar tiruan (closed loop) yang estetik jika data GPS kosong/kurang
+            if (points.size() < 2) {
+                points.clear();
+                double centerLat = -5.147665;
+                double centerLng = 119.432731;
+                double r = 0.0015; // Radius sekitar 150 meter
+                for (int i = 0; i <= 8; i++) {
+                    double angle = i * (2 * Math.PI / 8);
+                    points.add(new GeoPoint(centerLat + r * Math.sin(angle), centerLng + r * Math.cos(angle)));
+                }
+            }
+
+            GeoPoint pStart = points.get(0);
+            GeoPoint pEnd = points.get(points.size() - 1);
+
+            // Pusatkan peta pada titik tengah rute secara dinamis
+            double sumLat = 0;
+            double sumLng = 0;
+            for (GeoPoint gp : points) {
+                sumLat += gp.getLatitude();
+                sumLng += gp.getLongitude();
+            }
+            controller.setCenter(new GeoPoint(sumLat / points.size(), sumLng / points.size()));
 
             // Polyline oranye tebal khas Strava
             Polyline routeLine = new Polyline();
             routeLine.setColor(Color.parseColor("#FC4C02"));
             routeLine.setWidth(12.0f);
-            
-            List<GeoPoint> points = new ArrayList<>();
-            points.add(pStart);
-            points.add(pMid);
-            points.add(pEnd);
             routeLine.setPoints(points);
             mapViewDetail.getOverlayManager().add(routeLine);
 
