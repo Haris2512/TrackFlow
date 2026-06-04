@@ -189,89 +189,96 @@
         </RelativeLayout>
 
         <!-- Stats Section -->
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingHorizontal="24dp">
+            android:fillViewport="true">
 
-            <!-- Split Average Value & Label -->
-            <TextView
-                android:id="@+id/tvDashSplitVal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="---"
-                android:textColor="#FFFFFF"
-                android:textSize="48sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rata2 split (/km)"
-                android:textColor="#888888"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="32dp"/>
-
-            <!-- Distance Value & Label -->
-            <TextView
-                android:id="@+id/tvDashDistanceVal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#FFFFFF"
-                android:textSize="100sp"
-                android:textStyle="bold"
-                android:includeFontPadding="false"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Jarak (km)"
-                android:textColor="#888888"
-                android:textSize="16sp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="32dp"/>
-
-            <!-- Split indicators (Screenshot 2) -->
             <LinearLayout
-                android:layout_width="160dp"
-                android:layout_height="8dp"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:weightSum="3"
-                android:layout_marginBottom="8dp">
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_split_pill_blue"
-                    android:layout_marginEnd="4dp" />
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_split_pill_gray"
-                    android:layout_marginHorizontal="2dp" />
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_split_pill_gray"
-                    android:layout_marginStart="4dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Split (/km)"
-                android:textColor="#888888"
-                android:textSize="14sp"/>
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="16dp">
 
-        </LinearLayout>
+                <!-- Split Average Value & Label -->
+                <TextView
+                    android:id="@+id/tvDashSplitVal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="---"
+                    android:textColor="#FFFFFF"
+                    android:textSize="48sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rata2 split (/km)"
+                    android:textColor="#888888"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Distance Value & Label -->
+                <TextView
+                    android:id="@+id/tvDashDistanceVal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="#FFFFFF"
+                    android:textSize="100sp"
+                    android:textStyle="bold"
+                    android:includeFontPadding="false"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Jarak (km)"
+                    android:textColor="#888888"
+                    android:textSize="16sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Split indicators (Screenshot 2) -->
+                <LinearLayout
+                    android:layout_width="160dp"
+                    android:layout_height="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:weightSum="3"
+                    android:layout_marginBottom="8dp">
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_split_pill_blue"
+                        android:layout_marginEnd="4dp" />
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_split_pill_gray"
+                        android:layout_marginHorizontal="2dp" />
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_split_pill_gray"
+                        android:layout_marginStart="4dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Split (/km)"
+                    android:textColor="#888888"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
         <!-- Dummy space to offset the Bottom Sheet -->
         <View
