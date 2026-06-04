@@ -121,7 +121,6 @@ public class DetailActivity extends AppCompatActivity {
             mapViewDetail.setMultiTouchControls(true);
 
             IMapController controller = mapViewDetail.getController();
-            controller.setZoom(19.0);
 
             // Ambil koordinat GPS dari Intent jika ada
             String pathStr = getIntent().getStringExtra("EXTRA_PATH");
@@ -138,16 +137,49 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
 
-            // Fallback ke rute melingkar tiruan (closed loop) yang estetik jika data GPS kosong/kurang
+            boolean isFallback = false;
+            // Fallback ke rute melingkar alami/estetik jika data GPS kosong/kurang
             if (points.size() < 2) {
+                isFallback = true;
                 points.clear();
-                double centerLat = -5.147665;
-                double centerLng = 119.432731;
-                double r = 0.0015; // Radius sekitar 150 meter
-                for (int i = 0; i <= 8; i++) {
-                    double angle = i * (2 * Math.PI / 8);
-                    points.add(new GeoPoint(centerLat + r * Math.sin(angle), centerLng + r * Math.cos(angle)));
-                }
+                double centerLat = -5.1345;
+                double centerLng = 119.4895;
+                
+                // Titik-titik pembentuk rute melingkar alami (menyerupai rute lari kompleks)
+                points.add(new GeoPoint(centerLat - 0.0035, centerLng - 0.0030)); // Sudut kiri bawah
+                points.add(new GeoPoint(centerLat - 0.0036, centerLng - 0.0010));
+                points.add(new GeoPoint(centerLat - 0.0037, centerLng + 0.0010));
+                points.add(new GeoPoint(centerLat - 0.0038, centerLng + 0.0025)); // Sudut kanan bawah
+                
+                points.add(new GeoPoint(centerLat - 0.0020, centerLng + 0.0032));
+                points.add(new GeoPoint(centerLat - 0.0005, centerLng + 0.0020));
+                points.add(new GeoPoint(centerLat + 0.0005, centerLng + 0.0015));
+                points.add(new GeoPoint(centerLat + 0.0008, centerLng + 0.0035)); // Lekukan kecil kanan
+                points.add(new GeoPoint(centerLat + 0.0015, centerLng + 0.0036)); 
+                points.add(new GeoPoint(centerLat + 0.0025, centerLng + 0.0035)); // Sudut kanan atas
+                points.add(new GeoPoint(centerLat + 0.0026, centerLng + 0.0015));
+                points.add(new GeoPoint(centerLat + 0.0025, centerLng - 0.0002));
+                
+                points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0008)); // Lekukan U-turn atas
+                points.add(new GeoPoint(centerLat + 0.0012, centerLng - 0.0012));
+                points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0016));
+                
+                points.add(new GeoPoint(centerLat + 0.0028, centerLng - 0.0022));
+                points.add(new GeoPoint(centerLat + 0.0031, centerLng - 0.0022)); // Puncak kiri atas
+                points.add(new GeoPoint(centerLat + 0.0032, centerLng - 0.0035));
+                
+                points.add(new GeoPoint(centerLat + 0.0023, centerLng - 0.0038)); // Lekukan danau kiri
+                points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0032));
+                points.add(new GeoPoint(centerLat + 0.0008, centerLng - 0.0033)); 
+                points.add(new GeoPoint(centerLat + 0.0000, centerLng - 0.0036));
+                points.add(new GeoPoint(centerLat - 0.0015, centerLng - 0.0036));
+                points.add(new GeoPoint(centerLat - 0.0035, centerLng - 0.0030)); // Penutup loop
+            }
+
+            if (isFallback) {
+                controller.setZoom(15.5);
+            } else {
+                controller.setZoom(18.5);
             }
 
             GeoPoint pStart = points.get(0);
