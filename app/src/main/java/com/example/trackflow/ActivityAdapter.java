@@ -41,6 +41,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             intent.putExtra("EXTRA_DISTANCE", activity.getDistance());
             intent.putExtra("EXTRA_DURATION", activity.getDuration());
             intent.putExtra("EXTRA_DATE", activity.getDate());
+            intent.putExtra("EXTRA_PATH", activity.getPath());
             context.startActivity(intent);
         });
 
