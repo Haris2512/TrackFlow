@@ -13,5 +13,6 @@ public class DatabaseContract {
         public static final String COLUMN_DISTANCE = "distance"; // Jarak dalam KM
         public static final String COLUMN_DURATION = "duration"; // Waktu tempuh
         public static final String COLUMN_DATE = "date";         // Tanggal aktivitas
+        public static final String COLUMN_PATH = "path";         // Koordinat GPS: "lat1,lng1;lat2,lng2;..."
     }
 }
