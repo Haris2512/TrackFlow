@@ -15,9 +15,14 @@ public class MappingHelper {
             String distance = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.ActivityColumns.COLUMN_DISTANCE));
             String duration = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.ActivityColumns.COLUMN_DURATION));
             String date = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.ActivityColumns.COLUMN_DATE));
+            int pathColIdx = cursor.getColumnIndex(DatabaseContract.ActivityColumns.COLUMN_PATH);
+            String path = "";
+            if (pathColIdx != -1) {
+                path = cursor.getString(pathColIdx);
+            }
 
             // Masukkan ke dalam "cetakan" ActivityModel yang tadi kita buat
-            activitiesList.add(new ActivityModel(id, title, distance, duration, date));
+            activitiesList.add(new ActivityModel(id, title, distance, duration, date, path));
         }
 
         return activitiesList;
