@@ -67,7 +67,7 @@ public class CommunityFragment extends Fragment {
         Call<UserResponse> call = apiService.getUsers();
 
         call.enqueue(new Callback<UserResponse>() {
-            @Override
+            @Override   
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 // isAdded() mencegah force close jika user pindah halaman sebelum loading selesai
                 if (isAdded() && response.isSuccessful() && response.body() != null) {
