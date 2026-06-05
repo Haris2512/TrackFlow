@@ -110,6 +110,14 @@ public class ProfileFragment extends Fragment {
 
         btnEditProfile.setOnClickListener(v -> showEditOptionsDialog());
 
+        View cvFavoriteActivitiesButton = view.findViewById(R.id.cvFavoriteActivitiesButton);
+        if (cvFavoriteActivitiesButton != null) {
+            cvFavoriteActivitiesButton.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), FavoriteActivity.class);
+                startActivity(intent);
+            });
+        }
+
         // Buka Database
         activityHelper = ActivityHelper.getInstance(requireContext());
         activityHelper.open();
