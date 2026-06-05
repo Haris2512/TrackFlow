@@ -27,6 +27,7 @@ import java.util.List;
 public class DetailActivity extends AppCompatActivity {
 
     private MapView mapViewDetail;
+    private boolean isBookmarked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +50,13 @@ public class DetailActivity extends AppCompatActivity {
         TextView tvDetailDuration = findViewById(R.id.tvDetailDuration);
         TextView tvDetailPace = findViewById(R.id.tvDetailPace);
         Button btnKudosLihat = findViewById(R.id.btnKudosLihat);
+        
+        CardView cvBookmark = findViewById(R.id.cvBookmark);
+        android.widget.ImageView ivBookmarkIcon = findViewById(R.id.ivBookmarkIcon);
+        CardView cvMenu = findViewById(R.id.cvMenu);
 
         // Read extras
+        int activityId = getIntent().getIntExtra("EXTRA_ID", 0);
         String title = getIntent().getStringExtra("EXTRA_TITLE");
         String distance = getIntent().getStringExtra("EXTRA_DISTANCE");
         String duration = getIntent().getStringExtra("EXTRA_DURATION");
@@ -98,6 +104,10 @@ public class DetailActivity extends AppCompatActivity {
         tvDetailDuration.setText(duration);
         tvDetailPace.setText(paceStr);
 
+        final String finalDistance = distance;
+        final String finalDuration = duration;
+        final String finalPaceStr = paceStr;
+
         // Ambil data SharedPreferences User untuk username & avatar
         SharedPreferences sharedPrefs = getSharedPreferences("TrackFlowPrefs", MODE_PRIVATE);
         String savedName = sharedPrefs.getString("USERNAME", "another rhiez");
@@ -114,6 +124,57 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         btnKudosLihat.setOnClickListener(v -> finish());
+
+        // Bookmark Click Toggle
+        if (cvBookmark != null && ivBookmarkIcon != null) {
+            cvBookmark.setOnClickListener(v -> {
+                isBookmarked = !isBookmarked;
+                if (isBookmarked) {
+                    ivBookmarkIcon.setColorFilter(Color.parseColor("#FC4C02"));
+                    android.widget.Toast.makeText(DetailActivity.this, "Ditambahkan ke Favorit!", android.widget.Toast.LENGTH_SHORT).show();
+                } else {
+                    ivBookmarkIcon.setColorFilter(Color.WHITE);
+                    android.widget.Toast.makeText(DetailActivity.this, "Dihapus dari Favorit!", android.widget.Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        // Menu Click (Bagikan & Hapus)
+        if (cvMenu != null) {
+            cvMenu.setOnClickListener(v -> {
+                androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(DetailActivity.this, cvMenu);
+                popup.getMenu().add("Bagikan Hasil Lari");
+                popup.getMenu().add("Hapus");
+                popup.setOnMenuItemClickListener(item -> {
+                    if (item.getTitle().equals("Bagikan Hasil Lari")) {
+                        android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Aktivitas Lari TrackFlow");
+                        shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Hasil Lari TrackFlow saya: Jarak " + finalDistance + ", Durasi " + finalDuration + ", Pace " + finalPaceStr + ". Ayo capai target lari Anda bersama TrackFlow!");
+                        startActivity(android.content.Intent.createChooser(shareIntent, "Bagikan"));
+                        return true;
+                    } else if (item.getTitle().equals("Hapus")) {
+                        new androidx.appcompat.app.AlertDialog.Builder(DetailActivity.this)
+                            .setTitle("Hapus Aktivitas")
+                            .setMessage("Apakah Anda yakin ingin menghapus aktivitas ini?")
+                            .setPositiveButton("YA, HAPUS", (dialog, which) -> {
+                                ActivityHelper helper = ActivityHelper.getInstance(DetailActivity.this);
+                                helper.open();
+                                if (activityId != 0) {
+                                    helper.deleteById(String.valueOf(activityId));
+                                }
+                                android.widget.Toast.makeText(DetailActivity.this, "Aktivitas berhasil dihapus", android.widget.Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .setNegativeButton("BATAL", (dialog, which) -> dialog.dismiss())
+                            .show();
+                        return true;
+                    }
+                    return false;
+                });
+                popup.show();
+            });
+        }
 
         // Inisialisasi Map dan gambar lintasan oranye dinamis (Screenshot 1)
         if (mapViewDetail != null) {
@@ -141,39 +202,7 @@ public class DetailActivity extends AppCompatActivity {
             // Fallback ke rute melingkar alami/estetik jika data GPS kosong/kurang
             if (points.size() < 2) {
                 isFallback = true;
-                points.clear();
-                double centerLat = -5.1345;
-                double centerLng = 119.4895;
-                
-                // Titik-titik pembentuk rute melingkar alami (menyerupai rute lari kompleks)
-                points.add(new GeoPoint(centerLat - 0.0035, centerLng - 0.0030)); // Sudut kiri bawah
-                points.add(new GeoPoint(centerLat - 0.0036, centerLng - 0.0010));
-                points.add(new GeoPoint(centerLat - 0.0037, centerLng + 0.0010));
-                points.add(new GeoPoint(centerLat - 0.0038, centerLng + 0.0025)); // Sudut kanan bawah
-                
-                points.add(new GeoPoint(centerLat - 0.0020, centerLng + 0.0032));
-                points.add(new GeoPoint(centerLat - 0.0005, centerLng + 0.0020));
-                points.add(new GeoPoint(centerLat + 0.0005, centerLng + 0.0015));
-                points.add(new GeoPoint(centerLat + 0.0008, centerLng + 0.0035)); // Lekukan kecil kanan
-                points.add(new GeoPoint(centerLat + 0.0015, centerLng + 0.0036)); 
-                points.add(new GeoPoint(centerLat + 0.0025, centerLng + 0.0035)); // Sudut kanan atas
-                points.add(new GeoPoint(centerLat + 0.0026, centerLng + 0.0015));
-                points.add(new GeoPoint(centerLat + 0.0025, centerLng - 0.0002));
-                
-                points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0008)); // Lekukan U-turn atas
-                points.add(new GeoPoint(centerLat + 0.0012, centerLng - 0.0012));
-                points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0016));
-                
-                points.add(new GeoPoint(centerLat + 0.0028, centerLng - 0.0022));
-                points.add(new GeoPoint(centerLat + 0.0031, centerLng - 0.0022)); // Puncak kiri atas
-                points.add(new GeoPoint(centerLat + 0.0032, centerLng - 0.0035));
-                
-                points.add(new GeoPoint(centerLat + 0.0023, centerLng - 0.0038)); // Lekukan danau kiri
-                points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0032));
-                points.add(new GeoPoint(centerLat + 0.0008, centerLng - 0.0033)); 
-                points.add(new GeoPoint(centerLat + 0.0000, centerLng - 0.0036));
-                points.add(new GeoPoint(centerLat - 0.0015, centerLng - 0.0036));
-                points.add(new GeoPoint(centerLat - 0.0035, centerLng - 0.0030)); // Penutup loop
+                points = generateOrganicRoute(activityId);
             }
 
             if (isFallback) {
@@ -217,6 +246,46 @@ public class DetailActivity extends AppCompatActivity {
             endMarker.setTitle("Titik Selesai");
             mapViewDetail.getOverlays().add(endMarker);
         }
+    }
+
+    private List<GeoPoint> generateOrganicRoute(int id) {
+        List<GeoPoint> points = new ArrayList<>();
+        double centerLat = -5.1345;
+        double centerLng = 119.4895;
+        
+        int routeType = id % 4; 
+        if (routeType == 0) {
+            // Circular route
+            for (int i = 0; i <= 360; i += 20) {
+                double rad = Math.toRadians(i);
+                double r = 0.003 + 0.0005 * Math.sin(rad * 3);
+                points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
+            }
+        } else if (routeType == 1) {
+            // Figure-8 route
+            for (int i = 0; i <= 360; i += 15) {
+                double rad = Math.toRadians(i);
+                double r = 0.004;
+                double x = r * Math.cos(rad);
+                double y = r * Math.sin(rad * 2) / 2.0;
+                points.add(new GeoPoint(centerLat + x, centerLng + y));
+            }
+        } else if (routeType == 2) {
+            // Quad loop
+            for (int i = 0; i <= 360; i += 12) {
+                double rad = Math.toRadians(i);
+                double r = 0.0035 * Math.sin(2 * rad);
+                points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
+            }
+        } else {
+            // Zigzag loop
+            for (int i = 0; i <= 360; i += 30) {
+                double rad = Math.toRadians(i);
+                double r = 0.003 + 0.001 * (i % 60 == 0 ? 1 : -1);
+                points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
+            }
+        }
+        return points;
     }
 
     // Helper untuk menggambar marker bulat polos

@@ -50,13 +50,17 @@
             android:layout_centerVertical="true">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cvBookmark"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="#CC1A1A1A"
-                android:layout_marginEnd="12dp">
+                android:layout_marginEnd="12dp"
+                android:clickable="true"
+                android:focusable="true">
                 <ImageView
+                    android:id="@+id/ivBookmarkIcon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center"
@@ -65,11 +69,14 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cvMenu"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#CC1A1A1A">
+                app:cardBackgroundColor="#CC1A1A1A"
+                android:clickable="true"
+                android:focusable="true">
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
@@ -214,7 +221,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Kudos atas aktivitas pertama Anda!"
+                        android:text="Kudos (Apresiasi): Selamat atas pencapaian lari Anda!"
                         android:textColor="#FFFFFF"
                         android:textSize="12sp"
                         android:textStyle="bold"
