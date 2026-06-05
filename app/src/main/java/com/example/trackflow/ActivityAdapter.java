@@ -46,6 +46,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         holder.itemView.setOnClickListener(v -> {
             Context context = v.getContext();
             android.content.Intent intent = new android.content.Intent(context, DetailActivity.class);
+            intent.putExtra("EXTRA_ID", activity.getId());
             intent.putExtra("EXTRA_TITLE", activity.getTitle());
             intent.putExtra("EXTRA_DISTANCE", activity.getDistance());
             intent.putExtra("EXTRA_DURATION", activity.getDuration());
@@ -155,7 +156,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             }
 
             // Subtitle
-            tvItemSubtitle.setText(item.getDate() + " · Strava App");
+            tvItemSubtitle.setText(item.getDate() + " · TrackFlow");
 
             // Setup MapView Item (Static Preview)
             if (mapViewItem != null) {
@@ -178,33 +179,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
                 // Fallback rute melingkar organik
                 if (points.size() < 2) {
-                    points.clear();
-                    double centerLat = -5.1345;
-                    double centerLng = 119.4895;
-                    points.add(new GeoPoint(centerLat - 0.0035, centerLng - 0.0030));
-                    points.add(new GeoPoint(centerLat - 0.0036, centerLng - 0.0010));
-                    points.add(new GeoPoint(centerLat - 0.0037, centerLng + 0.0010));
-                    points.add(new GeoPoint(centerLat - 0.0038, centerLng + 0.0025));
-                    points.add(new GeoPoint(centerLat - 0.0020, centerLng + 0.0032));
-                    points.add(new GeoPoint(centerLat - 0.0005, centerLng + 0.0020));
-                    points.add(new GeoPoint(centerLat + 0.0005, centerLng + 0.0015));
-                    points.add(new GeoPoint(centerLat + 0.0008, centerLng + 0.0035));
-                    points.add(new GeoPoint(centerLat + 0.0015, centerLng + 0.0036)); 
-                    points.add(new GeoPoint(centerLat + 0.0025, centerLng + 0.0035));
-                    points.add(new GeoPoint(centerLat + 0.0026, centerLng + 0.0015));
-                    points.add(new GeoPoint(centerLat + 0.0025, centerLng - 0.0002));
-                    points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0008));
-                    points.add(new GeoPoint(centerLat + 0.0012, centerLng - 0.0012));
-                    points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0016));
-                    points.add(new GeoPoint(centerLat + 0.0028, centerLng - 0.0022));
-                    points.add(new GeoPoint(centerLat + 0.0031, centerLng - 0.0022));
-                    points.add(new GeoPoint(centerLat + 0.0032, centerLng - 0.0035));
-                    points.add(new GeoPoint(centerLat + 0.0023, centerLng - 0.0038));
-                    points.add(new GeoPoint(centerLat + 0.0015, centerLng - 0.0032));
-                    points.add(new GeoPoint(centerLat + 0.0008, centerLng - 0.0033)); 
-                    points.add(new GeoPoint(centerLat + 0.0000, centerLng - 0.0036));
-                    points.add(new GeoPoint(centerLat - 0.0015, centerLng - 0.0036));
-                    points.add(new GeoPoint(centerLat - 0.0035, centerLng - 0.0030));
+                    points = generateOrganicRoute(item.getId());
                 }
 
                 // Draw Path Polyline
@@ -233,6 +208,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
                 btnLihatKudos.setOnClickListener(v -> {
                     Context context = v.getContext();
                     android.content.Intent intent = new android.content.Intent(context, DetailActivity.class);
+                    intent.putExtra("EXTRA_ID", item.getId());
                     intent.putExtra("EXTRA_TITLE", item.getTitle());
                     intent.putExtra("EXTRA_DISTANCE", item.getDistance());
                     intent.putExtra("EXTRA_DURATION", item.getDuration());
@@ -280,6 +256,46 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             } catch (Exception e) {
                 return "10:21 /km";
             }
+        }
+
+        private List<GeoPoint> generateOrganicRoute(int id) {
+            List<GeoPoint> points = new ArrayList<>();
+            double centerLat = -5.1345;
+            double centerLng = 119.4895;
+            
+            int routeType = id % 4; 
+            if (routeType == 0) {
+                // Circular route
+                for (int i = 0; i <= 360; i += 20) {
+                    double rad = Math.toRadians(i);
+                    double r = 0.003 + 0.0005 * Math.sin(rad * 3);
+                    points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
+                }
+            } else if (routeType == 1) {
+                // Figure-8 route
+                for (int i = 0; i <= 360; i += 15) {
+                    double rad = Math.toRadians(i);
+                    double r = 0.004;
+                    double x = r * Math.cos(rad);
+                    double y = r * Math.sin(rad * 2) / 2.0;
+                    points.add(new GeoPoint(centerLat + x, centerLng + y));
+                }
+            } else if (routeType == 2) {
+                // Quad loop
+                for (int i = 0; i <= 360; i += 12) {
+                    double rad = Math.toRadians(i);
+                    double r = 0.0035 * Math.sin(2 * rad);
+                    points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
+                }
+            } else {
+                // Zigzag loop
+                for (int i = 0; i <= 360; i += 30) {
+                    double rad = Math.toRadians(i);
+                    double r = 0.003 + 0.001 * (i % 60 == 0 ? 1 : -1);
+                    points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
+                }
+            }
+            return points;
         }
     }
 }

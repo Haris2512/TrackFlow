@@ -62,7 +62,7 @@
                     android:id="@+id/tvItemSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="3 Juni 2026 pukul 12.34 · Strava App"
+                    android:text="3 Juni 2026 pukul 12.34 · TrackFlow"
                     android:textColor="#888888"
                     android:textSize="11sp"
                     android:layout_marginTop="1dp"/>
@@ -214,7 +214,7 @@
                     android:layout_toStartOf="@id/btnLihatKudos"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="12dp"
-                    android:text="Kudos atas aktivitas pertama Anda!"
+                    android:text="Kudos (Apresiasi): Selamat atas pencapaian lari Anda!"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
@@ -246,20 +246,6 @@
                 android:id="@+id/mapViewItem"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-
-            <!-- "Seluruh peta tersembunyi" Overlay Label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|start"
-                android:layout_margin="12dp"
-                android:background="#CC1A1A1A"
-                android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                android:text="Seluruh peta tersembunyi" />
         </FrameLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
