@@ -116,6 +116,7 @@
 
                 <!-- Badge "3" -->
                 <FrameLayout
+                    android:id="@+id/flNotificationBadge"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="top|end"
