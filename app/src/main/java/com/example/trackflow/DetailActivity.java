@@ -104,6 +104,8 @@ public class DetailActivity extends AppCompatActivity {
         tvDetailDuration.setText(duration);
         tvDetailPace.setText(paceStr);
 
+        final String finalTitle = title;
+        final String finalDate = date;
         final String finalDistance = distance;
         final String finalDuration = duration;
         final String finalPaceStr = paceStr;
@@ -126,12 +128,25 @@ public class DetailActivity extends AppCompatActivity {
         btnKudosLihat.setOnClickListener(v -> finish());
 
         // Bookmark Click Toggle
+        isBookmarked = sharedPrefs.getBoolean("FAV_ID_" + activityId, false);
+        if (ivBookmarkIcon != null) {
+            if (isBookmarked) {
+                ivBookmarkIcon.setColorFilter(Color.parseColor("#FC4C02"));
+            } else {
+                ivBookmarkIcon.setColorFilter(Color.WHITE);
+            }
+        }
+
         if (cvBookmark != null && ivBookmarkIcon != null) {
             cvBookmark.setOnClickListener(v -> {
                 isBookmarked = !isBookmarked;
+                sharedPrefs.edit().putBoolean("FAV_ID_" + activityId, isBookmarked).apply();
                 if (isBookmarked) {
                     ivBookmarkIcon.setColorFilter(Color.parseColor("#FC4C02"));
                     android.widget.Toast.makeText(DetailActivity.this, "Ditambahkan ke Favorit!", android.widget.Toast.LENGTH_SHORT).show();
+                    // Arahkan ke scene daftar lari favorit
+                    android.content.Intent favIntent = new android.content.Intent(DetailActivity.this, FavoriteActivity.class);
+                    startActivity(favIntent);
                 } else {
                     ivBookmarkIcon.setColorFilter(Color.WHITE);
                     android.widget.Toast.makeText(DetailActivity.this, "Dihapus dari Favorit!", android.widget.Toast.LENGTH_SHORT).show();
@@ -147,10 +162,18 @@ public class DetailActivity extends AppCompatActivity {
                 popup.getMenu().add("Hapus");
                 popup.setOnMenuItemClickListener(item -> {
                     if (item.getTitle().equals("Bagikan Hasil Lari")) {
+                        String shareText = "🏃 Hasil Lari TrackFlow Saya 🏃\n\n" +
+                                "Nama Aktivitas: " + finalTitle + "\n" +
+                                "Tanggal: " + finalDate + "\n" +
+                                "Jarak: " + finalDistance + "\n" +
+                                "Durasi: " + finalDuration + "\n" +
+                                "Rata-rata Pace: " + finalPaceStr + "\n" +
+                                "Lokasi: Tamalanrea Indah, South Sulawesi\n\n" +
+                                "Unduh TrackFlow sekarang untuk melacak dan membagikan aktivitas lari Anda!";
                         android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);
                         shareIntent.setType("text/plain");
                         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Aktivitas Lari TrackFlow");
-                        shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Hasil Lari TrackFlow saya: Jarak " + finalDistance + ", Durasi " + finalDuration + ", Pace " + finalPaceStr + ". Ayo capai target lari Anda bersama TrackFlow!");
+                        shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareText);
                         startActivity(android.content.Intent.createChooser(shareIntent, "Bagikan"));
                         return true;
                     } else if (item.getTitle().equals("Hapus")) {
@@ -253,38 +276,22 @@ public class DetailActivity extends AppCompatActivity {
         double centerLat = -5.1345;
         double centerLng = 119.4895;
         
-        int routeType = id % 4; 
-        if (routeType == 0) {
-            // Circular route
-            for (int i = 0; i <= 360; i += 20) {
-                double rad = Math.toRadians(i);
-                double r = 0.003 + 0.0005 * Math.sin(rad * 3);
-                points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
-            }
-        } else if (routeType == 1) {
-            // Figure-8 route
-            for (int i = 0; i <= 360; i += 15) {
-                double rad = Math.toRadians(i);
-                double r = 0.004;
-                double x = r * Math.cos(rad);
-                double y = r * Math.sin(rad * 2) / 2.0;
-                points.add(new GeoPoint(centerLat + x, centerLng + y));
-            }
-        } else if (routeType == 2) {
-            // Quad loop
-            for (int i = 0; i <= 360; i += 12) {
-                double rad = Math.toRadians(i);
-                double r = 0.0035 * Math.sin(2 * rad);
-                points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
-            }
-        } else {
-            // Zigzag loop
-            for (int i = 0; i <= 360; i += 30) {
-                double rad = Math.toRadians(i);
-                double r = 0.003 + 0.001 * (i % 60 == 0 ? 1 : -1);
-                points.add(new GeoPoint(centerLat + r * Math.cos(rad), centerLng + r * Math.sin(rad)));
-            }
+        // Seeded variation for realistic, unique loops
+        double seed = (id * 17) % 100 / 100.0;
+        double scale = 0.003 + (seed * 0.0015);
+        
+        int numSteps = 24;
+        for (int i = 0; i < numSteps; i++) {
+            double angle = (2.0 * Math.PI * i) / numSteps;
+            double r = scale * (1.0 + 0.25 * Math.sin(angle * 3) + 0.15 * Math.cos(angle * 5) + 0.08 * Math.sin(angle * 7));
+            double rotatedAngle = angle + (seed * Math.PI / 2.0);
+            
+            double latOffset = r * Math.cos(rotatedAngle);
+            double lngOffset = r * Math.sin(rotatedAngle) * 1.2;
+            points.add(new GeoPoint(centerLat + latOffset, centerLng + lngOffset));
         }
+        // Close the loop
+        points.add(points.get(0));
         return points;
     }
 
