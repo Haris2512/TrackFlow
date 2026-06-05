@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -122,8 +124,14 @@ public class HomeFragment extends Fragment {
         }
 
         View flNotifications = view.findViewById(R.id.flNotifications);
+        View flNotificationBadge = view.findViewById(R.id.flNotificationBadge);
         if (flNotifications != null) {
-            flNotifications.setOnClickListener(v -> showNotificationsDialog());
+            flNotifications.setOnClickListener(v -> {
+                if (flNotificationBadge != null) {
+                    flNotificationBadge.setVisibility(View.GONE);
+                }
+                showNotificationsDialog();
+            });
         }
     }
 
@@ -162,6 +170,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void filterActivities(String query) {
+        if (query.isEmpty()) {
+            loadActivitiesAsync();
+            return;
+        }
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
@@ -176,45 +188,87 @@ public class HomeFragment extends Fragment {
                 }
             }
             handler.post(() -> {
-                adapter.setData(filteredList);
-                calculateTotalDistance(filteredList);
+                if (filteredList.isEmpty()) {
+                    new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                        .setTitle("Pencarian")
+                        .setMessage("Kata kunci tidak dapat ditemukan")
+                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                        .show();
+                } else {
+                    adapter.setData(filteredList);
+                    calculateTotalDistance(filteredList);
+                }
             });
         });
     }
 
     private void setupRealtimeCalendar(View view) {
-        TextView tvDay1 = view.findViewById(R.id.tvDay1);
-        TextView tvDate1 = view.findViewById(R.id.tvDate1);
-        TextView tvDay2 = view.findViewById(R.id.tvDay2);
-        TextView tvDate2 = view.findViewById(R.id.tvDate2);
-        TextView tvDayToday = view.findViewById(R.id.tvDayToday);
-        TextView tvDateToday = view.findViewById(R.id.tvDateToday);
-        TextView tvDay4 = view.findViewById(R.id.tvDay4);
-        TextView tvDate4 = view.findViewById(R.id.tvDate4);
-
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat dayFmt = new SimpleDateFormat("EEE", new Locale("id", "ID")); // Cth: Sen, Sel
-        SimpleDateFormat dateFmt = new SimpleDateFormat("dd", new Locale("id", "ID")); // Cth: 18
+        // Go back until we hit Monday of the current week
+        while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+        }
 
-        // Mundur 2 hari dari sekarang (H-2)
-        cal.add(Calendar.DAY_OF_MONTH, -2);
-        if (tvDay1 != null) tvDay1.setText(dayFmt.format(cal.getTime()));
-        if (tvDate1 != null) tvDate1.setText(dateFmt.format(cal.getTime()));
+        SimpleDateFormat dayLetterFmt = new SimpleDateFormat("E", new Locale("id", "ID")); // e.g., "Sen", "Sel"...
+        SimpleDateFormat dateFmt = new SimpleDateFormat("d", new Locale("id", "ID"));
+        
+        Calendar todayCal = Calendar.getInstance();
+        int todayYear = todayCal.get(Calendar.YEAR);
+        int todayDayOfYear = todayCal.get(Calendar.DAY_OF_YEAR);
 
-        // Maju 1 hari (H-1)
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        if (tvDay2 != null) tvDay2.setText(dayFmt.format(cal.getTime()));
-        if (tvDate2 != null) tvDate2.setText(dateFmt.format(cal.getTime()));
-
-        // Maju 1 hari (HARI INI)
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        if (tvDayToday != null) tvDayToday.setText(dayFmt.format(cal.getTime()));
-        if (tvDateToday != null) tvDateToday.setText(dateFmt.format(cal.getTime()));
-
-        // Maju 1 hari (H+1)
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        if (tvDay4 != null) tvDay4.setText(dayFmt.format(cal.getTime()));
-        if (tvDate4 != null) tvDate4.setText(dateFmt.format(cal.getTime()));
+        for (int i = 0; i < 7; i++) {
+            int index = i + 1;
+            int resIdDayName = view.getResources().getIdentifier("tvDayName" + index, "id", view.getContext().getPackageName());
+            int resIdDateFrame = view.getResources().getIdentifier("flDateFrame" + index, "id", view.getContext().getPackageName());
+            int resIdDateVal = view.getResources().getIdentifier("tvDateVal" + index, "id", view.getContext().getPackageName());
+            int resIdShoeIcon = view.getResources().getIdentifier("ivShoeIcon" + index, "id", view.getContext().getPackageName());
+            
+            TextView tvDayName = view.findViewById(resIdDayName);
+            FrameLayout flDateFrame = view.findViewById(resIdDateFrame);
+            TextView tvDateVal = view.findViewById(resIdDateVal);
+            ImageView ivShoeIcon = view.findViewById(resIdShoeIcon);
+            
+            boolean isToday = (cal.get(Calendar.YEAR) == todayYear && cal.get(Calendar.DAY_OF_YEAR) == todayDayOfYear);
+            
+            if (tvDayName != null) {
+                String fullDayName = dayLetterFmt.format(cal.getTime()); // Cth: "Sen", "Sel"
+                String firstLetter = !fullDayName.isEmpty() ? fullDayName.substring(0, 1).toUpperCase() : "";
+                tvDayName.setText(firstLetter);
+                if (isToday) {
+                    tvDayName.setTextColor(Color.parseColor("#FC4C02"));
+                } else {
+                    tvDayName.setTextColor(Color.parseColor("#888888"));
+                }
+            }
+            
+            if (flDateFrame != null) {
+                if (isToday) {
+                    flDateFrame.setBackgroundResource(R.drawable.bg_circle_white);
+                } else {
+                    flDateFrame.setBackgroundResource(R.drawable.bg_circle_dark);
+                }
+            }
+            
+            if (tvDateVal != null) {
+                tvDateVal.setText(dateFmt.format(cal.getTime()));
+                if (isToday) {
+                    tvDateVal.setVisibility(View.GONE);
+                } else {
+                    tvDateVal.setVisibility(View.VISIBLE);
+                    tvDateVal.setTextColor(Color.parseColor("#888888"));
+                }
+            }
+            
+            if (ivShoeIcon != null) {
+                if (isToday) {
+                    ivShoeIcon.setVisibility(View.VISIBLE);
+                } else {
+                    ivShoeIcon.setVisibility(View.GONE);
+                }
+            }
+            
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
     }
 
     @Override
