@@ -34,6 +34,7 @@ public class HomeFragment extends Fragment {
     private TextView tvWelcome;
     private SharedPreferences sharedPreferences;
     private android.widget.ImageView ivHomeAvatar;
+    private TextView tvHomeAvatarLetter;
 
     public HomeFragment() {}
 
@@ -50,6 +51,7 @@ public class HomeFragment extends Fragment {
         tvTotalDistance = view.findViewById(R.id.tvTotalDistance);
         tvWelcome = view.findViewById(R.id.tvWelcome);
         ivHomeAvatar = view.findViewById(R.id.ivHomeAvatar);
+        tvHomeAvatarLetter = view.findViewById(R.id.tvHomeAvatarLetter);
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAdd);
         Switch switchTheme = view.findViewById(R.id.switchTheme);
 
@@ -124,9 +126,19 @@ public class HomeFragment extends Fragment {
         String savedAvatarUri = sharedPreferences.getString("USER_AVATAR", null);
         if (savedAvatarUri != null && ivHomeAvatar != null) {
             try {
+                ivHomeAvatar.setVisibility(View.VISIBLE);
+                if (tvHomeAvatarLetter != null) tvHomeAvatarLetter.setVisibility(View.GONE);
                 ivHomeAvatar.setImageURI(android.net.Uri.parse(savedAvatarUri));
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        } else {
+            if (ivHomeAvatar != null) ivHomeAvatar.setVisibility(View.GONE);
+            if (tvHomeAvatarLetter != null) {
+                tvHomeAvatarLetter.setVisibility(View.VISIBLE);
+                if (!savedName.isEmpty()) {
+                    tvHomeAvatarLetter.setText(savedName.substring(0, 1).toLowerCase());
+                }
             }
         }
         loadActivitiesAsync();
