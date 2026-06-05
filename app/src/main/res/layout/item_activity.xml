@@ -1,105 +1,265 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
+    android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardBackgroundColor="?attr/colorSurface"
-    app:cardElevation="2dp"> <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp">
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="#1E1E1E"
+    app:cardElevation="0dp">
 
-    <ImageView
-        android:id="@+id/ivIcon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@android:drawable/ic_menu_directions"
-        app:tint="@color/strava_orange"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="Lari Pagi"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/ivIcon"
-        app:layout_constraintTop_toTopOf="@id/ivIcon"
-        app:layout_constraintBottom_toTopOf="@id/tvDate"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="15 Mei 2026"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@id/ivIcon"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintBottom_toBottomOf="@id/ivIcon" />
-
-    <View
-        android:id="@+id/vDivider"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="12dp"
-        android:background="?attr/colorOnSurfaceVariant"
-        android:alpha="0.2"
-        app:layout_constraintTop_toBottomOf="@id/ivIcon" />
-
-    <TextView
-        android:id="@+id/lblDistance"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Jarak"
-        android:textSize="12sp"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintTop_toBottomOf="@id/vDivider"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="5.2 KM"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lblDistance" />
+        <!-- Header Row (Profile, Username, Date, Location) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
 
-    <TextView
-        android:id="@+id/lblDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="48dp"
-        android:text="Waktu"
-        android:textSize="12sp"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintTop_toBottomOf="@id/vDivider"
-        app:layout_constraintStart_toEndOf="@id/tvDistance" />
+            <!-- Avatar -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                app:cardCornerRadius="19dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#00897B">
+                <TextView
+                    android:id="@+id/tvItemAvatarLetter"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="a"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+            </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/tvDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="30m 00s"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/lblDuration"
-        app:layout_constraintTop_toBottomOf="@id/lblDuration" />
+            <!-- User Info & Meta -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/tvItemName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="another rhiez"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvItemSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3 Juni 2026 pukul 12.34 · Strava App"
+                    android:textColor="#888888"
+                    android:textSize="11sp"
+                    android:layout_marginTop="1dp"/>
+
+                <!-- Location Pin row -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="3dp">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_shoe"
+                        app:tint="#888888" />
+
+                    <TextView
+                        android:id="@+id/tvItemLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tamalanrea Indah, South Sulawesi"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:layout_marginStart="4dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Activity Info & Stats -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="12dp">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Berlari Siang"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Three Column Stats -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginBottom="16dp">
+
+                <!-- Col 1: Jarak -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Jarak"
+                        android:textColor="#888888"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/tvDistance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0,03 km"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <!-- Col 2: Pace -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pace"
+                        android:textColor="#888888"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/tvPace"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10:21 /km"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <!-- Col 3: Waktu -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Waktu"
+                        android:textColor="#888888"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/tvDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18d"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Kudos Card -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_kudos_card"
+                android:padding="12dp"
+                android:layout_marginBottom="12dp">
+
+                <!-- Kudos Hexagon Icon -->
+                <ImageView
+                    android:id="@+id/ivKudosIcon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_kudos"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/ivKudosIcon"
+                    android:layout_toStartOf="@id/btnLihatKudos"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="12dp"
+                    android:text="Kudos atas aktivitas pertama Anda!"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold"/>
+
+                <!-- Lihat Button -->
+                <Button
+                    android:id="@+id/btnLihatKudos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="Lihat"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="0dp"
+                    android:background="@drawable/bg_badge_orange"
+                    app:backgroundTint="#FC4C02"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <!-- Map View Container -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="180dp">
+
+            <org.osmdroid.views.MapView
+                android:id="@+id/mapViewItem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- "Seluruh peta tersembunyi" Overlay Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="12dp"
+                android:background="#CC1A1A1A"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:text="Seluruh peta tersembunyi" />
+        </FrameLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>
