@@ -79,7 +79,7 @@
                 android:gravity="center" />
         </androidx.cardview.widget.CardView>
 
-        <!-- Right Side Icons: Chat, Search, Notification Bell with Red Badge -->
+        <!-- Right Side Icons: Search, Notification Bell with Red Badge -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -89,18 +89,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Chat Icon -->
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_chat"
-                app:tint="#FFFFFF"
-                android:layout_marginEnd="16dp"
-                android:clickable="true"
-                android:focusable="true"/>
-
             <!-- Search Icon -->
             <ImageView
+                android:id="@+id/ivSearchIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_search"
@@ -111,8 +102,11 @@
 
             <!-- Notification Bell Icon with Red Badge -->
             <FrameLayout
+                android:id="@+id/flNotifications"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -192,6 +186,7 @@
 
                         <!-- Bagikan Button -->
                         <LinearLayout
+                            android:id="@+id/btnShareStreak"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -221,242 +216,12 @@
                         </LinearLayout>
                     </RelativeLayout>
 
-                    <!-- Content Row inside Card (Flame on Left, Calendar Strip on Right) -->
-                    <LinearLayout
+                    <!-- ViewPager2 for sliding content -->
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/vpStreak"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginTop="20dp">
-
-                        <!-- Left Side: Flame Block -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:layout_marginEnd="16dp">
-
-                            <FrameLayout
-                                android:layout_width="48dp"
-                                android:layout_height="48dp">
-
-                                <ImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:src="@drawable/ic_flame"
-                                    app:tint="#FC4C02"/>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:layout_marginTop="8dp"
-                                    android:text="1"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"/>
-                            </FrameLayout>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Minggu"
-                                android:textColor="#FC4C02"
-                                android:textSize="11sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="6dp"/>
-                        </LinearLayout>
-
-                        <!-- Right Side: Calendar Strip (S S R K J S M) -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="horizontal"
-                            android:gravity="center"
-                            android:weightSum="7">
-
-                            <!-- Day 1: S (Senin) -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="S"
-                                    android:textColor="#888888"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:background="@drawable/bg_circle_dark"
-                                    android:text="1"
-                                    android:textColor="#888888"
-                                    android:textSize="11sp"
-                                    android:gravity="center"
-                                    android:layout_marginTop="8dp"/>
-                            </LinearLayout>
-
-                            <!-- Day 2: S (Selasa) -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="S"
-                                    android:textColor="#888888"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:background="@drawable/bg_circle_dark"
-                                    android:text="2"
-                                    android:textColor="#888888"
-                                    android:textSize="11sp"
-                                    android:gravity="center"
-                                    android:layout_marginTop="8dp"/>
-                            </LinearLayout>
-
-                            <!-- Day 3: R (Rabu, Workout Completed) -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="R"
-                                    android:textColor="#888888"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold"/>
-                                <FrameLayout
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:background="@drawable/bg_circle_white"
-                                    android:layout_marginTop="8dp">
-                                    <ImageView
-                                        android:layout_width="16dp"
-                                        android:layout_height="16dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/ic_shoe"
-                                        app:tint="#FC4C02" />
-                                </FrameLayout>
-                            </LinearLayout>
-
-                            <!-- Day 4: K (Kamis) -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="K"
-                                    android:textColor="#888888"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:background="@drawable/bg_circle_dark"
-                                    android:text="4"
-                                    android:textColor="#888888"
-                                    android:textSize="11sp"
-                                    android:gravity="center"
-                                    android:layout_marginTop="8dp"/>
-                            </LinearLayout>
-
-                            <!-- Day 5: J (Jumat, Current Day Outline) -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="J"
-                                    android:textColor="#888888"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:background="@drawable/bg_circle_outline"
-                                    android:text="5"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="11sp"
-                                    android:textStyle="bold"
-                                    android:gravity="center"
-                                    android:layout_marginTop="8dp"/>
-                            </LinearLayout>
-
-                            <!-- Day 6: S (Sabtu) -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="S"
-                                    android:textColor="#888888"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:background="@drawable/bg_circle_dark"
-                                    android:text="6"
-                                    android:textColor="#888888"
-                                    android:textSize="11sp"
-                                    android:gravity="center"
-                                    android:layout_marginTop="8dp"/>
-                            </LinearLayout>
-
-                            <!-- Day 7: M (Minggu) -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="M"
-                                    android:textColor="#888888"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:background="@drawable/bg_circle_dark"
-                                    android:text="7"
-                                    android:textColor="#888888"
-                                    android:textSize="11sp"
-                                    android:gravity="center"
-                                    android:layout_marginTop="8dp"/>
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
+                        android:layout_height="132dp"
+                        android:layout_marginTop="12dp" />
 
                     <!-- Dot Page Indicators inside Card -->
                     <LinearLayout
@@ -464,19 +229,22 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center"
-                        android:layout_marginTop="16dp">
+                        android:layout_marginTop="12dp">
 
                         <View
+                            android:id="@+id/dot1"
                             android:layout_width="6dp"
                             android:layout_height="6dp"
                             android:background="@drawable/bg_circle_white"
                             android:layout_marginHorizontal="3dp" />
                         <View
+                            android:id="@+id/dot2"
                             android:layout_width="6dp"
                             android:layout_height="6dp"
                             android:background="@drawable/bg_circle_dark"
                             android:layout_marginHorizontal="3dp" />
                         <View
+                            android:id="@+id/dot3"
                             android:layout_width="6dp"
                             android:layout_height="6dp"
                             android:background="@drawable/bg_circle_dark"

@@ -4,20 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,8 +84,102 @@ public class HomeFragment extends Fragment {
             );
         });
 
-        // Panggil fungsi kalender real-time
-        setupRealtimeCalendar(view);
+        // Setup ViewPager2 untuk kartu Streak (Beruntun Anda)
+        ViewPager2 vpStreak = view.findViewById(R.id.vpStreak);
+        View dot1 = view.findViewById(R.id.dot1);
+        View dot2 = view.findViewById(R.id.dot2);
+        View dot3 = view.findViewById(R.id.dot3);
+
+        if (vpStreak != null) {
+            vpStreak.setAdapter(new StreakPagerAdapter());
+            vpStreak.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    if (dot1 != null) dot1.setBackgroundResource(position == 0 ? R.drawable.bg_circle_white : R.drawable.bg_circle_dark);
+                    if (dot2 != null) dot2.setBackgroundResource(position == 1 ? R.drawable.bg_circle_white : R.drawable.bg_circle_dark);
+                    if (dot3 != null) dot3.setBackgroundResource(position == 2 ? R.drawable.bg_circle_white : R.drawable.bg_circle_dark);
+                }
+            });
+        }
+
+        // Hubungkan aksi bagikan streak
+        LinearLayout btnShareStreak = view.findViewById(R.id.btnShareStreak);
+        if (btnShareStreak != null) {
+            btnShareStreak.setOnClickListener(v -> {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Streak Lari TrackFlow");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Ayo lihat kemajuan beruntun (streak) lari saya minggu ini di aplikasi TrackFlow! Berlari 3 hari berturut-turut!");
+                startActivity(Intent.createChooser(shareIntent, "Bagikan Streak"));
+            });
+        }
+
+        // Hubungkan fitur pencarian dan notifikasi di Toolbar
+        View ivSearchIcon = view.findViewById(R.id.ivSearchIcon);
+        if (ivSearchIcon != null) {
+            ivSearchIcon.setOnClickListener(v -> showSearchDialog());
+        }
+
+        View flNotifications = view.findViewById(R.id.flNotifications);
+        if (flNotifications != null) {
+            flNotifications.setOnClickListener(v -> showNotificationsDialog());
+        }
+    }
+
+    private void showNotificationsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("Notifikasi Aktivitas");
+        String[] items = {
+            "🏆 Rekor Baru! Anda menyelesaikan lari 5K tercepat.",
+            "💬 Komunitas: another rhiez memberikan Kudos pada lari Anda.",
+            "⭐ Tips TrackFlow: Lakukan peregangan sebelum berlari."
+        };
+        builder.setItems(items, null);
+        builder.setPositiveButton("TUTUP", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+    private void showSearchDialog() {
+        EditText input = new EditText(requireContext());
+        input.setHint("Masukkan kata kunci...");
+        input.setTextColor(Color.WHITE);
+        input.setPadding(48, 32, 48, 32);
+
+        AlertDialog dialog = new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("Cari Aktivitas")
+            .setView(input)
+            .setPositiveButton("CARI", (d, which) -> {
+                String query = input.getText().toString().trim().toLowerCase();
+                filterActivities(query);
+            })
+            .setNegativeButton("BATAL", (d, which) -> d.dismiss())
+            .setNeutralButton("RESET", (d, which) -> {
+                loadActivitiesAsync(); // reload all
+            })
+            .create();
+        dialog.show();
+    }
+
+    private void filterActivities(String query) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            Cursor cursor = activityHelper.queryAll();
+            ArrayList<ActivityModel> list = MappingHelper.mapCursorToArrayList(cursor);
+            ArrayList<ActivityModel> filteredList = new ArrayList<>();
+            if (list != null) {
+                for (ActivityModel model : list) {
+                    if (model.getTitle().toLowerCase().contains(query) || model.getDate().toLowerCase().contains(query)) {
+                        filteredList.add(model);
+                    }
+                }
+            }
+            handler.post(() -> {
+                adapter.setData(filteredList);
+                calculateTotalDistance(filteredList);
+            });
+        });
     }
 
     private void setupRealtimeCalendar(View view) {
@@ -98,23 +198,23 @@ public class HomeFragment extends Fragment {
 
         // Mundur 2 hari dari sekarang (H-2)
         cal.add(Calendar.DAY_OF_MONTH, -2);
-        tvDay1.setText(dayFmt.format(cal.getTime()));
-        tvDate1.setText(dateFmt.format(cal.getTime()));
+        if (tvDay1 != null) tvDay1.setText(dayFmt.format(cal.getTime()));
+        if (tvDate1 != null) tvDate1.setText(dateFmt.format(cal.getTime()));
 
         // Maju 1 hari (H-1)
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        tvDay2.setText(dayFmt.format(cal.getTime()));
-        tvDate2.setText(dateFmt.format(cal.getTime()));
+        if (tvDay2 != null) tvDay2.setText(dayFmt.format(cal.getTime()));
+        if (tvDate2 != null) tvDate2.setText(dateFmt.format(cal.getTime()));
 
         // Maju 1 hari (HARI INI)
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        tvDayToday.setText(dayFmt.format(cal.getTime()));
-        tvDateToday.setText(dateFmt.format(cal.getTime()));
+        if (tvDayToday != null) tvDayToday.setText(dayFmt.format(cal.getTime()));
+        if (tvDateToday != null) tvDateToday.setText(dateFmt.format(cal.getTime()));
 
         // Maju 1 hari (H+1)
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        tvDay4.setText(dayFmt.format(cal.getTime()));
-        tvDate4.setText(dateFmt.format(cal.getTime()));
+        if (tvDay4 != null) tvDay4.setText(dayFmt.format(cal.getTime()));
+        if (tvDate4 != null) tvDate4.setText(dateFmt.format(cal.getTime()));
     }
 
     @Override
@@ -175,7 +275,41 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (activityHelper != null) {
+    }
+
+    private class StreakPagerAdapter extends RecyclerView.Adapter<StreakPagerAdapter.ViewHolder> {
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            int layoutId = R.layout.item_streak_slide1;
+            if (viewType == 1) layoutId = R.layout.item_streak_slide2;
+            else if (viewType == 2) layoutId = R.layout.item_streak_slide3;
+
+            View v = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+            return new ViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            if (getItemViewType(position) == 0) {
+                setupRealtimeCalendar(holder.itemView);
+            }
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        @Override
+        public int getItemCount() {
+            return 3;
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            ViewHolder(View itemView) {
+                super(itemView);
+            }
         }
     }
 }
