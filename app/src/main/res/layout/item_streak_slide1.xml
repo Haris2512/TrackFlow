@@ -59,7 +59,7 @@
             android:gravity="center"
             android:weightSum="7">
 
-            <!-- Day 1: S (Senin) -->
+            <!-- Day 1 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -67,24 +67,39 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <TextView
+                    android:id="@+id/tvDayName1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="S"
                     android:textColor="#888888"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
-                <TextView
+                <FrameLayout
+                    android:id="@+id/flDateFrame1"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:background="@drawable/bg_circle_dark"
-                    android:text="1"
-                    android:textColor="#888888"
-                    android:textSize="11sp"
-                    android:gravity="center"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp">
+                    <TextView
+                        android:id="@+id/tvDateVal1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="1"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:gravity="center"/>
+                    <ImageView
+                        android:id="@+id/ivShoeIcon1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_shoe"
+                        app:tint="#FC4C02"
+                        android:visibility="gone"/>
+                </FrameLayout>
             </LinearLayout>
 
-            <!-- Day 2: S (Selasa) -->
+            <!-- Day 2 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -92,24 +107,39 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <TextView
+                    android:id="@+id/tvDayName2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="S"
                     android:textColor="#888888"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
-                <TextView
+                <FrameLayout
+                    android:id="@+id/flDateFrame2"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:background="@drawable/bg_circle_dark"
-                    android:text="2"
-                    android:textColor="#888888"
-                    android:textSize="11sp"
-                    android:gravity="center"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp">
+                    <TextView
+                        android:id="@+id/tvDateVal2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="2"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:gravity="center"/>
+                    <ImageView
+                        android:id="@+id/ivShoeIcon2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_shoe"
+                        app:tint="#FC4C02"
+                        android:visibility="gone"/>
+                </FrameLayout>
             </LinearLayout>
 
-            <!-- Day 3: R (Rabu, Workout Completed) -->
+            <!-- Day 3 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -117,6 +147,7 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <TextView
+                    android:id="@+id/tvDayName3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="R"
@@ -124,20 +155,31 @@
                     android:textSize="12sp"
                     android:textStyle="bold"/>
                 <FrameLayout
+                    android:id="@+id/flDateFrame3"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:background="@drawable/bg_circle_white"
+                    android:background="@drawable/bg_circle_dark"
                     android:layout_marginTop="8dp">
+                    <TextView
+                        android:id="@+id/tvDateVal3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="3"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:gravity="center"/>
                     <ImageView
+                        android:id="@+id/ivShoeIcon3"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#FC4C02" />
+                        app:tint="#FC4C02"
+                        android:visibility="gone"/>
                 </FrameLayout>
             </LinearLayout>
 
-            <!-- Day 4: K (Kamis) -->
+            <!-- Day 4 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -145,24 +187,39 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <TextView
+                    android:id="@+id/tvDayName4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="K"
                     android:textColor="#888888"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
-                <TextView
+                <FrameLayout
+                    android:id="@+id/flDateFrame4"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:background="@drawable/bg_circle_dark"
-                    android:text="4"
-                    android:textColor="#888888"
-                    android:textSize="11sp"
-                    android:gravity="center"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp">
+                    <TextView
+                        android:id="@+id/tvDateVal4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="4"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:gravity="center"/>
+                    <ImageView
+                        android:id="@+id/ivShoeIcon4"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_shoe"
+                        app:tint="#FC4C02"
+                        android:visibility="gone"/>
+                </FrameLayout>
             </LinearLayout>
 
-            <!-- Day 5: J (Jumat, Current Day Outline) -->
+            <!-- Day 5 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -170,25 +227,39 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <TextView
+                    android:id="@+id/tvDayName5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="J"
                     android:textColor="#888888"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
-                <TextView
+                <FrameLayout
+                    android:id="@+id/flDateFrame5"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:background="@drawable/bg_circle_outline"
-                    android:text="5"
-                    android:textColor="#FFFFFF"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:layout_marginTop="8dp"/>
+                    android:background="@drawable/bg_circle_dark"
+                    android:layout_marginTop="8dp">
+                    <TextView
+                        android:id="@+id/tvDateVal5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="5"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:gravity="center"/>
+                    <ImageView
+                        android:id="@+id/ivShoeIcon5"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_shoe"
+                        app:tint="#FC4C02"
+                        android:visibility="gone"/>
+                </FrameLayout>
             </LinearLayout>
 
-            <!-- Day 6: S (Sabtu) -->
+            <!-- Day 6 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -196,24 +267,39 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <TextView
+                    android:id="@+id/tvDayName6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="S"
                     android:textColor="#888888"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
-                <TextView
+                <FrameLayout
+                    android:id="@+id/flDateFrame6"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:background="@drawable/bg_circle_dark"
-                    android:text="6"
-                    android:textColor="#888888"
-                    android:textSize="11sp"
-                    android:gravity="center"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp">
+                    <TextView
+                        android:id="@+id/tvDateVal6"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="6"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:gravity="center"/>
+                    <ImageView
+                        android:id="@+id/ivShoeIcon6"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_shoe"
+                        app:tint="#FC4C02"
+                        android:visibility="gone"/>
+                </FrameLayout>
             </LinearLayout>
 
-            <!-- Day 7: M (Minggu) -->
+            <!-- Day 7 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -221,21 +307,36 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <TextView
+                    android:id="@+id/tvDayName7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="M"
                     android:textColor="#888888"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
-                <TextView
+                <FrameLayout
+                    android:id="@+id/flDateFrame7"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:background="@drawable/bg_circle_dark"
-                    android:text="7"
-                    android:textColor="#888888"
-                    android:textSize="11sp"
-                    android:gravity="center"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp">
+                    <TextView
+                        android:id="@+id/tvDateVal7"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="7"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:gravity="center"/>
+                    <ImageView
+                        android:id="@+id/ivShoeIcon7"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_shoe"
+                        app:tint="#FC4C02"
+                        android:visibility="gone"/>
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -244,7 +345,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="* Ikon sepatu (Rabu) menunjukkan aktivitas lari Anda telah tercapai."
+        android:text="* Ikon sepatu menunjukkan penanda hari ini secara real time."
         android:textColor="#888888"
         android:textSize="10sp"
         android:layout_marginTop="12dp"
