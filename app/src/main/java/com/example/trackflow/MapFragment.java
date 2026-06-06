@@ -97,12 +97,55 @@ public class MapFragment extends Fragment {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 String query = etSearchMap.getText().toString().trim();
                 if (!query.isEmpty()) {
-                    Toast.makeText(requireContext(), "Mencari lokasi: " + query + "\n(Fitur Geocoding segera hadir)", Toast.LENGTH_LONG).show();
                     InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     if (imm != null) {
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     }
                     etSearchMap.clearFocus();
+
+                    Toast.makeText(requireContext(), "Mencari \"" + query + "\"...", Toast.LENGTH_SHORT).show();
+
+                    new Thread(() -> {
+                        Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                        try {
+                            List<Address> addresses = geocoder.getFromLocationName(query, 1);
+                            if (addresses != null && !addresses.isEmpty()) {
+                                Address address = addresses.get(0);
+                                GeoPoint point = new GeoPoint(address.getLatitude(), address.getLongitude());
+
+                                if (getActivity() != null) {
+                                    requireActivity().runOnUiThread(() -> {
+                                        if (mapView != null) {
+                                            mapView.getController().animateTo(point);
+                                            mapView.getController().setZoom(19.0);
+
+                                            String featureName = address.getFeatureName();
+                                            String fullAddress = address.getAddressLine(0);
+                                            String finalAddress = fullAddress;
+                                            if (featureName != null && !fullAddress.startsWith(featureName)) {
+                                                finalAddress = featureName + ", " + fullAddress;
+                                            }
+                                            tvAddress.setText(finalAddress);
+                                            Toast.makeText(requireContext(), "Lokasi ditemukan: " + (featureName != null ? featureName : query), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            } else {
+                                if (getActivity() != null) {
+                                    requireActivity().runOnUiThread(() -> {
+                                        Toast.makeText(requireContext(), "Lokasi tidak ditemukan", Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            if (getActivity() != null) {
+                                requireActivity().runOnUiThread(() -> {
+                                    Toast.makeText(requireContext(), "Gagal mencari lokasi (Periksa koneksi internet)", Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        }
+                    }).start();
                 }
                 return true;
             }
