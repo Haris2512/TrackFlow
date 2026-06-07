@@ -8,9 +8,11 @@
 
         <item name="android:colorBackground">#121212</item>
         <item name="colorSurface">#1E1E1E</item>
+        <item name="colorSurfaceVariant">#222222</item>
 
         <item name="colorOnBackground">#FFFFFF</item>
         <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorOnSurfaceVariant">#CCCCCC</item>
         <item name="android:textColor">#FFFFFF</item>
 
         <item name="android:statusBarColor">#121212</item>

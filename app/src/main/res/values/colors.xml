@@ -35,4 +35,24 @@
     <color name="strava_orange">#FC4C02</color>
     <color name="strava_orange_dark">#DF4302</color>
     <color name="strava_grey">#333333</color>
+
+    <!-- Light/Dark Mode adaptive semantic colors -->
+    <color name="app_background">#F5F5F5</color>
+    <color name="app_surface">#FFFFFF</color>
+    <color name="app_surface_card">#EBEBEB</color>
+    
+    <color name="app_text_primary">#121212</color>
+    <color name="app_text_secondary">#555555</color>
+    <color name="app_text_hint">#888888</color>
+    
+    <!-- Streak circle colors -->
+    <color name="circle_today_bg">#FC4C02</color> <!-- Orange circle, white shoe in light mode -->
+    <color name="circle_other_bg">#E0E0E0</color> <!-- Light grey for other days in light mode -->
+    <color name="circle_today_text">#FFFFFF</color>
+    <color name="circle_other_text">#666666</color>
+    <color name="circle_shoe_tint">#FFFFFF</color>
+    
+    <color name="app_divider">#E0E0E0</color>
+    <color name="map_btn_background">#E6FFFFFF</color>
+    <color name="map_btn_icon_tint">#121212</color>
 </resources>
