@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -66,6 +68,13 @@ public class RecordFragment extends Fragment {
     private LinearLayout llPauseButtons;
     private Button btnLanjutkan;
     private Button btnSelesaikan;
+
+    // Sport Selector Views
+    private LinearLayout llRun;
+    private ImageView ivSportIcon;
+    private TextView tvSportName;
+    private String selectedSport = "Berlari";
+    private int selectedSportIconRes = R.drawable.ic_shoe;
 
     private boolean isRunning = false;
     private int seconds = 0;
@@ -119,6 +128,11 @@ public class RecordFragment extends Fragment {
         btnLanjutkan = view.findViewById(R.id.btnLanjutkan);
         btnSelesaikan = view.findViewById(R.id.btnSelesaikan);
 
+        // Inisialisasi widget Sport Selector
+        llRun = view.findViewById(R.id.llRun);
+        ivSportIcon = view.findViewById(R.id.ivSportIcon);
+        tvSportName = view.findViewById(R.id.tvSportName);
+
         // Awal mula: Tampilkan peta, sembunyikan dashboard
         llDashboardView.setVisibility(View.GONE);
         cvStopwatch.setVisibility(View.GONE);
@@ -129,6 +143,11 @@ public class RecordFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
+
+        // Sport Type Selector
+        if (llRun != null) {
+            llRun.setOnClickListener(v -> showSportPickerDialog());
+        }
 
         // Tapping floating stopwatch akan membawa ke Dashboard View
         cvStopwatch.setOnClickListener(v -> {
@@ -326,7 +345,7 @@ public class RecordFragment extends Fragment {
                         } else {
                             GeoPoint lastPt = routePoints.get(routePoints.size() - 1);
                             double dist = gp.distanceToAsDouble(lastPt); // in meters
-                            if (dist >= 1.5) { // only record if moved at least 1.5 meters to prevent jitter
+                            if (dist >= 5.0) { // only record if moved at least 5 meters to prevent GPS jitter when stationary
                                 routePoints.add(gp);
                                 if (livePolyline != null) {
                                     livePolyline.addPoint(gp);
@@ -404,14 +423,11 @@ public class RecordFragment extends Fragment {
                     tvStopwatch.setText(timeFormatted);
                     tvDashStopwatch.setText(timeFormatted);
 
-                    // Update jarak berjalan: jika tidak ada pergerakan GPS riil, simulasikan agar tetap terlihat hidup
-                    if (routePoints.size() <= 1) {
-                        currentDistance = seconds * 0.00167; // contoh: 18 detik = ~0.03 KM
-                    }
+                    // Hanya tampilkan jarak sebenarnya dari GPS (tidak ada simulasi palsu)
                     tvDashDistanceVal.setText(String.format(Locale.getDefault(), "%.2f", currentDistance));
 
-                    // Update split pace
-                    if (seconds > 2 && currentDistance > 0.0) {
+                    // Update split pace berdasarkan jarak GPS asli
+                    if (seconds > 2 && currentDistance > 0.01) {
                         double paceInSeconds = (double) seconds / currentDistance;
                         int paceMin = (int) (paceInSeconds / 60);
                         int paceSec = (int) (paceInSeconds % 60);
@@ -432,6 +448,21 @@ public class RecordFragment extends Fragment {
         int minutes = (totalSeconds % 3600) / 60;
         int secs = totalSeconds % 60;
         return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs);
+    }
+
+    private void showSportPickerDialog() {
+        String[] sportNames = {"Berlari", "Bersepeda", "Jalan Kaki", "Trail Run"};
+        int[] sportIcons = {R.drawable.ic_shoe, R.drawable.ic_bike, R.drawable.ic_walk, R.drawable.ic_hiking};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Pilih Jenis Olahraga");
+        builder.setItems(sportNames, (dialog, which) -> {
+            selectedSport = sportNames[which];
+            selectedSportIconRes = sportIcons[which];
+            if (tvSportName != null) tvSportName.setText(selectedSport);
+            if (ivSportIcon != null) ivSportIcon.setImageResource(selectedSportIconRes);
+        });
+        builder.show();
     }
 
     @Override
