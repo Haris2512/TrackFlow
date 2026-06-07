@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212">
+    android:background="?android:attr/colorBackground">
 
     <!-- Header Toolbar -->
     <RelativeLayout
         android:id="@+id/rlToolbarFavorite"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="#1E1E1E"
+        android:background="?attr/colorSurface"
         android:paddingHorizontal="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,7 +23,7 @@
             android:layout_centerVertical="true"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#2A2A2A"
+            app:cardBackgroundColor="@color/app_surface_card"
             android:clickable="true"
             android:focusable="true">
             <ImageView
@@ -32,7 +32,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_arrow_down"
                 android:rotation="90"
-                app:tint="#FFFFFF" />
+                app:tint="?attr/colorOnSurface" />
         </androidx.cardview.widget.CardView>
 
         <!-- Header Title -->
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Aktivitas Favorit"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="18sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -79,7 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Belum Ada Favorit"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tandai aktivitas lari Anda sebagai favorit di halaman detail untuk melihatnya di sini."
-            android:textColor="#888888"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp"
             android:gravity="center"
             android:lineSpacingExtra="4dp" />

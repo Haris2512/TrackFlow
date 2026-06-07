@@ -7,7 +7,7 @@
     android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="8dp"
     app:cardCornerRadius="12dp"
-    app:cardBackgroundColor="#1E1E1E"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardElevation="0dp">
 
     <LinearLayout
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="another rhiez"
-                    android:textColor="#FFFFFF"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="14sp"
                     android:textStyle="bold"/>
 
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3 Juni 2026 pukul 12.34 · TrackFlow"
-                    android:textColor="#888888"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="11sp"
                     android:layout_marginTop="1dp"/>
 
@@ -79,14 +79,14 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#888888" />
+                        app:tint="?attr/colorOnSurfaceVariant" />
 
                     <TextView
                         android:id="@+id/tvItemLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tamalanrea Indah, South Sulawesi"
-                        android:textColor="#888888"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="11sp"
                         android:layout_marginStart="4dp"/>
                 </LinearLayout>
@@ -107,7 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Berlari Siang"
-                android:textColor="#FFFFFF"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
@@ -130,14 +130,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Jarak"
-                        android:textColor="#888888"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="12sp"/>
                     <TextView
                         android:id="@+id/tvDistance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0,03 km"
-                        android:textColor="#FFFFFF"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:layout_marginTop="2dp"/>
@@ -153,14 +153,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Pace"
-                        android:textColor="#888888"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="12sp"/>
                     <TextView
                         android:id="@+id/tvPace"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="10:21 /km"
-                        android:textColor="#FFFFFF"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:layout_marginTop="2dp"/>
@@ -176,14 +176,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Waktu"
-                        android:textColor="#888888"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="12sp"/>
                     <TextView
                         android:id="@+id/tvDuration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="18d"
-                        android:textColor="#FFFFFF"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:layout_marginTop="2dp"/>
@@ -215,7 +215,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="12dp"
                     android:text="Kudos (Apresiasi): Selamat atas pencapaian lari Anda!"
-                    android:textColor="#FFFFFF"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
 

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212">
+    android:background="?android:attr/colorBackground">
 
     <!-- Map View (Takes top 55% of the screen) -->
     <org.osmdroid.views.MapView
@@ -31,14 +31,14 @@
             android:layout_centerVertical="true"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp"
-            app:cardBackgroundColor="#CC1A1A1A">
+            app:cardBackgroundColor="@color/map_btn_background">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_arrow_down"
                 android:rotation="90"
-                app:tint="#FFFFFF" />
+                app:tint="@color/map_btn_icon_tint" />
         </androidx.cardview.widget.CardView>
 
         <!-- Right Side: Bookmark & Menu buttons -->
@@ -55,7 +55,7 @@
                 android:layout_height="40dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#CC1A1A1A"
+                app:cardBackgroundColor="@color/map_btn_background"
                 android:layout_marginEnd="12dp"
                 android:clickable="true"
                 android:focusable="true">
@@ -65,7 +65,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_bookmark"
-                    app:tint="#FFFFFF"/>
+                    app:tint="@color/map_btn_icon_tint"/>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -74,7 +74,7 @@
                 android:layout_height="40dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#CC1A1A1A"
+                app:cardBackgroundColor="@color/map_btn_background"
                 android:clickable="true"
                 android:focusable="true">
                 <ImageView
@@ -82,7 +82,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_menu_dots"
-                    app:tint="#FFFFFF"/>
+                    app:tint="@color/map_btn_icon_tint"/>
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </RelativeLayout>
@@ -94,7 +94,7 @@
         android:layout_height="0dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="8dp"
-        app:cardBackgroundColor="#1A1A1A"
+        app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mapViewDetail">
 
@@ -114,7 +114,7 @@
                     android:layout_width="40dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="#444444"
+                    android:background="@color/app_divider"
                     android:layout_marginBottom="16dp" />
 
                 <!-- User profile row -->
@@ -154,7 +154,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="another rhiez"
-                            android:textColor="#FFFFFF"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -174,7 +174,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Hari ini pukul 12.34 · Tamalanrea Indah"
-                                android:textColor="#888888"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="11sp"
                                 android:layout_marginStart="4dp" />
                         </LinearLayout>
@@ -187,7 +187,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Berlari Siang"
-                    android:textColor="#FFFFFF"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:layout_marginTop="16dp" />
@@ -222,7 +222,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Kudos (Apresiasi): Selamat atas pencapaian lari Anda!"
-                        android:textColor="#FFFFFF"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:layout_marginStart="12dp" />
@@ -271,7 +271,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0,03 km"
-                                android:textColor="#FFFFFF"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="4dp"/>
@@ -294,7 +294,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="10:21 /km"
-                                android:textColor="#FFFFFF"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="4dp"/>
@@ -326,7 +326,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="18d"
-                                android:textColor="#FFFFFF"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="4dp"/>
@@ -348,7 +348,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0 m"
-                                android:textColor="#FFFFFF"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="4dp"/>
@@ -378,7 +378,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="20 m"
-                                android:textColor="#FFFFFF"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="4dp"/>

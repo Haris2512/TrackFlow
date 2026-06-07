@@ -136,7 +136,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void showNotificationsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Notifikasi Aktivitas");
         String[] items = {
             "🏆 Rekor Baru! Anda menyelesaikan lari 5K tercepat.",
@@ -151,10 +151,9 @@ public class HomeFragment extends Fragment {
     private void showSearchDialog() {
         EditText input = new EditText(requireContext());
         input.setHint("Masukkan kata kunci...");
-        input.setTextColor(Color.WHITE);
         input.setPadding(48, 32, 48, 32);
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
             .setTitle("Cari Aktivitas")
             .setView(input)
             .setPositiveButton("CARI", (d, which) -> {
@@ -235,9 +234,9 @@ public class HomeFragment extends Fragment {
                 String firstLetter = !fullDayName.isEmpty() ? fullDayName.substring(0, 1).toUpperCase() : "";
                 tvDayName.setText(firstLetter);
                 if (isToday) {
-                    tvDayName.setTextColor(Color.parseColor("#FC4C02"));
+                    tvDayName.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_today_text));
                 } else {
-                    tvDayName.setTextColor(Color.parseColor("#888888"));
+                    tvDayName.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_text));
                 }
             }
             
@@ -255,7 +254,7 @@ public class HomeFragment extends Fragment {
                     tvDateVal.setVisibility(View.GONE);
                 } else {
                     tvDateVal.setVisibility(View.VISIBLE);
-                    tvDateVal.setTextColor(Color.parseColor("#888888"));
+                    tvDateVal.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_text));
                 }
             }
             

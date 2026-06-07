@@ -133,7 +133,7 @@ public class DetailActivity extends AppCompatActivity {
             if (isBookmarked) {
                 ivBookmarkIcon.setColorFilter(Color.parseColor("#FC4C02"));
             } else {
-                ivBookmarkIcon.setColorFilter(Color.WHITE);
+                ivBookmarkIcon.setColorFilter(androidx.core.content.ContextCompat.getColor(this, R.color.map_btn_icon_tint));
             }
         }
 
@@ -148,7 +148,7 @@ public class DetailActivity extends AppCompatActivity {
                     android.content.Intent favIntent = new android.content.Intent(DetailActivity.this, FavoriteActivity.class);
                     startActivity(favIntent);
                 } else {
-                    ivBookmarkIcon.setColorFilter(Color.WHITE);
+                    ivBookmarkIcon.setColorFilter(androidx.core.content.ContextCompat.getColor(this, R.color.map_btn_icon_tint));
                     android.widget.Toast.makeText(DetailActivity.this, "Dihapus dari Favorit!", android.widget.Toast.LENGTH_SHORT).show();
                 }
             });

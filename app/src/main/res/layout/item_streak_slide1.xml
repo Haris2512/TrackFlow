@@ -71,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="S"
-                    android:textColor="#888888"
+                    android:textColor="@color/circle_other_text"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
                 <FrameLayout
@@ -85,7 +85,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="1"
-                        android:textColor="#888888"
+                        android:textColor="@color/circle_other_text"
                         android:textSize="11sp"
                         android:gravity="center"/>
                     <ImageView
@@ -94,7 +94,7 @@
                         android:layout_height="16dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#FC4C02"
+                        app:tint="@color/circle_shoe_tint"
                         android:visibility="gone"/>
                 </FrameLayout>
             </LinearLayout>
@@ -111,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="S"
-                    android:textColor="#888888"
+                    android:textColor="@color/circle_other_text"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
                 <FrameLayout
@@ -125,7 +125,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="2"
-                        android:textColor="#888888"
+                        android:textColor="@color/circle_other_text"
                         android:textSize="11sp"
                         android:gravity="center"/>
                     <ImageView
@@ -134,7 +134,7 @@
                         android:layout_height="16dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#FC4C02"
+                        app:tint="@color/circle_shoe_tint"
                         android:visibility="gone"/>
                 </FrameLayout>
             </LinearLayout>
@@ -151,7 +151,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="R"
-                    android:textColor="#888888"
+                    android:textColor="@color/circle_other_text"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
                 <FrameLayout
@@ -165,7 +165,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="3"
-                        android:textColor="#888888"
+                        android:textColor="@color/circle_other_text"
                         android:textSize="11sp"
                         android:gravity="center"/>
                     <ImageView
@@ -174,7 +174,7 @@
                         android:layout_height="16dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#FC4C02"
+                        app:tint="@color/circle_shoe_tint"
                         android:visibility="gone"/>
                 </FrameLayout>
             </LinearLayout>
@@ -191,7 +191,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="K"
-                    android:textColor="#888888"
+                    android:textColor="@color/circle_other_text"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
                 <FrameLayout
@@ -205,7 +205,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="4"
-                        android:textColor="#888888"
+                        android:textColor="@color/circle_other_text"
                         android:textSize="11sp"
                         android:gravity="center"/>
                     <ImageView
@@ -214,7 +214,7 @@
                         android:layout_height="16dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#FC4C02"
+                        app:tint="@color/circle_shoe_tint"
                         android:visibility="gone"/>
                 </FrameLayout>
             </LinearLayout>
@@ -231,7 +231,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="J"
-                    android:textColor="#888888"
+                    android:textColor="@color/circle_other_text"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
                 <FrameLayout
@@ -245,7 +245,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="5"
-                        android:textColor="#888888"
+                        android:textColor="@color/circle_other_text"
                         android:textSize="11sp"
                         android:gravity="center"/>
                     <ImageView
@@ -254,7 +254,7 @@
                         android:layout_height="16dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#FC4C02"
+                        app:tint="@color/circle_shoe_tint"
                         android:visibility="gone"/>
                 </FrameLayout>
             </LinearLayout>
@@ -271,7 +271,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="S"
-                    android:textColor="#888888"
+                    android:textColor="@color/circle_other_text"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
                 <FrameLayout
@@ -285,7 +285,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="6"
-                        android:textColor="#888888"
+                        android:textColor="@color/circle_other_text"
                         android:textSize="11sp"
                         android:gravity="center"/>
                     <ImageView
@@ -294,7 +294,7 @@
                         android:layout_height="16dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#FC4C02"
+                        app:tint="@color/circle_shoe_tint"
                         android:visibility="gone"/>
                 </FrameLayout>
             </LinearLayout>
@@ -311,7 +311,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="M"
-                    android:textColor="#888888"
+                    android:textColor="@color/circle_other_text"
                     android:textSize="12sp"
                     android:textStyle="bold"/>
                 <FrameLayout
@@ -325,7 +325,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="7"
-                        android:textColor="#888888"
+                        android:textColor="@color/circle_other_text"
                         android:textSize="11sp"
                         android:gravity="center"/>
                     <ImageView
@@ -334,7 +334,7 @@
                         android:layout_height="16dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_shoe"
-                        app:tint="#FC4C02"
+                        app:tint="@color/circle_shoe_tint"
                         android:visibility="gone"/>
                 </FrameLayout>
             </LinearLayout>
@@ -346,7 +346,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="* Ikon sepatu menunjukkan penanda hari ini secara real time."
-        android:textColor="#888888"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="10sp"
         android:layout_marginTop="12dp"
         android:gravity="center_horizontal" />
