@@ -56,6 +56,26 @@ public class FormActivity extends AppCompatActivity {
         Button btnDiscard = findViewById(R.id.btnDiscard);
         mapViewPreview = findViewById(R.id.mapViewPreview);
 
+        // Sport selector views
+        LinearLayout llSportSelector = findViewById(R.id.llSportSelector);
+        ImageView ivFormSportIcon = findViewById(R.id.ivFormSportIcon);
+        TextView tvFormSportName = findViewById(R.id.tvFormSportName);
+
+        // Sport picker dialog
+        if (llSportSelector != null) {
+            llSportSelector.setOnClickListener(v -> {
+                String[] sportNames = {"Berlari", "Bersepeda", "Jalan Kaki", "Trail Run"};
+                int[] sportIcons = {R.drawable.ic_shoe, R.drawable.ic_bike, R.drawable.ic_walk, R.drawable.ic_hiking};
+                new AlertDialog.Builder(FormActivity.this)
+                    .setTitle("Pilih Jenis Olahraga")
+                    .setItems(sportNames, (dialog, which) -> {
+                        if (tvFormSportName != null) tvFormSportName.setText(sportNames[which]);
+                        if (ivFormSportIcon != null) ivFormSportIcon.setImageResource(sportIcons[which]);
+                    })
+                    .show();
+            });
+        }
+
         // Komponen Tambah Menit Instan
         CardView cardQuickDuration = findViewById(R.id.cardQuickDuration);
         tvDurationDisplay = findViewById(R.id.tvDurationDisplay);
