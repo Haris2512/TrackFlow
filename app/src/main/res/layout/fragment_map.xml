@@ -3,8 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#121212">
 
+    <!-- ===== PETA FULL SCREEN ===== -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,139 +16,377 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <!-- Search bar atas (mirip Strava: "Cari lokasi") -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cvSearchBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_margin="12dp"
+            app:cardCornerRadius="26dp"
+            app:cardElevation="10dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnSimpan">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingHorizontal="16dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_sort_by_size" app:tint="?attr/colorOnSurfaceVariant" />
+                android:paddingHorizontal="14dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="#888888" />
+
                 <EditText
                     android:id="@+id/etSearchMap"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:hint="Cari rute atau lokasi..."
+                    android:hint="Cari lokasi tujuan..."
                     android:textSize="14sp"
-                    android:layout_marginStart="12dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#666666"
+                    android:layout_marginStart="10dp"
                     android:inputType="text"
-                    android:textColor="?attr/colorOnSurface"
-                    android:imeOptions="actionSearch"/>
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_search" app:tint="@color/strava_orange" android:layout_marginStart="8dp"/>
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true" />
+
+                <!-- X tombol clear -->
+                <ImageView
+                    android:id="@+id/ivClearSearch"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:tint="#666666"
+                    android:visibility="gone" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Tombol Simpan (kanan atas, ala Strava) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSimpan"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:text="Simpan"
+            android:textSize="13sp"
+            android:textColor="#FC4C02"
+            android:layout_margin="12dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:strokeColor="#FC4C02"
+            app:cornerRadius="26dp"
+            android:paddingHorizontal="14dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Instruksi tap (muncul saat menunggu user tap) -->
         <TextView
-            android:id="@+id/tvAddress"
-            android:layout_width="match_parent"
+            android:id="@+id/tvTapHint"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_menu_card"
-            android:elevation="4dp"
-            android:text="Mencari alamat detail..."
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="12sp"
+            android:text="Ketuk peta untuk menentukan tujuan"
+            android:textSize="13sp"
+            android:textColor="#FFFFFF"
             android:textStyle="bold"
-            android:padding="12dp"
+            android:background="#CC000000"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:layout_marginTop="80dp"
             android:gravity="center"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/cvSearchBar" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- FAB: Kembali ke lokasiku -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabMyLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="120dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="210dp"
             android:src="@android:drawable/ic_menu_mylocation"
-            app:backgroundTint="@color/strava_orange"
-            app:tint="#FFFFFF"
+            app:backgroundTint="#1E1E1E"
+            app:tint="#FC4C02"
             app:elevation="6dp"
+            app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- FAB: Hapus tujuan / mulai ulang -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="258dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:backgroundTint="#1E1E1E"
+            app:tint="#AAAAAA"
+            app:elevation="6dp"
+            app:fabSize="mini"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.cardview.widget.CardView
+    <!-- ===== BOTTOM SHEET ===== -->
+    <LinearLayout
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="16dp"
-        app:cardBackgroundColor="?attr/colorSurface"
+        android:orientation="vertical"
+        android:background="#1A1A1A"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_peekHeight="100dp"
         app:behavior_hideable="false">
 
+        <!-- Handle -->
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:background="#444444"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- ===== STATE: Belum ada tujuan ===== -->
         <LinearLayout
+            android:id="@+id/layoutEmpty"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
-
-            <View
-                android:layout_width="40dp"
-                android:layout_height="5dp"
-                android:background="#CCCCCC"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="16dp"
-                app:cornerRadius="4dp"/>
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="20dp"
+            android:visibility="visible">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Jelajahi Rute Sekitar"
-                android:textSize="18sp"
+                android:text="Buat Rute Lari"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="#FFFFFF" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Temukan jalur lari dan sepeda paling populer."
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:text="Ketuk peta untuk menentukan titik tujuan larimu"
+                android:textSize="13sp"
+                android:textColor="#888888"
+                android:layout_marginTop="6dp"
+                android:lineSpacingMultiplier="1.3" />
 
-            <HorizontalScrollView
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetTujuan"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
+                android:text="Tentukan Tujuan di Peta"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 android:layout_marginTop="16dp"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <Button android:id="@+id/btnRuteLari" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎽 Rute Lari" android:textColor="@color/strava_orange" android:backgroundTint="#1AFF4E02" android:layout_marginEnd="8dp"/>
-                    <Button android:id="@+id/btnJalurSepeda" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🚴‍♂️ Jalur Sepeda" android:textColor="?attr/colorOnSurface" android:backgroundTint="#1A888888" android:layout_marginEnd="8dp"/>
-                    <Button android:id="@+id/btnTrailRun" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⛰️ Trail Run" android:textColor="?attr/colorOnSurface" android:backgroundTint="#1A888888" />
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Data rute lokal belum tersedia. Silakan lakukan perekaman aktivitas baru."
-                android:textSize="12sp"
-                android:layout_marginTop="32dp"
-                android:textColor="#AAAAAA"
-                android:layout_gravity="center"
-                android:textAlignment="center"/>
+                app:backgroundTint="#FC4C02"
+                app:cornerRadius="25dp" />
 
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+
+        <!-- ===== STATE: Ada rute (mirip card Strava) ===== -->
+        <LinearLayout
+            android:id="@+id/layoutRoute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="20dp"
+            android:visibility="gone">
+
+            <!-- Nama rute + loading -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvRouteName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rute Lari Kustom"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dari lokasi Anda"
+                        android:textSize="12sp"
+                        android:textColor="#888888"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progressRoute"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Kartu statistik 3-kolom -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#252525"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp">
+
+                    <!-- Jarak -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvDistance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="#FC4C02" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="km"
+                            android:textSize="11sp"
+                            android:textColor="#888888" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="#333333"
+                        android:layout_gravity="center_vertical" />
+
+                    <!-- Estimasi Waktu -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvDuration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="#FFFFFF" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="est. waktu"
+                            android:textSize="11sp"
+                            android:textColor="#888888" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="#333333"
+                        android:layout_gravity="center_vertical" />
+
+                    <!-- Pace / Kesulitan -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvDifficulty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mudah"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#4CAF50" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="kesulitan"
+                            android:textSize="11sp"
+                            android:textColor="#888888" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Pace info -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Estimasi berdasarkan pace 5:30 /km"
+                android:textSize="11sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="14dp"
+                android:layout_gravity="center_horizontal" />
+
+            <!-- Tombol Mulai Lari -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMulaiLari"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Mulai Lari"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="#FC4C02"
+                app:cornerRadius="26dp" />
+
+            <!-- Ubah tujuan -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUbahTujuan"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Ubah Tujuan"
+                android:textSize="14sp"
+                android:textColor="#AAAAAA"
+                android:layout_marginTop="8dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                app:rippleColor="#22FFFFFF" />
+
+        </LinearLayout>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
