@@ -81,7 +81,7 @@ public class CommunityFragment extends Fragment {
                 // isAdded() mencegah force close jika user pindah halaman sebelum loading selesai
                 if (isAdded() && response.isSuccessful() && response.body() != null) {
                     List<User> userList = response.body().getUsers();
-                    adapter = new UserAdapter(userList);
+                    adapter = new UserAdapter(userList, sharedPreferences);
                     rvUsers.setAdapter(adapter);
                 } else if (isAdded()) {
                     Toast.makeText(requireContext(), "Gagal: " + response.code(), Toast.LENGTH_LONG).show();
