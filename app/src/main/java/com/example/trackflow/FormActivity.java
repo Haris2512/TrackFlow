@@ -15,8 +15,16 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -36,6 +44,22 @@ public class FormActivity extends AppCompatActivity {
     private boolean isFromRecord = false;
     private TextView tvDurationDisplay;
     private MapView mapViewPreview;
+
+    private ImageView ivPreviewPhoto;
+    private android.net.Uri selectedImageUri;
+    private TextView tvVisibility;
+
+    // Pemicu untuk membuka Galeri HP
+    private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    selectedImageUri = uri;
+                    ivPreviewPhoto.setImageURI(uri);
+                    ivPreviewPhoto.setVisibility(View.VISIBLE);
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +97,31 @@ public class FormActivity extends AppCompatActivity {
                         if (ivFormSportIcon != null) ivFormSportIcon.setImageResource(sportIcons[which]);
                     })
                     .show();
+            });
+        }
+
+        // --- Inisialisasi Upload Gambar ---
+        ivPreviewPhoto = findViewById(R.id.ivPreviewPhoto);
+        LinearLayout llAddPhoto = findViewById(R.id.llAddPhoto);
+        if (llAddPhoto != null) {
+            llAddPhoto.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        }
+
+        // --- Inisialisasi Visibilitas ---
+        LinearLayout llVisibility = findViewById(R.id.llVisibility);
+        tvVisibility = findViewById(R.id.tvVisibility);
+        if (llVisibility != null) {
+            llVisibility.setOnClickListener(v -> {
+                String[] visibilityOptions = {"🌍 Publik", "👥 Para pengikut", "🔒 Hanya Saya"};
+                new AlertDialog.Builder(FormActivity.this)
+                        .setTitle("Siapa yang bisa melihat")
+                        .setItems(visibilityOptions, (dialog, which) -> {
+                            if (tvVisibility != null) {
+                                // Buang emoji untuk teks (opsional, tapi lebih rapi jika emoji tetap ada)
+                                tvVisibility.setText(visibilityOptions[which].substring(3)); 
+                            }
+                        })
+                        .show();
             });
         }
 
@@ -218,6 +267,38 @@ public class FormActivity extends AppCompatActivity {
             if (incomingPath != null) {
                 values.put(DatabaseContract.ActivityColumns.COLUMN_PATH, incomingPath);
             }
+            
+            String savedPhotoUriStr = null;
+            if (selectedImageUri != null) {
+                savedPhotoUriStr = selectedImageUri.toString(); // Gunakan URI aslinya
+                try {
+                    getContentResolver().takePersistableUriPermission(selectedImageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
+                try {
+                    // Coba copy file ke internal storage
+                    InputStream is = getContentResolver().openInputStream(selectedImageUri);
+                    File dir = new File(getFilesDir(), "trackflow_photos");
+                    if (!dir.exists()) dir.mkdirs();
+                    File dest = new File(dir, "IMG_" + System.currentTimeMillis() + ".jpg");
+                    OutputStream os = new FileOutputStream(dest);
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = is.read(buffer)) > 0) {
+                        os.write(buffer, 0, length);
+                    }
+                    os.flush();
+                    os.close();
+                    is.close();
+                    // Jika sukses, timpa string dengan versi lokal yang super aman
+                    savedPhotoUriStr = android.net.Uri.fromFile(dest).toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                values.put(DatabaseContract.ActivityColumns.COLUMN_PHOTO_URI, savedPhotoUriStr);
+            }
 
             long result = activityHelper.insert(values);
             if (result > 0) {
@@ -231,6 +312,9 @@ public class FormActivity extends AppCompatActivity {
                 intent.putExtra("EXTRA_DATE", date);
                 if (incomingPath != null) {
                     intent.putExtra("EXTRA_PATH", incomingPath);
+                }
+                if (savedPhotoUriStr != null) {
+                    intent.putExtra("EXTRA_PHOTO_URI", savedPhotoUriStr);
                 }
                 startActivity(intent);
                 finish();
