@@ -27,7 +27,7 @@
             app:cardBackgroundColor="#1E1E1E"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnSimpan">
+            app:layout_constraintEnd_toEndOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -68,22 +68,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Tombol Simpan (kanan atas, ala Strava) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSimpan"
-            android:layout_width="wrap_content"
-            android:layout_height="52dp"
-            android:text="Simpan"
-            android:textSize="13sp"
-            android:textColor="#FC4C02"
-            android:layout_margin="12dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:strokeColor="#FC4C02"
-            app:cornerRadius="26dp"
-            android:paddingHorizontal="14dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+
 
         <!-- Instruksi tap (muncul saat menunggu user tap) -->
         <TextView
@@ -125,7 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="14dp"
-            android:layout_marginBottom="258dp"
+            android:layout_marginBottom="276dp"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             app:backgroundTint="#1E1E1E"
             app:tint="#AAAAAA"
@@ -145,7 +130,7 @@
         android:orientation="vertical"
         android:background="#1A1A1A"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        app:behavior_peekHeight="100dp"
+        app:behavior_peekHeight="180dp"
         app:behavior_hideable="false">
 
         <!-- Handle -->

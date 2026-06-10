@@ -74,7 +74,7 @@ public class MapFragment extends Fragment {
     private TextView tvTapHint, tvRouteName, tvDistance, tvDuration, tvDifficulty;
     private ProgressBar progressRoute;
     private FloatingActionButton fabMyLocation, fabClear;
-    private MaterialButton btnSetTujuan, btnSimpan, btnMulaiLari, btnUbahTujuan;
+    private MaterialButton btnSetTujuan, btnMulaiLari, btnUbahTujuan;
     private View layoutEmpty, layoutRoute;
     private BottomSheetBehavior<View> sheetBehavior;
 
@@ -95,6 +95,17 @@ public class MapFragment extends Fragment {
         Context ctx = requireActivity().getApplicationContext();
         Configuration.getInstance().load(ctx,
                 androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
+        
+        // Konfigurasi OSMDroid agar lancar dan tidak diblokir server OSM:
+        // 1. Set User-Agent unik (Wajib bagi OSMDroid agar tidak di-throttle/blokir)
+        Configuration.getInstance().setUserAgentValue(ctx.getPackageName());
+        
+        // 2. Arahkan direktori penyimpanan cache peta ke internal cache (Solusi Scoped Storage Android 10+)
+        java.io.File osmdroidBasePath = new java.io.File(ctx.getCacheDir(), "osmdroid");
+        Configuration.getInstance().setOsmdroidBasePath(osmdroidBasePath);
+        java.io.File osmdroidTileCache = new java.io.File(osmdroidBasePath, "tiles");
+        Configuration.getInstance().setOsmdroidTileCache(osmdroidTileCache);
+
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
@@ -126,7 +137,6 @@ public class MapFragment extends Fragment {
         fabMyLocation  = v.findViewById(R.id.fabMyLocation);
         fabClear       = v.findViewById(R.id.fabClear);
         btnSetTujuan   = v.findViewById(R.id.btnSetTujuan);
-        btnSimpan      = v.findViewById(R.id.btnSimpan);
         btnMulaiLari   = v.findViewById(R.id.btnMulaiLari);
         btnUbahTujuan  = v.findViewById(R.id.btnUbahTujuan);
         layoutEmpty    = v.findViewById(R.id.layoutEmpty);
@@ -171,7 +181,7 @@ public class MapFragment extends Fragment {
         View sheet = view.findViewById(R.id.bottomSheet);
         sheetBehavior = BottomSheetBehavior.from(sheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        sheetBehavior.setPeekHeight(dpToPx(100));
+        sheetBehavior.setPeekHeight(dpToPx(180));
     }
 
     private void setupListeners() {
@@ -187,15 +197,8 @@ public class MapFragment extends Fragment {
         // Ubah tujuan
         btnUbahTujuan.setOnClickListener(v -> clearDestination());
 
-        // Mulai lari
-        btnMulaiLari.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Rute siap! Memulai lari...", Toast.LENGTH_SHORT).show();
-            // TODO: navigate ke RecordFragment dengan rute ini
-        });
-
-        // Simpan rute
-        btnSimpan.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Rute disimpan!", Toast.LENGTH_SHORT).show());
+        // Mulai lari -> Tampilkan fake premium upsell dialog
+        btnMulaiLari.setOnClickListener(v -> showPremiumDialog(v));
 
         // Search bar — Nominatim / Geocoder
         etSearchMap.addTextChangedListener(new android.text.TextWatcher() {
@@ -259,9 +262,8 @@ public class MapFragment extends Fragment {
         mapView.getOverlays().add(destinationMarker);
         mapView.invalidate();
 
-        // Tampil FAB clear & tombol Simpan
+        // Tampil FAB clear
         fabClear.setVisibility(View.VISIBLE);
-        btnSimpan.setVisibility(View.VISIBLE);
 
         // Ambil nama lokasi tujuan via Geocoder (background)
         getLocationName(destination);
@@ -289,7 +291,6 @@ public class MapFragment extends Fragment {
         mapView.invalidate();
 
         fabClear.setVisibility(View.GONE);
-        btnSimpan.setVisibility(View.GONE);
         tvTapHint.setVisibility(View.GONE);
         showEmptyState();
     }
@@ -621,6 +622,25 @@ public class MapFragment extends Fragment {
 
     private int dpToPx(int dp) {
         return (int) (dp * requireContext().getResources().getDisplayMetrics().density);
+    }
+
+    private void showPremiumDialog(View viewForNavigation) {
+        android.app.Dialog dialog = new android.app.Dialog(requireContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dialog_premium);
+        
+        dialog.findViewById(R.id.ivClosePremium).setOnClickListener(v -> dialog.dismiss());
+        dialog.findViewById(R.id.btnLanjutkanPremium).setOnClickListener(v -> {
+            dialog.dismiss();
+            
+            // Ide: Tampilkan peringatan bahwa metode pembayaran tidak valid / belum berlangganan
+            new android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Gagal Mengaktifkan Trial")
+                    .setMessage("Metode pembayaran tidak valid atau belum ditambahkan. Anda harus berlangganan versi Premium sungguhan untuk merekam rute kustom ini! \n\n(Simulasi Fitur Premium)")
+                    .setPositiveButton("Kembali", null)
+                    .show();
+        });
+        
+        dialog.show();
     }
 
     private void hideKeyboard() {
