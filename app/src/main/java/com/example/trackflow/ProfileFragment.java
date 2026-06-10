@@ -128,6 +128,36 @@ public class ProfileFragment extends Fragment {
         calendarViewProfile.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
             checkActivityOnDate(year, month, dayOfMonth);
         });
+
+        // Sinkronisasi lokasi asli GPS
+        fetchLocation();
+    }
+
+    private void fetchLocation() {
+        android.location.LocationManager lm = (android.location.LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+        if (androidx.core.content.ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            android.location.Location location = lm.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER);
+            if (location == null) {
+                location = lm.getLastKnownLocation(android.location.LocationManager.NETWORK_PROVIDER);
+            }
+            if (location != null) {
+                try {
+                    android.location.Geocoder geocoder = new android.location.Geocoder(requireContext(), java.util.Locale.getDefault());
+                    java.util.List<android.location.Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    if (addresses != null && !addresses.isEmpty()) {
+                        String city = addresses.get(0).getSubAdminArea(); // Kabupaten / Kota
+                        if (city == null) city = addresses.get(0).getLocality(); 
+                        String country = addresses.get(0).getCountryName();
+                        if (city != null && country != null) {
+                            TextView tvBio = getView().findViewById(R.id.tvBio);
+                            if (tvBio != null) tvBio.setText("📍 " + city + ", " + country);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
