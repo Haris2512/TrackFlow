@@ -71,7 +71,7 @@ public class MapFragment extends Fragment {
     private MyLocationNewOverlay locationOverlay;
     private EditText etSearchMap;
     private ImageView ivClearSearch;
-    private TextView tvTapHint, tvRouteName, tvDistance, tvDuration, tvDifficulty;
+    private TextView tvTapHint, tvRouteName, tvDistance, tvDuration, tvDifficulty, tvCurrentLocationMap;
     private ProgressBar progressRoute;
     private FloatingActionButton fabMyLocation, fabClear;
     private MaterialButton btnSetTujuan, btnMulaiLari, btnUbahTujuan;
@@ -141,6 +141,7 @@ public class MapFragment extends Fragment {
         btnUbahTujuan  = v.findViewById(R.id.btnUbahTujuan);
         layoutEmpty    = v.findViewById(R.id.layoutEmpty);
         layoutRoute    = v.findViewById(R.id.layoutRoute);
+        tvCurrentLocationMap = v.findViewById(R.id.tvCurrentLocationMap);
     }
 
     private void setupMap() {
@@ -523,6 +524,7 @@ public class MapFragment extends Fragment {
                     myLocation = loc;
                     mapView.getController().animateTo(loc);
                     mapView.getController().setZoom(16.0);
+                    updateCurrentLocationText(loc);
                 }
             });
         });
@@ -535,9 +537,27 @@ public class MapFragment extends Fragment {
             myLocation = locationOverlay.getMyLocation();
             mapView.getController().animateTo(myLocation);
             mapView.getController().setZoom(17.0);
+            updateCurrentLocationText(myLocation);
         } else {
             Toast.makeText(requireContext(), "Menunggu sinyal GPS...", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void updateCurrentLocationText(GeoPoint point) {
+        if (tvCurrentLocationMap == null) return;
+        new Thread(() -> {
+            try {
+                Geocoder gc = new Geocoder(requireContext(), Locale.getDefault());
+                List<Address> list = gc.getFromLocation(point.getLatitude(), point.getLongitude(), 1);
+                if (list != null && !list.isEmpty()) {
+                    Address a = list.get(0);
+                    String city = a.getSubAdminArea();
+                    if (city == null) city = a.getLocality();
+                    String fullText = "Lokasi Anda: " + (city != null ? city : "Terlacak");
+                    requireActivity().runOnUiThread(() -> tvCurrentLocationMap.setText(fullText));
+                }
+            } catch (Exception e) { /* abaikan */ }
+        }).start();
     }
 
     // ─────────────────────────────────────────────────────────────────────

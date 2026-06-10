@@ -89,6 +89,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 .load(user.getImage()) // Mengambil 'image' dari DummyJSON
                 .circleCrop()
                 .into(holder.ivAvatar);
+
+        // Buka Halaman Detail Atlet Saat Kartu Diklik
+        holder.itemView.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(v.getContext(), DetailAthleteActivity.class);
+            intent.putExtra("EXTRA_NAME", user.getFirstName() + " " + user.getLastName());
+            intent.putExtra("EXTRA_IMAGE", user.getImage());
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override
