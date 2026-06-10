@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp">
+
+        <!-- Banner Header -->
+        <ImageView
+            android:id="@+id/ivBanner"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:background="#00897B"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Back Button & Settings -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="?attr/colorOnSurface"
+            android:layout_margin="16dp"
+            android:background="@drawable/circle_background_theme"
+            android:padding="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Tombol Settings Dihapus Sesuai Permintaan -->
+
+        <!-- Profile Avatar (Overlapping) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvProfileAvatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            android:layout_marginStart="24dp"
+            app:layout_constraintTop_toBottomOf="@id/ivBanner"
+            app:layout_constraintBottom_toBottomOf="@id/ivBanner"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/ivAthleteAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="#E0E0E0" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Athlete Name -->
+        <TextView
+            android:id="@+id/tvAthleteName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Nama Atlet"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"
+            android:layout_marginHorizontal="24dp"
+            app:layout_constraintTop_toBottomOf="@id/cvProfileAvatar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Stats Row (Berlari | Anggota | Publik) -->
+        <TextView
+            android:id="@+id/tvStats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🏃‍♂️ Berlari    👥 607 Pengikut    🌍 Publik"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="24dp"
+            app:layout_constraintTop_toBottomOf="@id/tvAthleteName"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Bio Description -->
+        <TextView
+            android:id="@+id/tvBioDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Untuk bersenang-senang dan menjaga kesehatan."
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="16sp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/tvStats" />
+
+        <!-- 4 Action Buttons Row -->
+        <LinearLayout
+            android:id="@+id/llActionButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:layout_marginHorizontal="16dp"
+            android:gravity="center"
+            android:weightSum="4"
+            app:layout_constraintTop_toBottomOf="@id/tvBioDesc">
+
+            <!-- Button 1: Bagikan -->
+            <LinearLayout android:id="@+id/btnActionShare" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp" android:src="@android:drawable/ic_menu_share" android:background="@drawable/circle_background_theme" android:padding="16dp" app:tint="?attr/colorOnSurfaceVariant"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bagikan" android:textColor="?attr/colorOnSurface" android:textSize="12sp" android:layout_marginTop="8dp"/>
+            </LinearLayout>
+
+            <!-- Button 2: Rangkuman -->
+            <LinearLayout android:id="@+id/btnActionSummary" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp" android:src="@android:drawable/ic_menu_info_details" android:background="@drawable/circle_background_theme" android:padding="16dp" app:tint="?attr/colorOnSurfaceVariant"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rangkuman" android:textColor="?attr/colorOnSurface" android:textSize="12sp" android:layout_marginTop="8dp"/>
+            </LinearLayout>
+
+            <!-- Button 3: Acara -->
+            <LinearLayout android:id="@+id/btnActionEvent" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp" android:src="@android:drawable/ic_menu_today" android:background="@drawable/circle_background_theme" android:padding="16dp" app:tint="?attr/colorOnSurfaceVariant"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Acara" android:textColor="?attr/colorOnSurface" android:textSize="12sp" android:layout_marginTop="8dp"/>
+            </LinearLayout>
+
+            <!-- Button 4: Aktivitas -->
+            <LinearLayout android:id="@+id/btnActionActivity" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp" android:src="@android:drawable/ic_menu_gallery" android:background="@drawable/circle_background_theme" android:padding="16dp" app:tint="?attr/colorOnSurfaceVariant"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Aktivitas" android:textColor="?attr/colorOnSurface" android:textSize="12sp" android:layout_marginTop="8dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:id="@+id/vDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorOnSurfaceVariant"
+            android:alpha="0.2"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/llActionButtons" />
+
+        <!-- Post Something Section -->
+        <LinearLayout
+            android:id="@+id/llPost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/vDivider">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#00897B" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Posting sesuatu..."
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="16sp"
+                android:layout_marginStart="16dp" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_camera"
+                app:tint="?attr/colorOnSurfaceVariant" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/vDivider2"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:background="#1A000000"
+            app:layout_constraintTop_toBottomOf="@id/llPost" />
+
+        <!-- Mock Activity Feed -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/vDivider2">
+
+            <!-- Activity Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <androidx.cardview.widget.CardView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp">
+                    <ImageView
+                        android:id="@+id/ivFeedAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:background="#E0E0E0" />
+                </androidx.cardview.widget.CardView>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvFeedName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lagi Lari"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="23 Maret 2026 pukul 19.09"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏃‍♂️ LAGI LARI VIRTUAL - MARET SERIES"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔥 14.47K Multiple Run Challenge...\nBaca selengkapnya..."
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#33FC4C02"
+                    android:src="@android:drawable/ic_menu_mapmode"
+                    app:tint="#FC4C02"
+                    android:scaleType="centerInside" />
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
