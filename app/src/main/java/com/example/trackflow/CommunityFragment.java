@@ -43,6 +43,15 @@ public class CommunityFragment extends Fragment {
         sharedPreferences = requireActivity().getSharedPreferences("TrackFlowPrefs", Context.MODE_PRIVATE);
 
         rvUsers.setLayoutManager(new LinearLayoutManager(requireContext()));
+        
+        View cvCommunityAvatar = view.findViewById(R.id.cvCommunityAvatar);
+        if (cvCommunityAvatar != null) {
+            cvCommunityAvatar.setOnClickListener(v -> {
+                com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_nav);
+                if (bottomNav != null) bottomNav.setSelectedItemId(R.id.nav_profile);
+            });
+        }
+
         fetchDataFromApi();
     }
 

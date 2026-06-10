@@ -77,6 +77,14 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
         });
 
+        View cvHomeAvatar = view.findViewById(R.id.cvHomeAvatar);
+        if (cvHomeAvatar != null) {
+            cvHomeAvatar.setOnClickListener(v -> {
+                com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_nav);
+                if (bottomNav != null) bottomNav.setSelectedItemId(R.id.nav_profile);
+            });
+        }
+
         boolean isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false);
         switchTheme.setChecked(isDarkMode);
         switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
