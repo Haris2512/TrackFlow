@@ -11,27 +11,70 @@
         android:layout_height="wrap_content"
         android:padding="24dp">
 
-        <!-- TOMBOL EDIT PROFIL DI KANAN ATAS -->
-        <ImageView
-            android:id="@+id/btnEditProfile"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_edit"
-            app:tint="?attr/colorOnSurface"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
+        <!-- HEADER ALA STRAVA -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerStrava"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- "Anda" text -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Anda"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Ikon Edit / Settings (Gear) Wrapper -->
+            <FrameLayout
+                android:id="@+id/flSettings"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <!-- The actual clickable button (menyatu dengan logika Edit Profile lama) -->
+                <ImageView
+                    android:id="@+id/btnEditProfile"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@android:drawable/ic_menu_manage"
+                    app:tint="?attr/colorOnSurface"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <!-- Titik merah notifikasi -->
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_gravity="top|end"
+                    android:background="@drawable/circle_orange"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="2dp" />
+            </FrameLayout>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cvAvatar"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             app:cardCornerRadius="50dp"
             app:cardElevation="2dp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerStrava"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
             <ImageView
