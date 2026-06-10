@@ -6,6 +6,26 @@
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground">
 
+    <!-- Background Photo for the Map area (Shown if photo exists) -->
+    <ImageView
+        android:id="@+id/ivMapBackgroundPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:background="#1A1A1A"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomCard"
+        app:layout_constraintHeight_percent="0.52" />
+
+    <!-- Dark gradient overlay to make buttons visible over photo -->
+    <View
+        android:id="@+id/vMapGradient"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@drawable/bg_black_gradient_top"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <!-- Map View (Takes top 55% of the screen) -->
     <org.osmdroid.views.MapView
         android:id="@+id/mapViewDetail"

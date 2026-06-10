@@ -61,6 +61,7 @@ public class DetailActivity extends AppCompatActivity {
         String distance = getIntent().getStringExtra("EXTRA_DISTANCE");
         String duration = getIntent().getStringExtra("EXTRA_DURATION");
         String date = getIntent().getStringExtra("EXTRA_DATE");
+        String photoUri = getIntent().getStringExtra("EXTRA_PHOTO_URI");
 
         // Set Default jika null
         if (title == null || title.isEmpty()) title = "Berlari Siang";
@@ -201,8 +202,27 @@ public class DetailActivity extends AppCompatActivity {
 
         // Inisialisasi Map dan gambar lintasan oranye dinamis (Screenshot 1)
         if (mapViewDetail != null) {
-            mapViewDetail.setTileSource(TileSourceFactory.MAPNIK);
             mapViewDetail.setMultiTouchControls(true);
+            
+            android.widget.ImageView ivMapBackgroundPhoto = findViewById(R.id.ivMapBackgroundPhoto);
+            boolean hasPhoto = (photoUri != null && !photoUri.isEmpty());
+
+            if (hasPhoto) {
+                try {
+                    ivMapBackgroundPhoto.setVisibility(android.view.View.VISIBLE);
+                    loadPhotoSafely(ivMapBackgroundPhoto, photoUri);
+                    
+                    // Buat Peta Transparan agar rute mengambang di atas foto!
+                    mapViewDetail.setBackgroundColor(Color.TRANSPARENT);
+                    mapViewDetail.getOverlays().clear(); // Hapus tile peta (jalan raya dll)
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mapViewDetail.setTileSource(TileSourceFactory.MAPNIK);
+                }
+            } else {
+                ivMapBackgroundPhoto.setVisibility(android.view.View.GONE);
+                mapViewDetail.setTileSource(TileSourceFactory.MAPNIK);
+            }
 
             IMapController controller = mapViewDetail.getController();
 
@@ -365,5 +385,36 @@ public class DetailActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (mapViewDetail != null) mapViewDetail.onPause();
+    }
+
+    private void loadPhotoSafely(android.widget.ImageView iv, String uriStr) {
+        try {
+            android.net.Uri uri = android.net.Uri.parse(uriStr);
+            java.io.InputStream is = getContentResolver().openInputStream(uri);
+            android.graphics.BitmapFactory.Options options = new android.graphics.BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            android.graphics.BitmapFactory.decodeStream(is, null, options);
+            if (is != null) is.close();
+
+            int scale = 1;
+            while (options.outWidth / scale / 2 >= 1024 && options.outHeight / scale / 2 >= 1024) {
+                scale *= 2;
+            }
+
+            android.graphics.BitmapFactory.Options options2 = new android.graphics.BitmapFactory.Options();
+            options2.inSampleSize = scale;
+            is = getContentResolver().openInputStream(uri);
+            android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(is, null, options2);
+            if (is != null) is.close();
+            
+            if (bitmap != null) {
+                iv.setImageBitmap(bitmap);
+            } else {
+                iv.setImageURI(uri);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            iv.setImageURI(android.net.Uri.parse(uriStr)); // Fallback
+        }
     }
 }
