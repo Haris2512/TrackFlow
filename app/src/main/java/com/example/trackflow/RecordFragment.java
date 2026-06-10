@@ -1,16 +1,20 @@
 package com.example.trackflow;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +22,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AlertDialog;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -39,7 +42,9 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+import org.osmdroid.views.overlay.Polyline;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class RecordFragment extends Fragment {
@@ -76,12 +81,45 @@ public class RecordFragment extends Fragment {
     private String selectedSport = "Berlari";
     private int selectedSportIconRes = R.drawable.ic_shoe;
 
-    private boolean isRunning = false;
-    private int seconds = 0;
-    private double currentDistance = 0.0;
-    private Handler handler = new Handler(Looper.getMainLooper());
-    private java.util.ArrayList<GeoPoint> routePoints = new java.util.ArrayList<>();
-    private org.osmdroid.views.overlay.Polyline livePolyline;
+    // Service Connection
+    private TrackingService trackingService;
+    private boolean isBound = false;
+    private Polyline livePolyline;
+
+    private final ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            TrackingService.LocalBinder binder = (TrackingService.LocalBinder) service;
+            trackingService = binder.getService();
+            isBound = true;
+            syncUIWithService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isBound = false;
+        }
+    };
+
+    private final BroadcastReceiver trackingReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() != null) {
+                if (intent.getAction().equals(TrackingService.BROADCAST_TICK)) {
+                    if (trackingService != null) {
+                        updateDashboardStats(trackingService.getSeconds(), trackingService.getCurrentDistance());
+                    }
+                } else if (intent.getAction().equals(TrackingService.BROADCAST_LOCATION)) {
+                    double lat = intent.getDoubleExtra("lat", 0);
+                    double lon = intent.getDoubleExtra("lon", 0);
+                    if (livePolyline != null) {
+                        livePolyline.addPoint(new GeoPoint(lat, lon));
+                        if (mapView != null) mapView.invalidate();
+                    }
+                }
+            }
+        }
+    };
 
     public RecordFragment() {}
 
@@ -89,31 +127,30 @@ public class RecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Context ctx = requireActivity().getApplicationContext();
         Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
+        Configuration.getInstance().setUserAgentValue(ctx.getPackageName());
+        java.io.File osmdroidBasePath = new java.io.File(ctx.getCacheDir(), "osmdroid");
+        Configuration.getInstance().setOsmdroidBasePath(osmdroidBasePath);
+        java.io.File osmdroidTileCache = new java.io.File(osmdroidBasePath, "tiles");
+        Configuration.getInstance().setOsmdroidTileCache(osmdroidTileCache);
         return inflater.inflate(R.layout.fragment_record, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initViews(view);
+        setupMap();
+        setupListeners();
+        checkPermissions();
+    }
 
-        // Inisialisasi Map
-        mapView = view.findViewById(R.id.mapView);
-        mapView.setMultiTouchControls(true);
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
-
-        IMapController mapController = mapView.getController();
-        mapController.setZoom(19.0);
-        GeoPoint defaultLocation = new GeoPoint(-5.147665, 119.432731); // Makassar
-        mapController.setCenter(defaultLocation);
-
-        // Inisialisasi widget UI Map
+    private void initViews(View view) {
         clMapOverlay = view.findViewById(R.id.clMapOverlay);
         cvStopwatch = view.findViewById(R.id.cvStopwatch);
         tvStopwatch = view.findViewById(R.id.tvStopwatch);
         fabPlay = view.findViewById(R.id.fabPlay);
         cvCollapse = view.findViewById(R.id.cvCollapse);
 
-        // Inisialisasi widget UI Dashboard
         llDashboardView = view.findViewById(R.id.llDashboardView);
         llDashStatusBar = view.findViewById(R.id.llDashStatusBar);
         tvDashStopwatch = view.findViewById(R.id.tvDashStopwatch);
@@ -121,197 +158,226 @@ public class RecordFragment extends Fragment {
         tvDashDistanceVal = view.findViewById(R.id.tvDashDistanceVal);
         ivDashCollapse = view.findViewById(R.id.ivDashCollapse);
 
-        // Inisialisasi widget Bottom Sheet
         clActionRow = view.findViewById(R.id.clActionRow);
         btnJeda = view.findViewById(R.id.btnJeda);
         llPauseButtons = view.findViewById(R.id.llPauseButtons);
         btnLanjutkan = view.findViewById(R.id.btnLanjutkan);
         btnSelesaikan = view.findViewById(R.id.btnSelesaikan);
 
-        // Inisialisasi widget Sport Selector
         llRun = view.findViewById(R.id.llRun);
         ivSportIcon = view.findViewById(R.id.ivSportIcon);
         tvSportName = view.findViewById(R.id.tvSportName);
 
-        // Awal mula: Tampilkan peta, sembunyikan dashboard
         llDashboardView.setVisibility(View.GONE);
         cvStopwatch.setVisibility(View.GONE);
+    }
 
-        // Tombol collapse kembali ke halaman sebelumnya
+    private void setupMap() {
+        mapView = requireView().findViewById(R.id.mapView);
+        mapView.setMultiTouchControls(true);
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+
+        IMapController mapController = mapView.getController();
+        mapController.setZoom(19.0);
+        mapController.setCenter(new GeoPoint(-5.147665, 119.432731));
+
+        livePolyline = new Polyline();
+        livePolyline.setColor(Color.parseColor("#FC4C02"));
+        livePolyline.setWidth(12.0f);
+        mapView.getOverlays().add(livePolyline);
+    }
+
+    private void setupListeners() {
         cvCollapse.setOnClickListener(v -> {
-            if (getActivity() != null) {
-                getActivity().onBackPressed();
-            }
+            if (getActivity() != null) getActivity().onBackPressed();
         });
 
-        // Sport Type Selector
         if (llRun != null) {
             llRun.setOnClickListener(v -> showSportPickerDialog());
         }
 
-        // Tapping floating stopwatch akan membawa ke Dashboard View
         cvStopwatch.setOnClickListener(v -> {
             clMapOverlay.setVisibility(View.GONE);
             llDashboardView.setVisibility(View.VISIBLE);
         });
 
-        // Tombol ciutkan di Dashboard View membawa kembali ke Map View
         ivDashCollapse.setOnClickListener(v -> {
             llDashboardView.setVisibility(View.GONE);
             clMapOverlay.setVisibility(View.VISIBLE);
-            if (isRunning || seconds > 0) {
+            if (trackingService != null && (trackingService.isTracking() || trackingService.getSeconds() > 0)) {
                 cvStopwatch.setVisibility(View.VISIBLE);
             }
         });
 
-        // 1. Aksi ketika tombol bulat play ditekan (Memulai latihan pertama kali)
-        fabPlay.setOnClickListener(v -> {
-            startTracking();
-        });
+        fabPlay.setOnClickListener(v -> startTracking());
+        btnJeda.setOnClickListener(v -> pauseTracking());
+        btnLanjutkan.setOnClickListener(v -> resumeTracking());
+        btnSelesaikan.setOnClickListener(v -> finishTracking());
+    }
 
-        // 2. Aksi tombol Jeda (Pause)
-        btnJeda.setOnClickListener(v -> {
-            pauseTracking();
-        });
+    private void checkPermissions() {
+        String[] permissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.POST_NOTIFICATIONS};
+        } else {
+            permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+        }
 
-        // 3. Aksi tombol Lanjutkan (Resume)
-        btnLanjutkan.setOnClickListener(v -> {
-            resumeTracking();
-        });
+        boolean allGranted = true;
+        for (String p : permissions) {
+            if (ContextCompat.checkSelfPermission(requireContext(), p) != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false; break;
+            }
+        }
 
-        // 4. Aksi tombol Selesaikan (Finish) -> Menuju FormActivity
-        btnSelesaikan.setOnClickListener(v -> {
-            finishTracking();
-        });
-
-        // Cek permission GPS
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        if (!allGranted) {
+            ActivityCompat.requestPermissions(requireActivity(), permissions, 1);
         } else {
             enableMyLocation();
         }
     }
 
+    private void enableMyLocation() {
+        if (getContext() == null || mapView == null) return;
+        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireContext()), mapView);
+        
+        Bitmap blueDot = createSleekBlueDot();
+        locationOverlay.setPersonIcon(blueDot);
+        locationOverlay.setDirectionArrow(blueDot, blueDot);
+        locationOverlay.setPersonHotspot(blueDot.getWidth() / 2f, blueDot.getHeight() / 2f);
+        locationOverlay.setDrawAccuracyEnabled(true);
+        locationOverlay.enableMyLocation();
+
+        locationOverlay.runOnFirstFix(() -> {
+            if (getActivity() != null) {
+                requireActivity().runOnUiThread(() -> {
+                    GeoPoint myLoc = locationOverlay.getMyLocation();
+                    if (myLoc != null && mapView != null) {
+                        mapView.getController().animateTo(myLoc);
+                    }
+                });
+            }
+        });
+        mapView.getOverlays().add(locationOverlay);
+    }
+
+    private void sendServiceAction(String action) {
+        Intent serviceIntent = new Intent(requireContext(), TrackingService.class);
+        serviceIntent.setAction(action);
+        ContextCompat.startForegroundService(requireContext(), serviceIntent);
+    }
+
     private void startTracking() {
-        isRunning = true;
-        seconds = 0;
-        currentDistance = 0.0;
-
-        routePoints.clear();
-        if (livePolyline != null && mapView != null) {
-            mapView.getOverlays().remove(livePolyline);
-        }
-        livePolyline = new org.osmdroid.views.overlay.Polyline();
-        livePolyline.setColor(Color.parseColor("#FC4C02"));
-        livePolyline.setWidth(12.0f);
-        if (mapView != null) {
-            mapView.getOverlays().add(livePolyline);
-        }
-
-        GeoPoint myLoc = locationOverlay != null ? locationOverlay.getMyLocation() : null;
-        if (myLoc != null) {
-            routePoints.add(myLoc);
-            livePolyline.addPoint(myLoc);
-        }
-
+        sendServiceAction(TrackingService.ACTION_START);
+        
         tvStopwatch.setText("00:00:00");
         tvDashStopwatch.setText("00:00:00");
         tvDashDistanceVal.setText("0,00");
         tvDashSplitVal.setText("---");
 
-        // Transisi Visual
         clActionRow.setVisibility(View.GONE);
         btnJeda.setVisibility(View.VISIBLE);
         llPauseButtons.setVisibility(View.GONE);
 
-        // Tampilkan Dashboard View (Screenshot 2)
         clMapOverlay.setVisibility(View.GONE);
         llDashboardView.setVisibility(View.VISIBLE);
         llDashStatusBar.setVisibility(View.GONE);
-
-        runStopwatch();
+        
+        livePolyline.setPoints(new ArrayList<>());
     }
 
     private void pauseTracking() {
-        isRunning = false;
-
-        // Transisi Visual
+        sendServiceAction(TrackingService.ACTION_PAUSE);
         clActionRow.setVisibility(View.GONE);
         btnJeda.setVisibility(View.GONE);
         llPauseButtons.setVisibility(View.VISIBLE);
-
-        // Tampilkan Header Kuning "Berhenti" di Dashboard (Screenshot 4)
         llDashStatusBar.setVisibility(View.VISIBLE);
     }
 
     private void resumeTracking() {
-        isRunning = true;
-
-        // Transisi Visual
+        sendServiceAction(TrackingService.ACTION_RESUME);
         clActionRow.setVisibility(View.GONE);
         btnJeda.setVisibility(View.VISIBLE);
         llPauseButtons.setVisibility(View.GONE);
         llDashStatusBar.setVisibility(View.GONE);
-
-        runStopwatch();
     }
 
     private void finishTracking() {
-        isRunning = false;
+        if (trackingService == null) return;
+        
+        int secs = trackingService.getSeconds();
+        double dist = trackingService.getCurrentDistance();
+        ArrayList<GeoPoint> pts = trackingService.getRoutePoints();
+        
+        sendServiceAction(TrackingService.ACTION_STOP);
 
-        int totalMin = seconds / 60; // Konversi total detik berjalan ke menit
+        int totalMin = secs / 60;
         String formattedDurationForForm;
-
         if (totalMin <= 0) {
-            formattedDurationForForm = seconds + "d"; // Mengikuti "18d" di Screenshot 1 (d = detik)
+            formattedDurationForForm = secs + "d";
         } else if (totalMin < 60) {
             formattedDurationForForm = totalMin + " Menit";
         } else {
             int hours = totalMin / 60;
             int remainingMinutes = totalMin % 60;
-
-            if (remainingMinutes == 0) {
-                formattedDurationForForm = hours + " Jam";
-            } else {
-                formattedDurationForForm = hours + " Jam " + remainingMinutes + " Menit";
-            }
+            formattedDurationForForm = remainingMinutes == 0 ? hours + " Jam" : hours + " Jam " + remainingMinutes + " Menit";
         }
 
-        // Hitung jarak terformat
-        String formattedDistance = String.format(Locale.getDefault(), "%.2f", currentDistance);
-
-        // Format routePoints ke string: lat,lng;lat,lng...
+        String formattedDistance = String.format(Locale.getDefault(), "%.2f", dist);
         StringBuilder pathBuilder = new StringBuilder();
-        for (int i = 0; i < routePoints.size(); i++) {
-            GeoPoint pt = routePoints.get(i);
+        for (int i = 0; i < pts.size(); i++) {
+            GeoPoint pt = pts.get(i);
             pathBuilder.append(pt.getLatitude()).append(",").append(pt.getLongitude());
-            if (i < routePoints.size() - 1) {
-                pathBuilder.append(";");
-            }
+            if (i < pts.size() - 1) pathBuilder.append(";");
         }
-        String pathString = pathBuilder.toString();
 
-        // Pindah ke FormActivity dan bawa durasi pintar, jarak, serta rute asli
         Intent intent = new Intent(requireContext(), FormActivity.class);
         intent.putExtra("EXTRA_DURATION", formattedDurationForForm);
         intent.putExtra("EXTRA_DISTANCE", formattedDistance);
-        intent.putExtra("EXTRA_PATH", pathString);
+        intent.putExtra("EXTRA_PATH", pathBuilder.toString());
         startActivity(intent);
 
-        // Reset komponen setelah data dikirim
         resetState();
     }
 
-    private void resetState() {
-        isRunning = false;
-        seconds = 0;
-        currentDistance = 0.0;
-        routePoints.clear();
-        if (livePolyline != null && mapView != null) {
-            mapView.getOverlays().remove(livePolyline);
-            livePolyline = null;
+    private void syncUIWithService() {
+        if (trackingService != null && trackingService.getSeconds() > 0) {
+            if (trackingService.isTracking()) {
+                clActionRow.setVisibility(View.GONE);
+                btnJeda.setVisibility(View.VISIBLE);
+                llPauseButtons.setVisibility(View.GONE);
+                llDashStatusBar.setVisibility(View.GONE);
+            } else {
+                clActionRow.setVisibility(View.GONE);
+                btnJeda.setVisibility(View.GONE);
+                llPauseButtons.setVisibility(View.VISIBLE);
+                llDashStatusBar.setVisibility(View.VISIBLE);
+            }
+            cvStopwatch.setVisibility(View.VISIBLE);
+            livePolyline.setPoints(trackingService.getRoutePoints());
+            mapView.invalidate();
+            updateDashboardStats(trackingService.getSeconds(), trackingService.getCurrentDistance());
         }
+    }
 
+    private void updateDashboardStats(int secs, double dist) {
+        String timeFormatted = formatTime(secs);
+        tvStopwatch.setText(timeFormatted);
+        tvDashStopwatch.setText(timeFormatted);
+        tvDashDistanceVal.setText(String.format(Locale.getDefault(), "%.2f", dist));
+
+        if (secs > 2 && dist > 0.01) {
+            double paceInSeconds = (double) secs / dist;
+            int paceMin = (int) (paceInSeconds / 60);
+            int paceSec = (int) (paceInSeconds % 60);
+            tvDashSplitVal.setText(String.format(Locale.getDefault(), "%02d:%02d", paceMin, paceSec));
+        } else {
+            tvDashSplitVal.setText("---");
+        }
+    }
+
+    private void resetState() {
+        livePolyline.setPoints(new ArrayList<>());
         tvStopwatch.setText("00:00:00");
         tvDashStopwatch.setText("00:00:00");
         tvDashDistanceVal.setText("0,00");
@@ -327,65 +393,11 @@ public class RecordFragment extends Fragment {
         cvStopwatch.setVisibility(View.GONE);
     }
 
-    private void enableMyLocation() {
-        if (getContext() == null || mapView == null) return;
-
-        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireContext()), mapView) {
-            @Override
-            public void onLocationChanged(final android.location.Location location, org.osmdroid.views.overlay.mylocation.IMyLocationProvider source) {
-                super.onLocationChanged(location, source);
-                if (location != null && isRunning && getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        GeoPoint gp = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        if (routePoints.isEmpty()) {
-                            routePoints.add(gp);
-                            if (livePolyline != null) {
-                                livePolyline.addPoint(gp);
-                            }
-                        } else {
-                            GeoPoint lastPt = routePoints.get(routePoints.size() - 1);
-                            double dist = gp.distanceToAsDouble(lastPt); // in meters
-                            if (dist >= 5.0) { // only record if moved at least 5 meters to prevent GPS jitter when stationary
-                                routePoints.add(gp);
-                                if (livePolyline != null) {
-                                    livePolyline.addPoint(gp);
-                                    if (mapView != null) {
-                                        mapView.invalidate();
-                                    }
-                                }
-                                // Accumulate distance
-                                currentDistance += (dist / 1000.0);
-                                if (tvDashDistanceVal != null) {
-                                    tvDashDistanceVal.setText(String.format(Locale.getDefault(), "%.2f", currentDistance));
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-        };
-
-        Bitmap blueDot = createSleekBlueDot();
-        locationOverlay.setPersonIcon(blueDot);
-        locationOverlay.setDirectionArrow(blueDot, blueDot);
-        locationOverlay.setPersonHotspot(blueDot.getWidth() / 2f, blueDot.getHeight() / 2f);
-        locationOverlay.setDrawAccuracyEnabled(true);
-
-        locationOverlay.enableMyLocation();
-
-        locationOverlay.runOnFirstFix(() -> {
-            if (getActivity() != null) {
-                requireActivity().runOnUiThread(() -> {
-                    GeoPoint myLoc = locationOverlay.getMyLocation();
-                    if (myLoc != null && mapView != null) {
-                        mapView.getController().animateTo(myLoc);
-                        mapView.getController().setZoom(20.0);
-                    }
-                });
-            }
-        });
-
-        mapView.getOverlays().add(locationOverlay);
+    private String formatTime(int totalSeconds) {
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
+        int secs = totalSeconds % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs);
     }
 
     private Bitmap createSleekBlueDot() {
@@ -407,62 +419,36 @@ public class RecordFragment extends Fragment {
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.parseColor("#1A73E8"));
         canvas.drawCircle(size / 2f, size / 2f, size / 3.8f, paint);
-
         return bitmap;
-    }
-
-    // Logika stopwatch + update dynamic stats
-    private void runStopwatch() {
-        handler.removeCallbacksAndMessages(null);
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (isRunning) {
-                    // Update stopwatch di Map dan di Dashboard
-                    String timeFormatted = formatTime(seconds);
-                    tvStopwatch.setText(timeFormatted);
-                    tvDashStopwatch.setText(timeFormatted);
-
-                    // Hanya tampilkan jarak sebenarnya dari GPS (tidak ada simulasi palsu)
-                    tvDashDistanceVal.setText(String.format(Locale.getDefault(), "%.2f", currentDistance));
-
-                    // Update split pace berdasarkan jarak GPS asli
-                    if (seconds > 2 && currentDistance > 0.01) {
-                        double paceInSeconds = (double) seconds / currentDistance;
-                        int paceMin = (int) (paceInSeconds / 60);
-                        int paceSec = (int) (paceInSeconds % 60);
-                        tvDashSplitVal.setText(String.format(Locale.getDefault(), "%02d:%02d", paceMin, paceSec));
-                    } else {
-                        tvDashSplitVal.setText("---");
-                    }
-
-                    seconds++;
-                    handler.postDelayed(this, 1000);
-                }
-            }
-        });
-    }
-
-    private String formatTime(int totalSeconds) {
-        int hours = totalSeconds / 3600;
-        int minutes = (totalSeconds % 3600) / 60;
-        int secs = totalSeconds % 60;
-        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs);
     }
 
     private void showSportPickerDialog() {
         String[] sportNames = {"Berlari", "Bersepeda", "Jalan Kaki", "Trail Run"};
         int[] sportIcons = {R.drawable.ic_shoe, R.drawable.ic_bike, R.drawable.ic_walk, R.drawable.ic_hiking};
+        new AlertDialog.Builder(requireContext())
+            .setTitle("Pilih Jenis Olahraga")
+            .setItems(sportNames, (dialog, which) -> {
+                selectedSport = sportNames[which];
+                selectedSportIconRes = sportIcons[which];
+                if (tvSportName != null) tvSportName.setText(selectedSport);
+                if (ivSportIcon != null) ivSportIcon.setImageResource(selectedSportIconRes);
+            }).show();
+    }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Pilih Jenis Olahraga");
-        builder.setItems(sportNames, (dialog, which) -> {
-            selectedSport = sportNames[which];
-            selectedSportIconRes = sportIcons[which];
-            if (tvSportName != null) tvSportName.setText(selectedSport);
-            if (ivSportIcon != null) ivSportIcon.setImageResource(selectedSportIconRes);
-        });
-        builder.show();
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = new Intent(requireContext(), TrackingService.class);
+        requireActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (isBound) {
+            requireActivity().unbindService(connection);
+            isBound = false;
+        }
     }
 
     @Override
@@ -470,6 +456,15 @@ public class RecordFragment extends Fragment {
         super.onResume();
         if (mapView != null) mapView.onResume();
         if (locationOverlay != null) locationOverlay.enableMyLocation();
+        
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(TrackingService.BROADCAST_TICK);
+        filter.addAction(TrackingService.BROADCAST_LOCATION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireActivity().registerReceiver(trackingReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            requireActivity().registerReceiver(trackingReceiver, filter);
+        }
     }
 
     @Override
@@ -477,12 +472,6 @@ public class RecordFragment extends Fragment {
         super.onPause();
         if (mapView != null) mapView.onPause();
         if (locationOverlay != null) locationOverlay.disableMyLocation();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        isRunning = false;
-        handler.removeCallbacksAndMessages(null);
+        requireActivity().unregisterReceiver(trackingReceiver);
     }
 }
