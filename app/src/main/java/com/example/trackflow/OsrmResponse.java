@@ -8,14 +8,15 @@ import java.util.List;
  *
  * Struktur JSON OSRM (disederhanakan):
  * {
- *   "code": "Ok",
- *   "routes": [
- *     {
- *       "distance": 3500.5,   <-- dalam METER
- *       "duration": 420.0,    <-- dalam DETIK
- *       "geometry": { ... }   <-- GeoJSON LineString koordinat rute (tidak kita parse di sini)
- *     }
- *   ]
+ * "code": "Ok",
+ * "routes": [
+ * {
+ * "distance": 3500.5, <-- dalam METER
+ * "duration": 420.0, <-- dalam DETIK
+ * "geometry": { ... } <-- GeoJSON LineString koordinat rute (tidak kita parse
+ * di sini)
+ * }
+ * ]
  * }
  *
  * Kita ambil routes[0] untuk mendapatkan rute terbaik/terpendek.
@@ -28,13 +29,18 @@ public class OsrmResponse {
     @SerializedName("routes")
     private List<Route> routes;
 
-    public String getCode() { return code; }
+    public String getCode() {
+        return code;
+    }
 
-    public List<Route> getRoutes() { return routes; }
+    public List<Route> getRoutes() {
+        return routes;
+    }
 
     /** Ambil rute pertama (terbaik) dari hasil OSRM */
     public Route getBestRoute() {
-        if (routes != null && !routes.isEmpty()) return routes.get(0);
+        if (routes != null && !routes.isEmpty())
+            return routes.get(0);
         return null;
     }
 
@@ -51,11 +57,17 @@ public class OsrmResponse {
         @SerializedName("geometry")
         private Geometry geometry;
 
-        public double getDistance() { return distance; }
+        public double getDistance() {
+            return distance;
+        }
 
-        public double getDuration() { return duration; }
+        public double getDuration() {
+            return duration;
+        }
 
-        public Geometry getGeometry() { return geometry; }
+        public Geometry getGeometry() {
+            return geometry;
+        }
 
         /** Konversi jarak dari meter ke kilometer, format 1 desimal */
         public String getDistanceKm() {
@@ -85,8 +97,12 @@ public class OsrmResponse {
         @SerializedName("type")
         private String type;
 
-        public List<List<Double>> getCoordinates() { return coordinates; }
+        public List<List<Double>> getCoordinates() {
+            return coordinates;
+        }
 
-        public String getType() { return type; }
+        public String getType() {
+            return type;
+        }
     }
 }

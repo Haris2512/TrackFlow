@@ -44,7 +44,8 @@ public class HomeFragment extends Fragment {
     private android.widget.ImageView ivHomeAvatar;
     private TextView tvHomeAvatarLetter;
 
-    public HomeFragment() {}
+    public HomeFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -80,8 +81,10 @@ public class HomeFragment extends Fragment {
         View cvHomeAvatar = view.findViewById(R.id.cvHomeAvatar);
         if (cvHomeAvatar != null) {
             cvHomeAvatar.setOnClickListener(v -> {
-                com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_nav);
-                if (bottomNav != null) bottomNav.setSelectedItemId(R.id.nav_profile);
+                com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = requireActivity()
+                        .findViewById(R.id.bottom_nav);
+                if (bottomNav != null)
+                    bottomNav.setSelectedItemId(R.id.nav_profile);
             });
         }
 
@@ -90,8 +93,7 @@ public class HomeFragment extends Fragment {
         switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
             sharedPreferences.edit().putBoolean("DARK_MODE", isChecked).apply();
             AppCompatDelegate.setDefaultNightMode(
-                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
-            );
+                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
         });
 
         // Slider streak (kartu beruntun lari mingguan)
@@ -102,11 +104,12 @@ public class HomeFragment extends Fragment {
 
         if (vpStreak != null) {
             vpStreak.setAdapter(new StreakPagerAdapter());
-            
+
             // Warna dot aktif = oranye, tidak aktif = abu-abu sesuai tema
             int activeColor = Color.parseColor("#FC4C02");
             android.util.TypedValue typedValue = new android.util.TypedValue();
-            int attrColorOnSurfaceVariant = requireContext().getResources().getIdentifier("colorOnSurfaceVariant", "attr", requireContext().getPackageName());
+            int attrColorOnSurfaceVariant = requireContext().getResources().getIdentifier("colorOnSurfaceVariant",
+                    "attr", requireContext().getPackageName());
             requireContext().getTheme().resolveAttribute(attrColorOnSurfaceVariant, typedValue, true);
             int inactiveColor = typedValue.data;
 
@@ -114,9 +117,15 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onPageSelected(int position) {
                     super.onPageSelected(position);
-                    if (dot1 != null) dot1.setBackgroundTintList(android.content.res.ColorStateList.valueOf(position == 0 ? activeColor : inactiveColor));
-                    if (dot2 != null) dot2.setBackgroundTintList(android.content.res.ColorStateList.valueOf(position == 1 ? activeColor : inactiveColor));
-                    if (dot3 != null) dot3.setBackgroundTintList(android.content.res.ColorStateList.valueOf(position == 2 ? activeColor : inactiveColor));
+                    if (dot1 != null)
+                        dot1.setBackgroundTintList(android.content.res.ColorStateList
+                                .valueOf(position == 0 ? activeColor : inactiveColor));
+                    if (dot2 != null)
+                        dot2.setBackgroundTintList(android.content.res.ColorStateList
+                                .valueOf(position == 1 ? activeColor : inactiveColor));
+                    if (dot3 != null)
+                        dot3.setBackgroundTintList(android.content.res.ColorStateList
+                                .valueOf(position == 2 ? activeColor : inactiveColor));
                 }
             });
         }
@@ -128,7 +137,8 @@ public class HomeFragment extends Fragment {
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Streak Lari TrackFlow");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Ayo lihat kemajuan beruntun (streak) lari saya minggu ini di aplikasi TrackFlow! Berlari 3 hari berturut-turut!");
+                shareIntent.putExtra(Intent.EXTRA_TEXT,
+                        "Ayo lihat kemajuan beruntun (streak) lari saya minggu ini di aplikasi TrackFlow! Berlari 3 hari berturut-turut!");
                 startActivity(Intent.createChooser(shareIntent, "Bagikan Streak"));
             });
         }
@@ -155,9 +165,9 @@ public class HomeFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Notifikasi Aktivitas");
         String[] items = {
-            "🏆 Rekor Baru! Anda menyelesaikan lari 5K tercepat.",
-            "💬 Komunitas: another rhiez memberikan Kudos pada lari Anda.",
-            "⭐ Tips TrackFlow: Lakukan peregangan sebelum berlari."
+                "🏆 Rekor Baru! Anda menyelesaikan lari 5K tercepat.",
+                "💬 Komunitas: another rhiez memberikan Kudos pada lari Anda.",
+                "⭐ Tips TrackFlow: Lakukan peregangan sebelum berlari."
         };
         builder.setItems(items, null);
         builder.setPositiveButton("TUTUP", (dialog, which) -> dialog.dismiss());
@@ -170,17 +180,17 @@ public class HomeFragment extends Fragment {
         input.setPadding(48, 32, 48, 32);
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
-            .setTitle("Cari Aktivitas")
-            .setView(input)
-            .setPositiveButton("CARI", (d, which) -> {
-                String query = input.getText().toString().trim().toLowerCase();
-                filterActivities(query);
-            })
-            .setNegativeButton("BATAL", (d, which) -> d.dismiss())
-            .setNeutralButton("RESET", (d, which) -> {
-                loadActivitiesAsync(); // reload all
-            })
-            .create();
+                .setTitle("Cari Aktivitas")
+                .setView(input)
+                .setPositiveButton("CARI", (d, which) -> {
+                    String query = input.getText().toString().trim().toLowerCase();
+                    filterActivities(query);
+                })
+                .setNegativeButton("BATAL", (d, which) -> d.dismiss())
+                .setNeutralButton("RESET", (d, which) -> {
+                    loadActivitiesAsync(); // reload all
+                })
+                .create();
         dialog.show();
     }
 
@@ -197,7 +207,8 @@ public class HomeFragment extends Fragment {
             ArrayList<ActivityModel> filteredList = new ArrayList<>();
             if (list != null) {
                 for (ActivityModel model : list) {
-                    if (model.getTitle().toLowerCase().contains(query) || model.getDate().toLowerCase().contains(query)) {
+                    if (model.getTitle().toLowerCase().contains(query)
+                            || model.getDate().toLowerCase().contains(query)) {
                         filteredList.add(model);
                     }
                 }
@@ -205,10 +216,10 @@ public class HomeFragment extends Fragment {
             handler.post(() -> {
                 if (filteredList.isEmpty()) {
                     new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                        .setTitle("Pencarian")
-                        .setMessage("Kata kunci tidak dapat ditemukan")
-                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                        .show();
+                            .setTitle("Pencarian")
+                            .setMessage("Kata kunci tidak dapat ditemukan")
+                            .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                            .show();
                 } else {
                     adapter.setData(filteredList);
                     calculateTotalDistance(filteredList);
@@ -226,61 +237,71 @@ public class HomeFragment extends Fragment {
 
         SimpleDateFormat dayLetterFmt = new SimpleDateFormat("E", new Locale("id", "ID")); // e.g., "Sen", "Sel"...
         SimpleDateFormat dateFmt = new SimpleDateFormat("d", new Locale("id", "ID"));
-        
+
         Calendar todayCal = Calendar.getInstance();
         int todayYear = todayCal.get(Calendar.YEAR);
         int todayDayOfYear = todayCal.get(Calendar.DAY_OF_YEAR);
 
         for (int i = 0; i < 7; i++) {
             int index = i + 1;
-            int resIdDayName = view.getResources().getIdentifier("tvDayName" + index, "id", view.getContext().getPackageName());
-            int resIdDateFrame = view.getResources().getIdentifier("flDateFrame" + index, "id", view.getContext().getPackageName());
-            int resIdDateVal = view.getResources().getIdentifier("tvDateVal" + index, "id", view.getContext().getPackageName());
-            int resIdShoeIcon = view.getResources().getIdentifier("ivShoeIcon" + index, "id", view.getContext().getPackageName());
-            
+            int resIdDayName = view.getResources().getIdentifier("tvDayName" + index, "id",
+                    view.getContext().getPackageName());
+            int resIdDateFrame = view.getResources().getIdentifier("flDateFrame" + index, "id",
+                    view.getContext().getPackageName());
+            int resIdDateVal = view.getResources().getIdentifier("tvDateVal" + index, "id",
+                    view.getContext().getPackageName());
+            int resIdShoeIcon = view.getResources().getIdentifier("ivShoeIcon" + index, "id",
+                    view.getContext().getPackageName());
+
             TextView tvDayName = view.findViewById(resIdDayName);
             FrameLayout flDateFrame = view.findViewById(resIdDateFrame);
             TextView tvDateVal = view.findViewById(resIdDateVal);
             ImageView ivShoeIcon = view.findViewById(resIdShoeIcon);
-            
+
             boolean isToday = (cal.get(Calendar.YEAR) == todayYear && cal.get(Calendar.DAY_OF_YEAR) == todayDayOfYear);
-            
+
             if (tvDayName != null) {
                 String fullDayName = dayLetterFmt.format(cal.getTime());
                 String firstLetter = !fullDayName.isEmpty() ? fullDayName.substring(0, 1).toUpperCase() : "";
                 tvDayName.setText(firstLetter);
-                
+
                 android.util.TypedValue tvText = new android.util.TypedValue();
                 if (isToday) {
-                    // Gunakan circle_today_bg (Oranye di Light Mode, Putih di Dark Mode) agar kontras dengan background layar
-                    tvDayName.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_today_bg));
+                    // Gunakan circle_today_bg (Oranye di Light Mode, Putih di Dark Mode) agar
+                    // kontras dengan background layar
+                    tvDayName.setTextColor(
+                            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_today_bg));
                 } else {
-                    tvDayName.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_text));
+                    tvDayName.setTextColor(
+                            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_text));
                 }
             }
-            
+
             if (flDateFrame != null) {
                 android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
                 gd.setShape(android.graphics.drawable.GradientDrawable.OVAL);
                 android.util.TypedValue tv = new android.util.TypedValue();
                 if (isToday) {
-                    gd.setColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_today_bg));
+                    gd.setColor(
+                            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_today_bg));
                 } else {
-                    gd.setColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_bg));
+                    gd.setColor(
+                            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_bg));
                 }
                 flDateFrame.setBackground(gd);
             }
-            
+
             if (tvDateVal != null) {
                 tvDateVal.setText(dateFmt.format(cal.getTime()));
                 if (isToday) {
                     tvDateVal.setVisibility(View.GONE);
                 } else {
                     tvDateVal.setVisibility(View.VISIBLE);
-                    tvDateVal.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_text));
+                    tvDateVal.setTextColor(
+                            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_text));
                 }
             }
-            
+
             if (ivShoeIcon != null) {
                 if (isToday) {
                     ivShoeIcon.setVisibility(View.VISIBLE);
@@ -288,7 +309,7 @@ public class HomeFragment extends Fragment {
                     ivShoeIcon.setVisibility(View.GONE);
                 }
             }
-            
+
             cal.add(Calendar.DAY_OF_MONTH, 1);
         }
     }
@@ -303,13 +324,15 @@ public class HomeFragment extends Fragment {
         if (savedAvatarUri != null && ivHomeAvatar != null) {
             try {
                 ivHomeAvatar.setVisibility(View.VISIBLE);
-                if (tvHomeAvatarLetter != null) tvHomeAvatarLetter.setVisibility(View.GONE);
+                if (tvHomeAvatarLetter != null)
+                    tvHomeAvatarLetter.setVisibility(View.GONE);
                 ivHomeAvatar.setImageURI(android.net.Uri.parse(savedAvatarUri));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            if (ivHomeAvatar != null) ivHomeAvatar.setVisibility(View.GONE);
+            if (ivHomeAvatar != null)
+                ivHomeAvatar.setVisibility(View.GONE);
             if (tvHomeAvatarLetter != null) {
                 tvHomeAvatarLetter.setVisibility(View.VISIBLE);
                 if (!savedName.isEmpty()) {
@@ -358,8 +381,10 @@ public class HomeFragment extends Fragment {
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             int layoutId = R.layout.item_streak_slide1;
-            if (viewType == 1) layoutId = R.layout.item_streak_slide2;
-            else if (viewType == 2) layoutId = R.layout.item_streak_slide3;
+            if (viewType == 1)
+                layoutId = R.layout.item_streak_slide2;
+            else if (viewType == 2)
+                layoutId = R.layout.item_streak_slide3;
 
             View v = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
             return new ViewHolder(v);

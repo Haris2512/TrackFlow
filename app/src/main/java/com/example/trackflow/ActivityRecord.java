@@ -15,9 +15,23 @@ public class ActivityRecord {
         this.date = date;
     }
 
-    public int getId() { return id; }
-    public String getTitle() { return title; }
-    public String getDistance() { return distance; }
-    public String getDuration() { return duration; }
-    public String getDate() { return date; }
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public String getDate() {
+        return date;
+    }
 }

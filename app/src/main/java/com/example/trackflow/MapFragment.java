@@ -71,11 +71,11 @@ public class MapFragment extends Fragment {
     private BottomSheetBehavior<View> sheetBehavior;
 
     // State tracking
-    private GeoPoint myLocation = null;       // Lokasi GPS user saat ini
+    private GeoPoint myLocation = null; // Lokasi GPS user saat ini
     private GeoPoint destinationPoint = null; // Titik tujuan yang dipilih
     private Marker destinationMarker = null;
     private Polyline routeLine = null;
-    private boolean waitingForTap = false;    // true = mode pilih tujuan aktif
+    private boolean waitingForTap = false; // true = mode pilih tujuan aktif
     private double routeDistanceKm = 0;
 
     // OSRM base URL (mode kaki/lari)
@@ -87,11 +87,12 @@ public class MapFragment extends Fragment {
         Context ctx = requireActivity().getApplicationContext();
         Configuration.getInstance().load(ctx,
                 androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
-        
+
         // User-Agent wajib diset, kalau tidak OSM bisa throttle request kita
         Configuration.getInstance().setUserAgentValue(ctx.getPackageName());
-        
-        // Cache tile ke internal storage agar kompatibel dengan scoped storage Android 10+
+
+        // Cache tile ke internal storage agar kompatibel dengan scoped storage Android
+        // 10+
         java.io.File osmdroidBasePath = new java.io.File(ctx.getCacheDir(), "osmdroid");
         Configuration.getInstance().setOsmdroidBasePath(osmdroidBasePath);
         java.io.File osmdroidTileCache = new java.io.File(osmdroidBasePath, "tiles");
@@ -114,23 +115,23 @@ public class MapFragment extends Fragment {
     // ─────────────────────────────────────────────────────────────────────
 
     private void bindViews(View v) {
-        mapView        = v.findViewById(R.id.mapView);
-        etSearchMap    = v.findViewById(R.id.etSearchMap);
-        ivClearSearch  = v.findViewById(R.id.ivClearSearch);
-        tvTapHint      = v.findViewById(R.id.tvTapHint);
-        tvRouteName    = v.findViewById(R.id.tvRouteName);
-        tvDistance     = v.findViewById(R.id.tvDistance);
-        tvDuration     = v.findViewById(R.id.tvDuration);
-        tvDifficulty   = v.findViewById(R.id.tvDifficulty);
-        progressRoute  = v.findViewById(R.id.progressRoute);
-        fabMyLocation  = v.findViewById(R.id.fabMyLocation);
-        fabClear       = v.findViewById(R.id.fabClear);
-        fabRefresh     = v.findViewById(R.id.fabRefresh);
-        btnSetTujuan   = v.findViewById(R.id.btnSetTujuan);
-        btnMulaiLari   = v.findViewById(R.id.btnMulaiLari);
-        btnUbahTujuan  = v.findViewById(R.id.btnUbahTujuan);
-        layoutEmpty    = v.findViewById(R.id.layoutEmpty);
-        layoutRoute    = v.findViewById(R.id.layoutRoute);
+        mapView = v.findViewById(R.id.mapView);
+        etSearchMap = v.findViewById(R.id.etSearchMap);
+        ivClearSearch = v.findViewById(R.id.ivClearSearch);
+        tvTapHint = v.findViewById(R.id.tvTapHint);
+        tvRouteName = v.findViewById(R.id.tvRouteName);
+        tvDistance = v.findViewById(R.id.tvDistance);
+        tvDuration = v.findViewById(R.id.tvDuration);
+        tvDifficulty = v.findViewById(R.id.tvDifficulty);
+        progressRoute = v.findViewById(R.id.progressRoute);
+        fabMyLocation = v.findViewById(R.id.fabMyLocation);
+        fabClear = v.findViewById(R.id.fabClear);
+        fabRefresh = v.findViewById(R.id.fabRefresh);
+        btnSetTujuan = v.findViewById(R.id.btnSetTujuan);
+        btnMulaiLari = v.findViewById(R.id.btnMulaiLari);
+        btnUbahTujuan = v.findViewById(R.id.btnUbahTujuan);
+        layoutEmpty = v.findViewById(R.id.layoutEmpty);
+        layoutRoute = v.findViewById(R.id.layoutRoute);
         tvCurrentLocationMap = v.findViewById(R.id.tvCurrentLocationMap);
     }
 
@@ -150,6 +151,7 @@ public class MapFragment extends Fragment {
                 }
                 return false;
             }
+
             @Override
             public boolean longPressHelper(GeoPoint p) {
                 setDestination(p);
@@ -198,11 +200,18 @@ public class MapFragment extends Fragment {
 
         // Search bar — Nominatim / Geocoder
         etSearchMap.addTextChangedListener(new android.text.TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 ivClearSearch.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
             }
-            @Override public void afterTextChanged(android.text.Editable s) {}
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+            }
         });
 
         etSearchMap.setOnEditorActionListener((v, actionId, event) -> {
@@ -226,14 +235,16 @@ public class MapFragment extends Fragment {
     // Cek internet dulu sebelum masuk mode tap — OSRM tidak bisa offline
     private void activateTapMode() {
         // Cek koneksi internet sebelum mengizinkan pencarian rute (OSRM butuh internet)
-        android.net.ConnectivityManager cm = (android.net.ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        android.net.ConnectivityManager cm = (android.net.ConnectivityManager) requireContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
         android.net.NetworkInfo activeNetwork = cm != null ? cm.getActiveNetworkInfo() : null;
         if (activeNetwork == null || !activeNetwork.isConnected()) {
             new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Tidak Ada Internet")
-                .setMessage("Fitur 'Tentukan Tujuan di Peta' memerlukan koneksi internet untuk mengalkulasi rute jalan. Silakan nyalakan WiFi atau Data Seluler Anda.")
-                .setPositiveButton("Mengerti", null)
-                .show();
+                    .setTitle("Tidak Ada Internet")
+                    .setMessage(
+                            "Fitur 'Tentukan Tujuan di Peta' memerlukan koneksi internet untuk mengalkulasi rute jalan. Silakan nyalakan WiFi atau Data Seluler Anda.")
+                    .setPositiveButton("Mengerti", null)
+                    .show();
             return;
         }
 
@@ -254,7 +265,8 @@ public class MapFragment extends Fragment {
         tvTapHint.setVisibility(View.GONE);
         destinationPoint = destination;
 
-        if (destinationMarker != null) mapView.getOverlays().remove(destinationMarker);
+        if (destinationMarker != null)
+            mapView.getOverlays().remove(destinationMarker);
 
         destinationMarker = new Marker(mapView);
         destinationMarker.setPosition(destination);
@@ -291,7 +303,8 @@ public class MapFragment extends Fragment {
         mapView.invalidate();
 
         fabClear.setVisibility(View.GONE);
-        if (fabRefresh != null) fabRefresh.setVisibility(View.GONE);
+        if (fabRefresh != null)
+            fabRefresh.setVisibility(View.GONE);
         tvTapHint.setVisibility(View.GONE);
         showEmptyState();
     }
@@ -310,18 +323,21 @@ public class MapFragment extends Fragment {
         osrmService.getRoute(url).enqueue(new Callback<OsrmResponse>() {
             @Override
             public void onResponse(@NonNull Call<OsrmResponse> call,
-                                   @NonNull Response<OsrmResponse> response) {
+                    @NonNull Response<OsrmResponse> response) {
                 showLoading(false);
-                if (!isAdded()) return; // Fragment sudah tidak aktif, abaikan
+                if (!isAdded())
+                    return; // Fragment sudah tidak aktif, abaikan
 
                 if (response.isSuccessful() && response.body() != null
                         && response.body().getBestRoute() != null) {
-                    if (fabRefresh != null) fabRefresh.setVisibility(View.GONE);
+                    if (fabRefresh != null)
+                        fabRefresh.setVisibility(View.GONE);
                     OsrmResponse.Route route = response.body().getBestRoute();
                     drawRoute(route);
                     updateRouteStats(route);
                 } else {
-                    if (fabRefresh != null) fabRefresh.setVisibility(View.VISIBLE);
+                    if (fabRefresh != null)
+                        fabRefresh.setVisibility(View.VISIBLE);
                     // Server gagal respons, tampilkan estimasi garis lurus dulu
                     drawStraightLine(from, to);
                     updateStatsFromHaversine(from, to);
@@ -333,30 +349,35 @@ public class MapFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<OsrmResponse> call, @NonNull Throwable t) {
                 showLoading(false);
-                if (!isAdded()) return;
-                
-                if (fabRefresh != null) fabRefresh.setVisibility(View.VISIBLE);
-                
+                if (!isAdded())
+                    return;
+
+                if (fabRefresh != null)
+                    fabRefresh.setVisibility(View.VISIBLE);
+
                 // Koneksi putus, tetap tampilkan estimasi agar layar tidak kosong
                 drawStraightLine(from, to);
                 updateStatsFromHaversine(from, to);
-                
+
                 new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                    .setTitle("Gagal Menghitung Rute")
-                    .setMessage("Jaringan internet Anda sepertinya terputus. Untuk sementara kami menampilkan jarak lurus (estimasi burung).\n\nSilakan periksa koneksi lalu tekan tombol Refresh (🔄) untuk memuat ulang rute jalan yang akurat.")
-                    .setPositiveButton("Mengerti", null)
-                    .show();
+                        .setTitle("Gagal Menghitung Rute")
+                        .setMessage(
+                                "Jaringan internet Anda sepertinya terputus. Untuk sementara kami menampilkan jarak lurus (estimasi burung).\n\nSilakan periksa koneksi lalu tekan tombol Refresh (🔄) untuk memuat ulang rute jalan yang akurat.")
+                        .setPositiveButton("Mengerti", null)
+                        .show();
             }
         });
     }
 
     private void drawRoute(OsrmResponse.Route route) {
-        if (routeLine != null) mapView.getOverlays().remove(routeLine);
+        if (routeLine != null)
+            mapView.getOverlays().remove(routeLine);
 
         if (route.getGeometry() != null && route.getGeometry().getCoordinates() != null) {
             List<GeoPoint> pts = new ArrayList<>();
             for (List<Double> c : route.getGeometry().getCoordinates()) {
-                if (c.size() >= 2) pts.add(new GeoPoint(c.get(1), c.get(0)));
+                if (c.size() >= 2)
+                    pts.add(new GeoPoint(c.get(1), c.get(0)));
             }
             routeLine = makePolyline(pts);
             mapView.getOverlays().add(routeLine);
@@ -371,9 +392,11 @@ public class MapFragment extends Fragment {
     }
 
     private void drawStraightLine(GeoPoint from, GeoPoint to) {
-        if (routeLine != null) mapView.getOverlays().remove(routeLine);
+        if (routeLine != null)
+            mapView.getOverlays().remove(routeLine);
         List<GeoPoint> pts = new ArrayList<>();
-        pts.add(from); pts.add(to);
+        pts.add(from);
+        pts.add(to);
         routeLine = makePolyline(pts);
         mapView.getOverlays().add(routeLine);
         mapView.invalidate();
@@ -402,7 +425,7 @@ public class MapFragment extends Fragment {
                 : routeDistanceKm < 7 ? "Sedang" : "Sulit";
         int diffColor = routeDistanceKm < 3 ? Color.parseColor("#4CAF50")
                 : routeDistanceKm < 7 ? Color.parseColor("#FF9800")
-                : Color.parseColor("#F44336");
+                        : Color.parseColor("#F44336");
 
         requireActivity().runOnUiThread(() -> {
             tvDistance.setText(distStr);
@@ -416,9 +439,9 @@ public class MapFragment extends Fragment {
     private void updateStatsFromHaversine(GeoPoint from, GeoPoint to) {
         double meters = haversine(from, to);
         routeDistanceKm = meters / 1000.0;
-        double runSecs  = routeDistanceKm * 330.0;
-        String distStr  = String.format(Locale.US, "%.1f", routeDistanceKm);
-        String timeStr  = formatTime(runSecs);
+        double runSecs = routeDistanceKm * 330.0;
+        String distStr = String.format(Locale.US, "%.1f", routeDistanceKm);
+        String timeStr = formatTime(runSecs);
         String difficulty = routeDistanceKm < 3 ? "Mudah"
                 : routeDistanceKm < 7 ? "Sedang" : "Sulit";
 
@@ -443,7 +466,8 @@ public class MapFragment extends Fragment {
     }
 
     private void showLoading(boolean show) {
-        if (!isAdded()) return;
+        if (!isAdded())
+            return;
         requireActivity().runOnUiThread(() -> {
             progressRoute.setVisibility(show ? View.VISIBLE : View.GONE);
             if (show) {
@@ -468,13 +492,15 @@ public class MapFragment extends Fragment {
                             : a.getAddressLine(0).split(",")[0];
                     requireActivity().runOnUiThread(() -> tvRouteName.setText(name));
                 }
-            } catch (IOException e) { /* abaikan */ }
+            } catch (IOException e) {
+                /* abaikan */ }
         }).start();
     }
 
     /** Cari lokasi via Geocoder dan jadikan tujuan secara otomatis */
     private void searchAndSetDestination(String query) {
-        if (query.isEmpty()) return;
+        if (query.isEmpty())
+            return;
         new Thread(() -> {
             try {
                 Geocoder gc = new Geocoder(requireContext(), Locale.getDefault());
@@ -487,17 +513,16 @@ public class MapFragment extends Fragment {
                         mapView.getController().setZoom(16.0);
                         setDestination(pt);
                         tvRouteName.setText(a.getFeatureName() != null
-                                ? a.getFeatureName() : query);
+                                ? a.getFeatureName()
+                                : query);
                     });
                 } else {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(requireContext(),
-                                    "Lokasi tidak ditemukan", Toast.LENGTH_SHORT).show());
+                    requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(),
+                            "Lokasi tidak ditemukan", Toast.LENGTH_SHORT).show());
                 }
             } catch (IOException e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(),
-                                "Gagal mencari lokasi", Toast.LENGTH_SHORT).show());
+                requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(),
+                        "Gagal mencari lokasi", Toast.LENGTH_SHORT).show());
             }
         }).start();
     }
@@ -510,7 +535,7 @@ public class MapFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, 1);
         } else {
             enableMyLocation();
         }
@@ -528,7 +553,8 @@ public class MapFragment extends Fragment {
         locationOverlay.enableMyLocation();
 
         locationOverlay.runOnFirstFix(() -> {
-            if (getActivity() == null) return;
+            if (getActivity() == null)
+                return;
             requireActivity().runOnUiThread(() -> {
                 GeoPoint loc = locationOverlay.getMyLocation();
                 if (loc != null) {
@@ -555,7 +581,8 @@ public class MapFragment extends Fragment {
     }
 
     private void updateCurrentLocationText(GeoPoint point) {
-        if (tvCurrentLocationMap == null) return;
+        if (tvCurrentLocationMap == null)
+            return;
         new Thread(() -> {
             try {
                 Geocoder gc = new Geocoder(requireContext(), Locale.getDefault());
@@ -571,7 +598,8 @@ public class MapFragment extends Fragment {
                     String fullText = "Lokasi Anda: " + detailLoc;
                     requireActivity().runOnUiThread(() -> tvCurrentLocationMap.setText(fullText));
                 }
-            } catch (Exception e) { /* abaikan */ }
+            } catch (Exception e) {
+                /* abaikan */ }
         }).start();
     }
 
@@ -637,7 +665,7 @@ public class MapFragment extends Fragment {
         long secs = (long) totalSeconds % 60;
         if (mins >= 60) {
             long hrs = mins / 60;
-            long m   = mins % 60;
+            long m = mins % 60;
             return String.format(Locale.US, "%dj %02dm", hrs, m);
         }
         return String.format(Locale.US, "%d:%02d", mins, secs);
@@ -646,12 +674,12 @@ public class MapFragment extends Fragment {
     /** Hitung jarak lurus (meter) antara dua titik GPS via Haversine */
     private double haversine(GeoPoint a, GeoPoint b) {
         double R = 6371000;
-        double dLat = Math.toRadians(b.getLatitude()  - a.getLatitude());
+        double dLat = Math.toRadians(b.getLatitude() - a.getLatitude());
         double dLon = Math.toRadians(b.getLongitude() - a.getLongitude());
-        double x = Math.sin(dLat/2) * Math.sin(dLat/2)
-                 + Math.cos(Math.toRadians(a.getLatitude()))
-                 * Math.cos(Math.toRadians(b.getLatitude()))
-                 * Math.sin(dLon/2) * Math.sin(dLon/2);
+        double x = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(a.getLatitude()))
+                        * Math.cos(Math.toRadians(b.getLatitude()))
+                        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
     }
 
@@ -660,41 +688,50 @@ public class MapFragment extends Fragment {
     }
 
     private void showPremiumDialog(View viewForNavigation) {
-        android.app.Dialog dialog = new android.app.Dialog(requireContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        android.app.Dialog dialog = new android.app.Dialog(requireContext(),
+                android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.dialog_premium);
-        
+
         dialog.findViewById(R.id.ivClosePremium).setOnClickListener(v -> dialog.dismiss());
         dialog.findViewById(R.id.btnLanjutkanPremium).setOnClickListener(v -> {
             dialog.dismiss();
-            
-            // Ide: Tampilkan peringatan bahwa metode pembayaran tidak valid / belum berlangganan
+
+            // Ide: Tampilkan peringatan bahwa metode pembayaran tidak valid / belum
+            // berlangganan
             new android.app.AlertDialog.Builder(requireContext())
                     .setTitle("Gagal Mengaktifkan Trial")
-                    .setMessage("Metode pembayaran tidak valid atau belum ditambahkan. Anda harus berlangganan versi Premium sungguhan untuk merekam rute kustom ini! \n\n(Simulasi Fitur Premium)")
+                    .setMessage(
+                            "Metode pembayaran tidak valid atau belum ditambahkan. Anda harus berlangganan versi Premium sungguhan untuk merekam rute kustom ini! \n\n(Simulasi Fitur Premium)")
                     .setPositiveButton("Kembali", null)
                     .show();
         });
-        
+
         dialog.show();
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager)
-                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) imm.hideSoftInputFromWindow(
-                requireView().getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null)
+            imm.hideSoftInputFromWindow(
+                    requireView().getWindowToken(), 0);
         etSearchMap.clearFocus();
     }
 
-    @Override public void onResume() {
+    @Override
+    public void onResume() {
         super.onResume();
-        if (mapView != null) mapView.onResume();
-        if (locationOverlay != null) locationOverlay.enableMyLocation();
+        if (mapView != null)
+            mapView.onResume();
+        if (locationOverlay != null)
+            locationOverlay.enableMyLocation();
     }
 
-    @Override public void onPause() {
+    @Override
+    public void onPause() {
         super.onPause();
-        if (mapView != null) mapView.onPause();
-        if (locationOverlay != null) locationOverlay.disableMyLocation();
+        if (mapView != null)
+            mapView.onPause();
+        if (locationOverlay != null)
+            locationOverlay.disableMyLocation();
     }
 }

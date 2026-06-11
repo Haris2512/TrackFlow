@@ -109,7 +109,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             tvDistance = itemView.findViewById(R.id.tvDistance);
             tvDuration = itemView.findViewById(R.id.tvDuration);
             tvPace = itemView.findViewById(R.id.tvPace);
-            
+
             tvItemName = itemView.findViewById(R.id.tvItemName);
             tvItemSubtitle = itemView.findViewById(R.id.tvItemSubtitle);
             tvItemLocation = itemView.findViewById(R.id.tvItemLocation);
@@ -121,7 +121,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         void bind(ActivityModel item) {
             tvTitle.setText(item.getTitle());
             tvDistance.setText(item.getDistance());
-            
+
             // Format durasi (jika format raw, cth: "00:00:18", bersihkan atau biarkan)
             String rawDuration = item.getDuration();
             if (rawDuration.contains(":") && rawDuration.split(":").length == 3) {
@@ -148,7 +148,8 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             tvPace.setText(calculatePace(item.getDistance(), item.getDuration()));
 
             // Nama user dari SharedPreferences
-            SharedPreferences prefs = itemView.getContext().getSharedPreferences("TrackFlowPrefs", Context.MODE_PRIVATE);
+            SharedPreferences prefs = itemView.getContext().getSharedPreferences("TrackFlowPrefs",
+                    Context.MODE_PRIVATE);
             String username = prefs.getString("USERNAME", "another rhiez");
             tvItemName.setText(username);
             if (!username.isEmpty()) {
@@ -172,7 +173,8 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
                                 double lng = Double.parseDouble(latLng[1]);
                                 new Thread(() -> {
                                     try {
-                                        android.location.Geocoder gc = new android.location.Geocoder(itemView.getContext(), java.util.Locale.getDefault());
+                                        android.location.Geocoder gc = new android.location.Geocoder(
+                                                itemView.getContext(), java.util.Locale.getDefault());
                                         java.util.List<android.location.Address> list = gc.getFromLocation(lat, lng, 1);
                                         if (list != null && !list.isEmpty()) {
                                             android.location.Address a = list.get(0);
@@ -180,15 +182,21 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
                                             String tempLoc = "";
                                             if (addressLine != null && !addressLine.isEmpty()) {
                                                 String[] addressParts = addressLine.split(",");
-                                                tempLoc = addressParts[0].trim() + (addressParts.length > 1 ? ", " + addressParts[1].trim() : "");
+                                                tempLoc = addressParts[0].trim()
+                                                        + (addressParts.length > 1 ? ", " + addressParts[1].trim()
+                                                                : "");
                                             }
-                                            final String finalLoc = tempLoc.isEmpty() ? "Lokasi Tidak Diketahui" : tempLoc;
-                                            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> tvItemLocation.setText(finalLoc));
+                                            final String finalLoc = tempLoc.isEmpty() ? "Lokasi Tidak Diketahui"
+                                                    : tempLoc;
+                                            new android.os.Handler(android.os.Looper.getMainLooper())
+                                                    .post(() -> tvItemLocation.setText(finalLoc));
                                         } else {
-                                            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> tvItemLocation.setText("Makassar, South Sulawesi"));
+                                            new android.os.Handler(android.os.Looper.getMainLooper())
+                                                    .post(() -> tvItemLocation.setText("Makassar, South Sulawesi"));
                                         }
                                     } catch (Exception e) {
-                                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> tvItemLocation.setText("Makassar, South Sulawesi"));
+                                        new android.os.Handler(android.os.Looper.getMainLooper())
+                                                .post(() -> tvItemLocation.setText("Makassar, South Sulawesi"));
                                     }
                                 }).start();
                             } catch (Exception ignored) {
@@ -219,7 +227,8 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
                         if (latLng.length == 2) {
                             try {
                                 points.add(new GeoPoint(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1])));
-                            } catch (Exception ignored) {}
+                            } catch (Exception ignored) {
+                            }
                         }
                     }
                 }
@@ -271,14 +280,16 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
                 double distance = 0.0;
                 String cleanDist = distanceStr.toUpperCase().replace("KM", "").replace(",", ".").trim();
                 distance = Double.parseDouble(cleanDist);
-                if (distance <= 0) return "--:-- /km";
+                if (distance <= 0)
+                    return "--:-- /km";
 
                 double seconds = 0.0;
                 String cleanDur = durationStr.toLowerCase().trim();
                 if (cleanDur.contains(":")) {
                     String[] parts = cleanDur.split(":");
                     if (parts.length == 3) {
-                        seconds = Integer.parseInt(parts[0]) * 3600 + Integer.parseInt(parts[1]) * 60 + Integer.parseInt(parts[2]);
+                        seconds = Integer.parseInt(parts[0]) * 3600 + Integer.parseInt(parts[1]) * 60
+                                + Integer.parseInt(parts[2]);
                     } else if (parts.length == 2) {
                         seconds = Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
                     }
@@ -294,7 +305,8 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
                     }
                 }
 
-                if (seconds <= 0) return "--:-- /km";
+                if (seconds <= 0)
+                    return "--:-- /km";
 
                 double paceMinutesPerKm = (seconds / 60.0) / distance;
                 int paceMinutes = (int) paceMinutesPerKm;
@@ -311,16 +323,17 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             List<GeoPoint> points = new ArrayList<>();
             double centerLat = -5.1345;
             double centerLng = 119.4895;
-            
+
             double seed = (id * 17) % 100 / 100.0;
             double scale = 0.003 + (seed * 0.0015);
-            
+
             int numSteps = 24;
             for (int i = 0; i < numSteps; i++) {
                 double angle = (2.0 * Math.PI * i) / numSteps;
-                double r = scale * (1.0 + 0.25 * Math.sin(angle * 3) + 0.15 * Math.cos(angle * 5) + 0.08 * Math.sin(angle * 7));
+                double r = scale
+                        * (1.0 + 0.25 * Math.sin(angle * 3) + 0.15 * Math.cos(angle * 5) + 0.08 * Math.sin(angle * 7));
                 double rotatedAngle = angle + (seed * Math.PI / 2.0);
-                
+
                 double latOffset = r * Math.cos(rotatedAngle);
                 double lngOffset = r * Math.sin(rotatedAngle) * 1.2;
                 points.add(new GeoPoint(centerLat + latOffset, centerLng + lngOffset));

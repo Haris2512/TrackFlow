@@ -25,8 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             DatabaseContract.ActivityColumns.COLUMN_DURATION,
             DatabaseContract.ActivityColumns.COLUMN_DATE,
             DatabaseContract.ActivityColumns.COLUMN_PATH,
-            DatabaseContract.ActivityColumns.COLUMN_PHOTO_URI
-    );
+            DatabaseContract.ActivityColumns.COLUMN_PHOTO_URI);
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

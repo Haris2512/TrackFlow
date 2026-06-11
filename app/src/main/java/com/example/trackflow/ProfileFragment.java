@@ -65,10 +65,10 @@ public class ProfileFragment extends Fragment {
                         Toast.makeText(requireContext(), "Foto profil berhasil diperbarui!", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-    );
+            });
 
-    public ProfileFragment() {}
+    public ProfileFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -91,7 +91,8 @@ public class ProfileFragment extends Fragment {
         tvActiveDaysList = view.findViewById(R.id.tvActiveDaysList);
 
         Context context = getContext();
-        if (context == null) return;
+        if (context == null)
+            return;
 
         sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
@@ -99,15 +100,19 @@ public class ProfileFragment extends Fragment {
         tvSavedName.setText(sharedPref.getString("USERNAME", "Belum ada nama"));
         String joinDate = sharedPref.getString("JOIN_DATE", null);
         if (joinDate == null) {
-            joinDate = "Bergabung sejak " + new SimpleDateFormat("MMMM yyyy", new Locale("id", "ID")).format(new Date());
+            joinDate = "Bergabung sejak "
+                    + new SimpleDateFormat("MMMM yyyy", new Locale("id", "ID")).format(new Date());
             sharedPref.edit().putString("JOIN_DATE", joinDate).apply();
         }
         tvJoinDate.setText(joinDate);
 
         String savedAvatarUri = sharedPref.getString("USER_AVATAR", null);
         if (savedAvatarUri != null) {
-            try { ivAvatar.setImageURI(Uri.parse(savedAvatarUri)); }
-            catch (Exception e) { e.printStackTrace(); }
+            try {
+                ivAvatar.setImageURI(Uri.parse(savedAvatarUri));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         btnEditProfile.setOnClickListener(v -> showEditOptionsDialog());
@@ -136,23 +141,29 @@ public class ProfileFragment extends Fragment {
     }
 
     private void fetchLocation() {
-        android.location.LocationManager lm = (android.location.LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
-        if (androidx.core.content.ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+        android.location.LocationManager lm = (android.location.LocationManager) requireContext()
+                .getSystemService(Context.LOCATION_SERVICE);
+        if (androidx.core.content.ContextCompat.checkSelfPermission(requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
             android.location.Location location = lm.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER);
             if (location == null) {
                 location = lm.getLastKnownLocation(android.location.LocationManager.NETWORK_PROVIDER);
             }
             if (location != null) {
                 try {
-                    android.location.Geocoder geocoder = new android.location.Geocoder(requireContext(), java.util.Locale.getDefault());
-                    java.util.List<android.location.Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    android.location.Geocoder geocoder = new android.location.Geocoder(requireContext(),
+                            java.util.Locale.getDefault());
+                    java.util.List<android.location.Address> addresses = geocoder
+                            .getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     if (addresses != null && !addresses.isEmpty()) {
                         String city = addresses.get(0).getSubAdminArea(); // Kabupaten / Kota
-                        if (city == null) city = addresses.get(0).getLocality(); 
+                        if (city == null)
+                            city = addresses.get(0).getLocality();
                         String country = addresses.get(0).getCountryName();
                         if (city != null && country != null) {
                             TextView tvBio = getView().findViewById(R.id.tvBio);
-                            if (tvBio != null) tvBio.setText("📍 " + city + ", " + country);
+                            if (tvBio != null)
+                                tvBio.setText("📍 " + city + ", " + country);
                         }
                     }
                 } catch (Exception e) {
@@ -196,7 +207,8 @@ public class ProfileFragment extends Fragment {
         // Ambil Bulan aktif dan Tahun aktif saat ini dari HP user
         Calendar currentCal = Calendar.getInstance();
         int currentMonthNum = currentCal.get(Calendar.MONTH) + 1; // 1-12
-        String currentMonthName = new SimpleDateFormat("MMMM", new Locale("id", "ID")).format(currentCal.getTime()).toLowerCase(); // cth: "juni"
+        String currentMonthName = new SimpleDateFormat("MMMM", new Locale("id", "ID")).format(currentCal.getTime())
+                .toLowerCase(); // cth: "juni"
         String currentYear = String.valueOf(currentCal.get(Calendar.YEAR)); // cth: "2026"
 
         java.util.ArrayList<Integer> activeDays = new java.util.ArrayList<>();
@@ -221,7 +233,8 @@ public class ProfileFragment extends Fragment {
                     }
                 }
 
-                // Jika aktivitas terjadi di bulan dan tahun yang sama dengan hari ini, hitung masuk!
+                // Jika aktivitas terjadi di bulan dan tahun yang sama dengan hari ini, hitung
+                // masuk!
                 if (monthMatch && yearMatch) {
                     countCurrentMonth++;
                     try {
@@ -241,7 +254,8 @@ public class ProfileFragment extends Fragment {
                                 break;
                             }
                         }
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                 }
             }
         }
@@ -249,7 +263,7 @@ public class ProfileFragment extends Fragment {
         // Tampilkan hasil filter spesifik bulan berjalan saja
         tvMonthlyCount.setText(countCurrentMonth + " Kali");
         tvMonthlyDistance.setText(String.format(Locale.US, "%.2f KM", totalDistanceCurrentMonth));
-        
+
         if (tvActiveDaysList != null) {
             if (activeDays.isEmpty()) {
                 tvActiveDaysList.setText("📅 Hari aktif bulan ini: Belum ada");
@@ -258,7 +272,8 @@ public class ProfileFragment extends Fragment {
                 StringBuilder daysStr = new StringBuilder();
                 for (int i = 0; i < activeDays.size(); i++) {
                     daysStr.append(activeDays.get(i));
-                    if (i < activeDays.size() - 1) daysStr.append(", ");
+                    if (i < activeDays.size() - 1)
+                        daysStr.append(", ");
                 }
                 tvActiveDaysList.setText("📅 Hari aktif bulan ini: Tanggal " + daysStr.toString());
             }
@@ -279,9 +294,11 @@ public class ProfileFragment extends Fragment {
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, dayOfMonth);
-        String targetMonthNameId = new SimpleDateFormat("MMMM", new Locale("id", "ID")).format(cal.getTime()).toLowerCase();
+        String targetMonthNameId = new SimpleDateFormat("MMMM", new Locale("id", "ID")).format(cal.getTime())
+                .toLowerCase();
         String targetMonthNameEn = new SimpleDateFormat("MMMM", Locale.ENGLISH).format(cal.getTime()).toLowerCase();
-        String targetMonthShortId = new SimpleDateFormat("MMM", new Locale("id", "ID")).format(cal.getTime()).toLowerCase();
+        String targetMonthShortId = new SimpleDateFormat("MMM", new Locale("id", "ID")).format(cal.getTime())
+                .toLowerCase();
 
         for (ActivityModel item : allActivities) {
             if (item.getDate() != null) {
@@ -308,7 +325,8 @@ public class ProfileFragment extends Fragment {
                     try {
                         String distStr = item.getDistance().toUpperCase().replace(" KM", "").trim();
                         totalDistanceThatDay += Double.parseDouble(distStr);
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                 }
             }
         }
@@ -316,7 +334,9 @@ public class ProfileFragment extends Fragment {
         String displayDate = new SimpleDateFormat("dd MMMM yyyy", new Locale("id", "ID")).format(cal.getTime());
 
         if (found) {
-            tvDateDetail.setText("🎯 Hebat! Pada " + displayDate + " kamu merekam " + activityCount + " aktivitas dengan total jarak " + String.format(Locale.US, "%.2f KM", totalDistanceThatDay) + ".");
+            tvDateDetail.setText("🎯 Hebat! Pada " + displayDate + " kamu merekam " + activityCount
+                    + " aktivitas dengan total jarak " + String.format(Locale.US, "%.2f KM", totalDistanceThatDay)
+                    + ".");
             tvDateDetail.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
         } else {
             tvDateDetail.setText("💤 Tidak ada aktivitas pada " + displayDate + ". Saatnya berolahraga!");
@@ -325,7 +345,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showEditOptionsDialog() {
-        String[] options = {"🖼️ Ganti Foto Profil", "✏️ Ganti Nama"};
+        String[] options = { "🖼️ Ganti Foto Profil", "✏️ Ganti Nama" };
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Pengaturan Profil");
         builder.setItems(options, (dialog, which) -> {
@@ -348,7 +368,8 @@ public class ProfileFragment extends Fragment {
         final EditText input = new EditText(requireContext());
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         String currentName = sharedPref.getString("USERNAME", "");
-        if (!currentName.equals("Belum ada nama")) input.setText(currentName);
+        if (!currentName.equals("Belum ada nama"))
+            input.setText(currentName);
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);

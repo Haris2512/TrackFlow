@@ -114,14 +114,16 @@ public class RecordFragment extends Fragment {
                     double lon = intent.getDoubleExtra("lon", 0);
                     if (livePolyline != null) {
                         livePolyline.addPoint(new GeoPoint(lat, lon));
-                        if (mapView != null) mapView.invalidate();
+                        if (mapView != null)
+                            mapView.invalidate();
                     }
                 }
             }
         }
     };
 
-    public RecordFragment() {}
+    public RecordFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -189,7 +191,8 @@ public class RecordFragment extends Fragment {
 
     private void setupListeners() {
         cvCollapse.setOnClickListener(v -> {
-            if (getActivity() != null) getActivity().onBackPressed();
+            if (getActivity() != null)
+                getActivity().onBackPressed();
         });
 
         if (llRun != null) {
@@ -218,15 +221,17 @@ public class RecordFragment extends Fragment {
     private void checkPermissions() {
         String[] permissions;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.POST_NOTIFICATIONS};
+            permissions = new String[] { Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.POST_NOTIFICATIONS };
         } else {
-            permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+            permissions = new String[] { Manifest.permission.ACCESS_FINE_LOCATION };
         }
 
         boolean allGranted = true;
         for (String p : permissions) {
             if (ContextCompat.checkSelfPermission(requireContext(), p) != PackageManager.PERMISSION_GRANTED) {
-                allGranted = false; break;
+                allGranted = false;
+                break;
             }
         }
 
@@ -238,9 +243,10 @@ public class RecordFragment extends Fragment {
     }
 
     private void enableMyLocation() {
-        if (getContext() == null || mapView == null) return;
+        if (getContext() == null || mapView == null)
+            return;
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireContext()), mapView);
-        
+
         Bitmap blueDot = createSleekBlueDot();
         locationOverlay.setPersonIcon(blueDot);
         locationOverlay.setDirectionArrow(blueDot, blueDot);
@@ -269,24 +275,27 @@ public class RecordFragment extends Fragment {
     }
 
     private void startTracking() {
-        android.location.LocationManager lm = (android.location.LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+        android.location.LocationManager lm = (android.location.LocationManager) requireContext()
+                .getSystemService(Context.LOCATION_SERVICE);
         boolean gpsEnabled = false;
         try {
             gpsEnabled = lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
-        } catch(Exception e) {}
+        } catch (Exception e) {
+        }
 
         // Tolak mulai jika GPS mati, beri tahu user dengan jelas
         if (!gpsEnabled) {
             new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Sinyal GPS Lemah / Mati")
-                .setMessage("Kami tidak dapat mendeteksi sinyal GPS. Pastikan fitur Lokasi di ponsel Anda sudah menyala dan Anda berada di luar ruangan agar pelacakan rute berjalan akurat.")
-                .setPositiveButton("Mengerti", null)
-                .show();
+                    .setTitle("Sinyal GPS Lemah / Mati")
+                    .setMessage(
+                            "Kami tidak dapat mendeteksi sinyal GPS. Pastikan fitur Lokasi di ponsel Anda sudah menyala dan Anda berada di luar ruangan agar pelacakan rute berjalan akurat.")
+                    .setPositiveButton("Mengerti", null)
+                    .show();
             return;
         }
 
         sendServiceAction(TrackingService.ACTION_START);
-        
+
         tvStopwatch.setText("00:00:00");
         tvDashStopwatch.setText("00:00:00");
         tvDashDistanceVal.setText("0,00");
@@ -299,7 +308,7 @@ public class RecordFragment extends Fragment {
         clMapOverlay.setVisibility(View.GONE);
         llDashboardView.setVisibility(View.VISIBLE);
         llDashStatusBar.setVisibility(View.GONE);
-        
+
         livePolyline.setPoints(new ArrayList<>());
     }
 
@@ -320,12 +329,13 @@ public class RecordFragment extends Fragment {
     }
 
     private void finishTracking() {
-        if (trackingService == null) return;
-        
+        if (trackingService == null)
+            return;
+
         int secs = trackingService.getSeconds();
         double dist = trackingService.getCurrentDistance();
         ArrayList<GeoPoint> pts = trackingService.getRoutePoints();
-        
+
         sendServiceAction(TrackingService.ACTION_STOP);
 
         // Format durasi ke bentuk yang ramah untuk disimpan ke form
@@ -338,7 +348,8 @@ public class RecordFragment extends Fragment {
         } else {
             int hours = totalMin / 60;
             int remainingMinutes = totalMin % 60;
-            formattedDurationForForm = remainingMinutes == 0 ? hours + " Jam" : hours + " Jam " + remainingMinutes + " Menit";
+            formattedDurationForForm = remainingMinutes == 0 ? hours + " Jam"
+                    : hours + " Jam " + remainingMinutes + " Menit";
         }
 
         String formattedDistance = String.format(Locale.getDefault(), "%.2f", dist);
@@ -346,7 +357,8 @@ public class RecordFragment extends Fragment {
         for (int i = 0; i < pts.size(); i++) {
             GeoPoint pt = pts.get(i);
             pathBuilder.append(pt.getLatitude()).append(",").append(pt.getLongitude());
-            if (i < pts.size() - 1) pathBuilder.append(";");
+            if (i < pts.size() - 1)
+                pathBuilder.append(";");
         }
 
         Intent intent = new Intent(requireContext(), FormActivity.class);
@@ -441,16 +453,18 @@ public class RecordFragment extends Fragment {
     }
 
     private void showSportPickerDialog() {
-        String[] sportNames = {"Berlari", "Bersepeda", "Jalan Kaki", "Trail Run"};
-        int[] sportIcons = {R.drawable.ic_shoe, R.drawable.ic_bike, R.drawable.ic_walk, R.drawable.ic_hiking};
+        String[] sportNames = { "Berlari", "Bersepeda", "Jalan Kaki", "Trail Run" };
+        int[] sportIcons = { R.drawable.ic_shoe, R.drawable.ic_bike, R.drawable.ic_walk, R.drawable.ic_hiking };
         new AlertDialog.Builder(requireContext())
-            .setTitle("Pilih Jenis Olahraga")
-            .setItems(sportNames, (dialog, which) -> {
-                selectedSport = sportNames[which];
-                selectedSportIconRes = sportIcons[which];
-                if (tvSportName != null) tvSportName.setText(selectedSport);
-                if (ivSportIcon != null) ivSportIcon.setImageResource(selectedSportIconRes);
-            }).show();
+                .setTitle("Pilih Jenis Olahraga")
+                .setItems(sportNames, (dialog, which) -> {
+                    selectedSport = sportNames[which];
+                    selectedSportIconRes = sportIcons[which];
+                    if (tvSportName != null)
+                        tvSportName.setText(selectedSport);
+                    if (ivSportIcon != null)
+                        ivSportIcon.setImageResource(selectedSportIconRes);
+                }).show();
     }
 
     @Override
@@ -472,9 +486,11 @@ public class RecordFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null) mapView.onResume();
-        if (locationOverlay != null) locationOverlay.enableMyLocation();
-        
+        if (mapView != null)
+            mapView.onResume();
+        if (locationOverlay != null)
+            locationOverlay.enableMyLocation();
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(TrackingService.BROADCAST_TICK);
         filter.addAction(TrackingService.BROADCAST_LOCATION);
@@ -488,8 +504,10 @@ public class RecordFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (mapView != null) mapView.onPause();
-        if (locationOverlay != null) locationOverlay.disableMyLocation();
+        if (mapView != null)
+            mapView.onPause();
+        if (locationOverlay != null)
+            locationOverlay.disableMyLocation();
         requireActivity().unregisterReceiver(trackingReceiver);
     }
 }

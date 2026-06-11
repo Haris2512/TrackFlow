@@ -31,13 +31,13 @@ import java.util.Locale;
 public class TrackingService extends Service implements LocationListener {
 
     // Action yang dikirim dari Fragment ke Service via Intent
-    public static final String ACTION_START  = "ACTION_START";
-    public static final String ACTION_PAUSE  = "ACTION_PAUSE";
+    public static final String ACTION_START = "ACTION_START";
+    public static final String ACTION_PAUSE = "ACTION_PAUSE";
     public static final String ACTION_RESUME = "ACTION_RESUME";
-    public static final String ACTION_STOP   = "ACTION_STOP";
+    public static final String ACTION_STOP = "ACTION_STOP";
 
     // Broadcast action untuk kirim update ke RecordFragment
-    public static final String BROADCAST_TICK     = "com.example.trackflow.TRACKING_TICK";
+    public static final String BROADCAST_TICK = "com.example.trackflow.TRACKING_TICK";
     public static final String BROADCAST_LOCATION = "com.example.trackflow.TRACKING_LOCATION";
 
     private final IBinder binder = new LocalBinder();
@@ -68,10 +68,18 @@ public class TrackingService extends Service implements LocationListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getAction() != null) {
             switch (intent.getAction()) {
-                case ACTION_START:  startTracking();  break;
-                case ACTION_PAUSE:  pauseTracking();  break;
-                case ACTION_RESUME: resumeTracking(); break;
-                case ACTION_STOP:   stopTracking();   break;
+                case ACTION_START:
+                    startTracking();
+                    break;
+                case ACTION_PAUSE:
+                    pauseTracking();
+                    break;
+                case ACTION_RESUME:
+                    resumeTracking();
+                    break;
+                case ACTION_STOP:
+                    stopTracking();
+                    break;
             }
         }
         // START_STICKY agar service di-restart OS kalau dimatikan
@@ -85,7 +93,8 @@ public class TrackingService extends Service implements LocationListener {
 
     @SuppressLint("MissingPermission")
     private void startTracking() {
-        if (isRunning) return;
+        if (isRunning)
+            return;
         isRunning = true;
         seconds = 0;
         currentDistance = 0.0;
@@ -94,7 +103,8 @@ public class TrackingService extends Service implements LocationListener {
         // Jalankan sebagai foreground service agar tidak dibunuh OS saat layar mati
         startForeground(1, buildNotification("00:00:00", "0.00 km"));
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Update lokasi tiap 2 detik atau jika bergerak >2 meter
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2f, this);
         }
@@ -105,13 +115,15 @@ public class TrackingService extends Service implements LocationListener {
     private void pauseTracking() {
         isRunning = false;
         locationManager.removeUpdates(this);
-        updateNotification("Jeda - " + formatTime(seconds), String.format(Locale.getDefault(), "%.2f km", currentDistance));
+        updateNotification("Jeda - " + formatTime(seconds),
+                String.format(Locale.getDefault(), "%.2f km", currentDistance));
     }
 
     @SuppressLint("MissingPermission")
     private void resumeTracking() {
         isRunning = true;
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2f, this);
         }
         runStopwatch();
@@ -136,7 +148,8 @@ public class TrackingService extends Service implements LocationListener {
                     intent.setPackage(getPackageName());
                     sendBroadcast(intent);
 
-                    updateNotification(formatTime(seconds), String.format(Locale.getDefault(), "%.2f km", currentDistance));
+                    updateNotification(formatTime(seconds),
+                            String.format(Locale.getDefault(), "%.2f km", currentDistance));
                     handler.postDelayed(this, 1000);
                 }
             }
@@ -146,8 +159,9 @@ public class TrackingService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        if (!isRunning) return;
-        
+        if (!isRunning)
+            return;
+
         GeoPoint gp = new GeoPoint(location.getLatitude(), location.getLongitude());
         if (routePoints.isEmpty()) {
             routePoints.add(gp);
@@ -155,7 +169,8 @@ public class TrackingService extends Service implements LocationListener {
         } else {
             GeoPoint lastPt = routePoints.get(routePoints.size() - 1);
             double dist = gp.distanceToAsDouble(lastPt);
-            // Hanya simpan titik jika sudah bergerak minimal 5 meter, biar poliline tidak berantakan
+            // Hanya simpan titik jika sudah bergerak minimal 5 meter, biar poliline tidak
+            // berantakan
             if (dist >= 5.0) {
                 routePoints.add(gp);
                 currentDistance += (dist / 1000.0);
@@ -184,11 +199,11 @@ public class TrackingService extends Service implements LocationListener {
             NotificationChannel channel = new NotificationChannel(
                     "TRACKING_CHANNEL",
                     "Pelacakan Lari",
-                    NotificationManager.IMPORTANCE_LOW
-            );
+                    NotificationManager.IMPORTANCE_LOW);
             channel.setDescription("Menampilkan status pelacakan olahraga");
             NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) manager.createNotificationChannel(channel);
+            if (manager != null)
+                manager.createNotificationChannel(channel);
         }
     }
 
@@ -196,8 +211,7 @@ public class TrackingService extends Service implements LocationListener {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         return new NotificationCompat.Builder(this, "TRACKING_CHANNEL")
                 .setContentTitle("Merekam Aktivitas - " + time)
@@ -217,8 +231,19 @@ public class TrackingService extends Service implements LocationListener {
     }
 
     // Getter untuk RecordFragment yang ter-bind ke service ini
-    public boolean isTracking() { return isRunning; }
-    public int getSeconds() { return seconds; }
-    public double getCurrentDistance() { return currentDistance; }
-    public ArrayList<GeoPoint> getRoutePoints() { return routePoints; }
+    public boolean isTracking() {
+        return isRunning;
+    }
+
+    public int getSeconds() {
+        return seconds;
+    }
+
+    public double getCurrentDistance() {
+        return currentDistance;
+    }
+
+    public ArrayList<GeoPoint> getRoutePoints() {
+        return routePoints;
+    }
 }

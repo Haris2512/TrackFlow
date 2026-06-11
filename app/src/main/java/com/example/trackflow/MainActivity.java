@@ -20,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        // LOGIKA TEMA — Harus pakai nama & key yang SAMA dengan ProfileFragment & HomeFragment
+        // LOGIKA TEMA — Harus pakai nama & key yang SAMA dengan ProfileFragment &
+        // HomeFragment
         SharedPreferences sharedPreferences = getSharedPreferences("TrackFlowPrefs", MODE_PRIVATE);
         boolean isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false);
 
@@ -42,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Set up Navigation Controller from the NavHostFragment
-        NavHostFragment navHostFragment = (NavHostFragment)
-                getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
 
         if (navHostFragment != null) {
             NavController navController = navHostFragment.getNavController();

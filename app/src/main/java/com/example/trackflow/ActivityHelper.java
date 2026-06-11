@@ -43,8 +43,7 @@ public class ActivityHelper {
         return database.query(
                 DATABASE_TABLE,
                 null, null, null, null, null,
-                DatabaseContract.ActivityColumns._ID + " DESC"
-        );
+                DatabaseContract.ActivityColumns._ID + " DESC");
     }
 
     public long insert(ContentValues values) {
@@ -52,6 +51,6 @@ public class ActivityHelper {
     }
 
     public int deleteById(String id) {
-        return database.delete(DATABASE_TABLE, DatabaseContract.ActivityColumns._ID + " = ?", new String[]{id});
+        return database.delete(DATABASE_TABLE, DatabaseContract.ActivityColumns._ID + " = ?", new String[] { id });
     }
 }

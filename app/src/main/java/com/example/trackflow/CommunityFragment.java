@@ -28,7 +28,8 @@ public class CommunityFragment extends Fragment {
     private View llErrorState;
     private com.google.android.material.button.MaterialButton btnRefreshCommunity;
 
-    public CommunityFragment() {}
+    public CommunityFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,12 +55,14 @@ public class CommunityFragment extends Fragment {
         });
 
         rvUsers.setLayoutManager(new LinearLayoutManager(requireContext()));
-        
+
         View cvCommunityAvatar = view.findViewById(R.id.cvCommunityAvatar);
         if (cvCommunityAvatar != null) {
             cvCommunityAvatar.setOnClickListener(v -> {
-                com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_nav);
-                if (bottomNav != null) bottomNav.setSelectedItemId(R.id.nav_profile);
+                com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = requireActivity()
+                        .findViewById(R.id.bottom_nav);
+                if (bottomNav != null)
+                    bottomNav.setSelectedItemId(R.id.nav_profile);
             });
         }
 
@@ -89,7 +92,8 @@ public class CommunityFragment extends Fragment {
         call.enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                // isAdded() dipakai supaya tidak crash jika user pindah halaman sebelum data selesai dimuat
+                // isAdded() dipakai supaya tidak crash jika user pindah halaman sebelum data
+                // selesai dimuat
                 if (isAdded() && response.isSuccessful() && response.body() != null) {
                     llErrorState.setVisibility(View.GONE);
                     rvUsers.setVisibility(View.VISIBLE);
@@ -100,7 +104,8 @@ public class CommunityFragment extends Fragment {
                     rvUsers.setVisibility(View.GONE);
                     llErrorState.setVisibility(View.VISIBLE);
                     android.widget.TextView tvError = getView().findViewById(R.id.tvErrorMsg);
-                    if (tvError != null) tvError.setText("Waduh, server komunitas sedang sibuk. Coba lagi nanti, ya!");
+                    if (tvError != null)
+                        tvError.setText("Waduh, server komunitas sedang sibuk. Coba lagi nanti, ya!");
                 }
             }
 
@@ -110,13 +115,15 @@ public class CommunityFragment extends Fragment {
                     rvUsers.setVisibility(View.GONE);
                     llErrorState.setVisibility(View.VISIBLE);
                     android.widget.TextView tvError = getView().findViewById(R.id.tvErrorMsg);
-                    if (tvError != null) tvError.setText("Yah, jaringan internet sepertinya terputus.\nSilakan periksa koneksi Anda.");
-                    
+                    if (tvError != null)
+                        tvError.setText("Yah, jaringan internet sepertinya terputus.\nSilakan periksa koneksi Anda.");
+
                     new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                        .setTitle("Koneksi Terputus")
-                        .setMessage("Tidak dapat terhubung ke server komunitas. Pastikan koneksi internet Anda aktif, lalu coba lagi.")
-                        .setPositiveButton("Mengerti", null)
-                        .show();
+                            .setTitle("Koneksi Terputus")
+                            .setMessage(
+                                    "Tidak dapat terhubung ke server komunitas. Pastikan koneksi internet Anda aktif, lalu coba lagi.")
+                            .setPositiveButton("Mengerti", null)
+                            .show();
                 }
             }
         });

@@ -17,7 +17,8 @@ public class DetailAthleteActivity extends AppCompatActivity {
         String name = getIntent().getStringExtra("EXTRA_NAME");
         String imageUrl = getIntent().getStringExtra("EXTRA_IMAGE");
 
-        if (name == null) name = "Atlet TrackFlow";
+        if (name == null)
+            name = "Atlet TrackFlow";
 
         // Inisialisasi View
         ImageView btnBack = findViewById(R.id.btnBack);
@@ -40,7 +41,9 @@ public class DetailAthleteActivity extends AppCompatActivity {
 
         // Fungsikan Tombol Dummy Interaktif
         android.view.View.OnClickListener dummyClickListener = v -> {
-            android.widget.Toast.makeText(this, "Fitur ini belum tersedia untuk data simulasi.", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast
+                    .makeText(this, "Fitur ini belum tersedia untuk data simulasi.", android.widget.Toast.LENGTH_SHORT)
+                    .show();
         };
 
         findViewById(R.id.btnActionShare).setOnClickListener(dummyClickListener);

@@ -50,7 +50,7 @@ public class DetailActivity extends AppCompatActivity {
         TextView tvDetailDuration = findViewById(R.id.tvDetailDuration);
         TextView tvDetailPace = findViewById(R.id.tvDetailPace);
         Button btnKudosLihat = findViewById(R.id.btnKudosLihat);
-        
+
         CardView cvBookmark = findViewById(R.id.cvBookmark);
         android.widget.ImageView ivBookmarkIcon = findViewById(R.id.ivBookmarkIcon);
         CardView cvMenu = findViewById(R.id.cvMenu);
@@ -64,16 +64,21 @@ public class DetailActivity extends AppCompatActivity {
         String photoUri = getIntent().getStringExtra("EXTRA_PHOTO_URI");
 
         // Set Default jika null
-        if (title == null || title.isEmpty()) title = "Berlari Siang";
-        if (distance == null || distance.isEmpty()) distance = "0,03 km";
-        if (duration == null || duration.isEmpty()) duration = "18d";
-        if (date == null || date.isEmpty()) date = "Hari ini pukul 12.34";
+        if (title == null || title.isEmpty())
+            title = "Berlari Siang";
+        if (distance == null || distance.isEmpty())
+            distance = "0,03 km";
+        if (duration == null || duration.isEmpty())
+            duration = "18d";
+        if (date == null || date.isEmpty())
+            date = "Hari ini pukul 12.34";
 
         // Pastikan format KM konsisten dengan screenshot
         if (!distance.toLowerCase().contains("km")) {
             distance = distance + " km";
         }
-        // Ganti titik dengan koma untuk lokalisasi Indonesia seperti di screenshot (0,03 km)
+        // Ganti titik dengan koma untuk lokalisasi Indonesia seperti di screenshot
+        // (0,03 km)
         distance = distance.replace(".", ",");
 
         // Format pace secara dinamis jika jarak valid
@@ -131,7 +136,8 @@ public class DetailActivity extends AppCompatActivity {
                         double lng = Double.parseDouble(latLng[1]);
                         new Thread(() -> {
                             try {
-                                android.location.Geocoder gc = new android.location.Geocoder(DetailActivity.this, java.util.Locale.getDefault());
+                                android.location.Geocoder gc = new android.location.Geocoder(DetailActivity.this,
+                                        java.util.Locale.getDefault());
                                 java.util.List<android.location.Address> list = gc.getFromLocation(lat, lng, 1);
                                 if (list != null && !list.isEmpty()) {
                                     android.location.Address a = list.get(0);
@@ -139,15 +145,18 @@ public class DetailActivity extends AppCompatActivity {
                                     String tempLoc = "";
                                     if (addressLine != null && !addressLine.isEmpty()) {
                                         String[] addressParts = addressLine.split(",");
-                                        tempLoc = addressParts[0].trim() + (addressParts.length > 1 ? ", " + addressParts[1].trim() : "");
+                                        tempLoc = addressParts[0].trim()
+                                                + (addressParts.length > 1 ? ", " + addressParts[1].trim() : "");
                                     }
                                     final String finalLoc = tempLoc.isEmpty() ? "Lokasi Tidak Diketahui" : tempLoc;
                                     runOnUiThread(() -> tvSubDetails.setText(finalDate + " · " + finalLoc));
                                 } else {
-                                    runOnUiThread(() -> tvSubDetails.setText(finalDate + " · Tamalanrea Indah, South Sulawesi"));
+                                    runOnUiThread(() -> tvSubDetails
+                                            .setText(finalDate + " · Tamalanrea Indah, South Sulawesi"));
                                 }
                             } catch (Exception e) {
-                                runOnUiThread(() -> tvSubDetails.setText(finalDate + " · Tamalanrea Indah, South Sulawesi"));
+                                runOnUiThread(
+                                        () -> tvSubDetails.setText(finalDate + " · Tamalanrea Indah, South Sulawesi"));
                             }
                         }).start();
                     } catch (Exception e) {
@@ -172,7 +181,8 @@ public class DetailActivity extends AppCompatActivity {
             if (isBookmarked) {
                 ivBookmarkIcon.setColorFilter(Color.parseColor("#FC4C02"));
             } else {
-                ivBookmarkIcon.setColorFilter(androidx.core.content.ContextCompat.getColor(this, R.color.map_btn_icon_tint));
+                ivBookmarkIcon
+                        .setColorFilter(androidx.core.content.ContextCompat.getColor(this, R.color.map_btn_icon_tint));
             }
         }
 
@@ -182,13 +192,19 @@ public class DetailActivity extends AppCompatActivity {
                 sharedPrefs.edit().putBoolean("FAV_ID_" + activityId, isBookmarked).apply();
                 if (isBookmarked) {
                     ivBookmarkIcon.setColorFilter(Color.parseColor("#FC4C02"));
-                    android.widget.Toast.makeText(DetailActivity.this, "Ditambahkan ke Favorit!", android.widget.Toast.LENGTH_SHORT).show();
+                    android.widget.Toast
+                            .makeText(DetailActivity.this, "Ditambahkan ke Favorit!", android.widget.Toast.LENGTH_SHORT)
+                            .show();
                     // Arahkan ke scene daftar lari favorit
-                    android.content.Intent favIntent = new android.content.Intent(DetailActivity.this, FavoriteActivity.class);
+                    android.content.Intent favIntent = new android.content.Intent(DetailActivity.this,
+                            FavoriteActivity.class);
                     startActivity(favIntent);
                 } else {
-                    ivBookmarkIcon.setColorFilter(androidx.core.content.ContextCompat.getColor(this, R.color.map_btn_icon_tint));
-                    android.widget.Toast.makeText(DetailActivity.this, "Dihapus dari Favorit!", android.widget.Toast.LENGTH_SHORT).show();
+                    ivBookmarkIcon.setColorFilter(
+                            androidx.core.content.ContextCompat.getColor(this, R.color.map_btn_icon_tint));
+                    android.widget.Toast
+                            .makeText(DetailActivity.this, "Dihapus dari Favorit!", android.widget.Toast.LENGTH_SHORT)
+                            .show();
                 }
             });
         }
@@ -196,7 +212,8 @@ public class DetailActivity extends AppCompatActivity {
         // Menu Click (Bagikan & Hapus)
         if (cvMenu != null) {
             cvMenu.setOnClickListener(v -> {
-                androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(DetailActivity.this, cvMenu);
+                androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(DetailActivity.this,
+                        cvMenu);
                 popup.getMenu().add("Bagikan Hasil Lari");
                 popup.getMenu().add("Hapus");
                 popup.setOnMenuItemClickListener(item -> {
@@ -209,7 +226,8 @@ public class DetailActivity extends AppCompatActivity {
                                 "Rata-rata Pace: " + finalPaceStr + "\n" +
                                 "Lokasi: " + tvSubDetails.getText().toString().replace(finalDate + " · ", "") + "\n\n" +
                                 "Unduh TrackFlow sekarang untuk melacak dan membagikan aktivitas lari Anda!";
-                        android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);
+                        android.content.Intent shareIntent = new android.content.Intent(
+                                android.content.Intent.ACTION_SEND);
                         shareIntent.setType("text/plain");
                         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Aktivitas Lari TrackFlow");
                         shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareText);
@@ -217,19 +235,20 @@ public class DetailActivity extends AppCompatActivity {
                         return true;
                     } else if (item.getTitle().equals("Hapus")) {
                         new androidx.appcompat.app.AlertDialog.Builder(DetailActivity.this)
-                            .setTitle("Hapus Aktivitas")
-                            .setMessage("Apakah Anda yakin ingin menghapus aktivitas ini?")
-                            .setPositiveButton("YA, HAPUS", (dialog, which) -> {
-                                ActivityHelper helper = ActivityHelper.getInstance(DetailActivity.this);
-                                helper.open();
-                                if (activityId != 0) {
-                                    helper.deleteById(String.valueOf(activityId));
-                                }
-                                android.widget.Toast.makeText(DetailActivity.this, "Aktivitas berhasil dihapus", android.widget.Toast.LENGTH_SHORT).show();
-                                finish();
-                            })
-                            .setNegativeButton("BATAL", (dialog, which) -> dialog.dismiss())
-                            .show();
+                                .setTitle("Hapus Aktivitas")
+                                .setMessage("Apakah Anda yakin ingin menghapus aktivitas ini?")
+                                .setPositiveButton("YA, HAPUS", (dialog, which) -> {
+                                    ActivityHelper helper = ActivityHelper.getInstance(DetailActivity.this);
+                                    helper.open();
+                                    if (activityId != 0) {
+                                        helper.deleteById(String.valueOf(activityId));
+                                    }
+                                    android.widget.Toast.makeText(DetailActivity.this, "Aktivitas berhasil dihapus",
+                                            android.widget.Toast.LENGTH_SHORT).show();
+                                    finish();
+                                })
+                                .setNegativeButton("BATAL", (dialog, which) -> dialog.dismiss())
+                                .show();
                         return true;
                     }
                     return false;
@@ -241,7 +260,7 @@ public class DetailActivity extends AppCompatActivity {
         // Inisialisasi Map dan gambar lintasan oranye dinamis (Screenshot 1)
         if (mapViewDetail != null) {
             mapViewDetail.setMultiTouchControls(true);
-            
+
             android.widget.ImageView ivMapBackgroundPhoto = findViewById(R.id.ivMapBackgroundPhoto);
             boolean hasPhoto = (photoUri != null && !photoUri.isEmpty());
 
@@ -249,7 +268,7 @@ public class DetailActivity extends AppCompatActivity {
                 try {
                     ivMapBackgroundPhoto.setVisibility(android.view.View.VISIBLE);
                     loadPhotoSafely(ivMapBackgroundPhoto, photoUri);
-                    
+
                     // Buat Peta Transparan agar rute mengambang di atas foto!
                     mapViewDetail.setBackgroundColor(Color.TRANSPARENT);
                     mapViewDetail.getOverlays().clear(); // Hapus tile peta (jalan raya dll)
@@ -274,7 +293,8 @@ public class DetailActivity extends AppCompatActivity {
                     if (latLng.length == 2) {
                         try {
                             points.add(new GeoPoint(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1])));
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
@@ -333,17 +353,18 @@ public class DetailActivity extends AppCompatActivity {
         List<GeoPoint> points = new ArrayList<>();
         double centerLat = -5.1345;
         double centerLng = 119.4895;
-        
+
         // Seeded variation for realistic, unique loops
         double seed = (id * 17) % 100 / 100.0;
         double scale = 0.003 + (seed * 0.0015);
-        
+
         int numSteps = 24;
         for (int i = 0; i < numSteps; i++) {
             double angle = (2.0 * Math.PI * i) / numSteps;
-            double r = scale * (1.0 + 0.25 * Math.sin(angle * 3) + 0.15 * Math.cos(angle * 5) + 0.08 * Math.sin(angle * 7));
+            double r = scale
+                    * (1.0 + 0.25 * Math.sin(angle * 3) + 0.15 * Math.cos(angle * 5) + 0.08 * Math.sin(angle * 7));
             double rotatedAngle = angle + (seed * Math.PI / 2.0);
-            
+
             double latOffset = r * Math.cos(rotatedAngle);
             double lngOffset = r * Math.sin(rotatedAngle) * 1.2;
             points.add(new GeoPoint(centerLat + latOffset, centerLng + lngOffset));
@@ -404,7 +425,7 @@ public class DetailActivity extends AppCompatActivity {
 
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.BLACK);
-        
+
         // Kotak kiri atas dan kanan bawah hitam
         canvas.drawRect(cx - radius, cy - radius, cx, cy, paint);
         canvas.drawRect(cx, cy, cx + radius, cy + radius, paint);
@@ -416,13 +437,15 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (mapViewDetail != null) mapViewDetail.onResume();
+        if (mapViewDetail != null)
+            mapViewDetail.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mapViewDetail != null) mapViewDetail.onPause();
+        if (mapViewDetail != null)
+            mapViewDetail.onPause();
     }
 
     private void loadPhotoSafely(android.widget.ImageView iv, String uriStr) {
@@ -432,7 +455,8 @@ public class DetailActivity extends AppCompatActivity {
             android.graphics.BitmapFactory.Options options = new android.graphics.BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             android.graphics.BitmapFactory.decodeStream(is, null, options);
-            if (is != null) is.close();
+            if (is != null)
+                is.close();
 
             int scale = 1;
             while (options.outWidth / scale / 2 >= 1024 && options.outHeight / scale / 2 >= 1024) {
@@ -443,8 +467,9 @@ public class DetailActivity extends AppCompatActivity {
             options2.inSampleSize = scale;
             is = getContentResolver().openInputStream(uri);
             android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(is, null, options2);
-            if (is != null) is.close();
-            
+            if (is != null)
+                is.close();
+
             if (bitmap != null) {
                 iv.setImageBitmap(bitmap);
             } else {

@@ -58,17 +58,16 @@ public class FormActivity extends AppCompatActivity {
                     ivPreviewPhoto.setImageURI(uri);
                     ivPreviewPhoto.setVisibility(View.VISIBLE);
                 }
-            }
-    );
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Inisialisasi konfigurasi OSMDroid sebelum setContentView
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
-        
+
         setContentView(R.layout.activity_form);
 
         EditText edtTitle = findViewById(R.id.edtTitle);
@@ -88,15 +87,17 @@ public class FormActivity extends AppCompatActivity {
         // Sport picker dialog
         if (llSportSelector != null) {
             llSportSelector.setOnClickListener(v -> {
-                String[] sportNames = {"Berlari", "Bersepeda", "Jalan Kaki", "Trail Run"};
-                int[] sportIcons = {R.drawable.ic_shoe, R.drawable.ic_bike, R.drawable.ic_walk, R.drawable.ic_hiking};
+                String[] sportNames = { "Berlari", "Bersepeda", "Jalan Kaki", "Trail Run" };
+                int[] sportIcons = { R.drawable.ic_shoe, R.drawable.ic_bike, R.drawable.ic_walk, R.drawable.ic_hiking };
                 new AlertDialog.Builder(FormActivity.this)
-                    .setTitle("Pilih Jenis Olahraga")
-                    .setItems(sportNames, (dialog, which) -> {
-                        if (tvFormSportName != null) tvFormSportName.setText(sportNames[which]);
-                        if (ivFormSportIcon != null) ivFormSportIcon.setImageResource(sportIcons[which]);
-                    })
-                    .show();
+                        .setTitle("Pilih Jenis Olahraga")
+                        .setItems(sportNames, (dialog, which) -> {
+                            if (tvFormSportName != null)
+                                tvFormSportName.setText(sportNames[which]);
+                            if (ivFormSportIcon != null)
+                                ivFormSportIcon.setImageResource(sportIcons[which]);
+                        })
+                        .show();
             });
         }
 
@@ -112,13 +113,13 @@ public class FormActivity extends AppCompatActivity {
         tvVisibility = findViewById(R.id.tvVisibility);
         if (llVisibility != null) {
             llVisibility.setOnClickListener(v -> {
-                String[] visibilityOptions = {"🌍 Publik", "👥 Para pengikut", "🔒 Hanya Saya"};
+                String[] visibilityOptions = { "🌍 Publik", "👥 Para pengikut", "🔒 Hanya Saya" };
                 new AlertDialog.Builder(FormActivity.this)
                         .setTitle("Siapa yang bisa melihat")
                         .setItems(visibilityOptions, (dialog, which) -> {
                             if (tvVisibility != null) {
                                 // Buang emoji untuk teks (opsional, tapi lebih rapi jika emoji tetap ada)
-                                tvVisibility.setText(visibilityOptions[which].substring(3)); 
+                                tvVisibility.setText(visibilityOptions[which].substring(3));
                             }
                         })
                         .show();
@@ -144,7 +145,7 @@ public class FormActivity extends AppCompatActivity {
             mapViewPreview.setTileSource(TileSourceFactory.MAPNIK);
             IMapController controller = mapViewPreview.getController();
             controller.setZoom(17.0);
-            
+
             java.util.List<GeoPoint> previewPoints = new java.util.ArrayList<>();
             if (incomingPath != null && !incomingPath.isEmpty()) {
                 String[] parts = incomingPath.split(";");
@@ -152,8 +153,10 @@ public class FormActivity extends AppCompatActivity {
                     String[] latLng = part.split(",");
                     if (latLng.length == 2) {
                         try {
-                            previewPoints.add(new GeoPoint(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1])));
-                        } catch (Exception ignored) {}
+                            previewPoints
+                                    .add(new GeoPoint(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1])));
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
@@ -189,7 +192,7 @@ public class FormActivity extends AppCompatActivity {
 
             cardQuickDuration.setVisibility(View.GONE);
             finalDurationString = incomingDuration;
-            
+
             // Auto fill title dan distance untuk mempercepat UI
             edtTitle.setText("Berlari Siang");
             if (incomingDistance != null && !incomingDistance.isEmpty()) {
@@ -256,7 +259,7 @@ public class FormActivity extends AppCompatActivity {
 
             ContentValues values = new ContentValues();
             values.put(DatabaseContract.ActivityColumns.COLUMN_TITLE, title);
-            
+
             String distToSave = distance;
             if (!distToSave.toUpperCase().contains("KM")) {
                 distToSave = distToSave + " KM";
@@ -267,21 +270,23 @@ public class FormActivity extends AppCompatActivity {
             if (incomingPath != null) {
                 values.put(DatabaseContract.ActivityColumns.COLUMN_PATH, incomingPath);
             }
-            
+
             String savedPhotoUriStr = null;
             if (selectedImageUri != null) {
                 savedPhotoUriStr = selectedImageUri.toString(); // Gunakan URI aslinya
                 try {
-                    getContentResolver().takePersistableUriPermission(selectedImageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    getContentResolver().takePersistableUriPermission(selectedImageUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                
+
                 try {
                     // Coba copy file ke internal storage
                     InputStream is = getContentResolver().openInputStream(selectedImageUri);
                     File dir = new File(getFilesDir(), "trackflow_photos");
-                    if (!dir.exists()) dir.mkdirs();
+                    if (!dir.exists())
+                        dir.mkdirs();
                     File dest = new File(dir, "IMG_" + System.currentTimeMillis() + ".jpg");
                     OutputStream os = new FileOutputStream(dest);
                     byte[] buffer = new byte[1024];
@@ -303,7 +308,7 @@ public class FormActivity extends AppCompatActivity {
             long result = activityHelper.insert(values);
             if (result > 0) {
                 Toast.makeText(this, "Aktivitas berhasil disimpan", Toast.LENGTH_SHORT).show();
-                
+
                 // Launch DetailActivity matching screenshot 1
                 Intent intent = new Intent(FormActivity.this, DetailActivity.class);
                 intent.putExtra("EXTRA_TITLE", title);
