@@ -25,6 +25,8 @@ public class CommunityFragment extends Fragment {
     private UserAdapter adapter;
     private ImageView ivCommunityAvatar;
     private SharedPreferences sharedPreferences;
+    private View llErrorState;
+    private com.google.android.material.button.MaterialButton btnRefreshCommunity;
 
     public CommunityFragment() {}
 
@@ -39,8 +41,17 @@ public class CommunityFragment extends Fragment {
 
         rvUsers = view.findViewById(R.id.rvUsers);
         ivCommunityAvatar = view.findViewById(R.id.ivCommunityAvatar);
+        llErrorState = view.findViewById(R.id.llErrorState);
+        btnRefreshCommunity = view.findViewById(R.id.btnRefreshCommunity);
 
         sharedPreferences = requireActivity().getSharedPreferences("TrackFlowPrefs", Context.MODE_PRIVATE);
+
+        btnRefreshCommunity.setOnClickListener(v -> {
+            llErrorState.setVisibility(View.GONE);
+            rvUsers.setVisibility(View.VISIBLE);
+            Toast.makeText(requireContext(), "Mencoba menghubungkan kembali...", Toast.LENGTH_SHORT).show();
+            fetchDataFromApi();
+        });
 
         rvUsers.setLayoutManager(new LinearLayoutManager(requireContext()));
         
@@ -80,18 +91,32 @@ public class CommunityFragment extends Fragment {
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 // isAdded() mencegah force close jika user pindah halaman sebelum loading selesai
                 if (isAdded() && response.isSuccessful() && response.body() != null) {
+                    llErrorState.setVisibility(View.GONE);
+                    rvUsers.setVisibility(View.VISIBLE);
                     List<User> userList = response.body().getUsers();
                     adapter = new UserAdapter(userList, sharedPreferences);
                     rvUsers.setAdapter(adapter);
                 } else if (isAdded()) {
-                    Toast.makeText(requireContext(), "Gagal: " + response.code(), Toast.LENGTH_LONG).show();
+                    rvUsers.setVisibility(View.GONE);
+                    llErrorState.setVisibility(View.VISIBLE);
+                    android.widget.TextView tvError = getView().findViewById(R.id.tvErrorMsg);
+                    if (tvError != null) tvError.setText("Waduh, server komunitas sedang sibuk. Coba lagi nanti, ya!");
                 }
             }
 
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    rvUsers.setVisibility(View.GONE);
+                    llErrorState.setVisibility(View.VISIBLE);
+                    android.widget.TextView tvError = getView().findViewById(R.id.tvErrorMsg);
+                    if (tvError != null) tvError.setText("Yah, jaringan internet sepertinya terputus.\nSilakan periksa koneksi Anda.");
+                    
+                    new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Koneksi Terputus")
+                        .setMessage("Tidak dapat terhubung ke server komunitas. Pastikan koneksi internet Anda aktif, lalu coba lagi.")
+                        .setPositiveButton("Mengerti", null)
+                        .show();
                 }
             }
         });

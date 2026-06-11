@@ -46,4 +46,44 @@
         app:layout_constraintTop_toBottomOf="@id/cvCommunityAvatar"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <!-- Error / Offline State -->
+    <LinearLayout
+        android:id="@+id/llErrorState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/cvCommunityAvatar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@android:drawable/ic_dialog_alert"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvErrorMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Koneksi terputus. Tidak dapat memuat daftar atlet."
+            android:textAlignment="center"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="24dp"
+            android:layout_marginHorizontal="32dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRefreshCommunity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Coba Lagi"
+            app:icon="@android:drawable/ic_popup_sync"
+            app:cornerRadius="20dp"
+            app:backgroundTint="#FC4C02"/>
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
