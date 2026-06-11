@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light/Dark Mode adaptive semantic colors -->
+    <color name="app_background">#121212</color>
+    <color name="app_surface">#1A1A1A</color>
+    <color name="app_surface_card">#222222</color>
+    
+    <color name="app_text_primary">#FFFFFF</color>
+    <color name="app_text_secondary">#CCCCCC</color>
+    <color name="app_text_hint">#888888</color>
+    
+    <!-- Streak circle colors -->
+    <color name="circle_today_bg">#FFFFFF</color> <!-- White circle, orange shoe in dark mode -->
+    <color name="circle_other_bg">#222222</color> <!-- Dark grey for other days in dark mode -->
+    <color name="circle_today_text">#FC4C02</color>
+    <color name="circle_other_text">#888888</color>
+    <color name="circle_shoe_tint">#FC4C02</color>
+    
+    <color name="app_divider">#2C2C2C</color>
+    <color name="map_btn_background">#E61E1E1E</color>
+    <color name="map_btn_icon_tint">#FFFFFF</color>
+</resources>

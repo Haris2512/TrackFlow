@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="8dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kemajuan Bulan Juni"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvMonthlyStatsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="15,4 KM • 3 Aktivitas Lari"
+        android:textColor="#FC4C02"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp"/>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:max="100"
+        android:progress="65"
+        android:progressTint="#FC4C02"
+        android:progressBackgroundTint="@color/app_surface_card"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="65% dari target bulanan Anda (25 KM) tercapai"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="11sp"
+        android:layout_marginTop="8dp"/>
+</LinearLayout>

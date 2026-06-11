@@ -1,7 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TrackFlow" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <style name="Base.Theme.TrackFlow" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/strava_orange</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <item name="colorSecondary">@color/strava_orange_dark</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+
+        <item name="android:colorBackground">#121212</item>
+        <item name="colorSurface">#1E1E1E</item>
+        <item name="colorSurfaceVariant">#222222</item>
+
+        <item name="colorOnBackground">#FFFFFF</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorOnSurfaceVariant">#CCCCCC</item>
+        <item name="android:textColor">#FFFFFF</item>
+
+        <item name="android:statusBarColor">#121212</item>
     </style>
+
+    <style name="Theme.TrackFlow" parent="Base.Theme.TrackFlow" />
 </resources>

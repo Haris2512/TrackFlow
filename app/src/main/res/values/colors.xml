@@ -2,4 +2,57 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="tf_primary">#1B5E20</color>
+    <color name="tf_primary_variant">#2E7D32</color>
+    <color name="tf_on_primary">#FFFFFF</color>
+    <color name="tf_secondary">#00897B</color>
+    <color name="tf_secondary_variant">#00695C</color>
+    <color name="tf_on_secondary">#FFFFFF</color>
+    <color name="tf_background">#F5F5F5</color>
+    <color name="tf_surface">#FFFFFF</color>
+    <color name="tf_on_background">#1C1B1F</color>
+    <color name="tf_on_surface">#1C1B1F</color>
+
+    <color name="tf_primary_dark">#66BB6A</color>
+    <color name="tf_primary_variant_dark">#81C784</color>
+    <color name="tf_on_primary_dark">#003910</color>
+    <color name="tf_secondary_dark">#4DB6AC</color>
+    <color name="tf_secondary_variant_dark">#80CBC4</color>
+    <color name="tf_on_secondary_dark">#003731</color>
+    <color name="tf_background_dark">#121212</color>
+    <color name="tf_surface_dark">#1E1E1E</color>
+    <color name="tf_on_background_dark">#E6E1E5</color>
+    <color name="tf_on_surface_dark">#E6E1E5</color>
+
+    <color name="stitch_bg_dark">#0B1528</color>
+    <color name="stitch_surface_dark">#16253D</color>
+    <color name="stitch_cyan_neon">#00E5FF</color>
+    <color name="stitch_magenta_neon">#FF2A85</color>
+    <color name="stitch_text_primary">#FFFFFF</color>
+    <color name="stitch_text_secondary">#8A9BB4</color>
+
+    <color name="strava_orange">#FC4C02</color>
+    <color name="strava_orange_dark">#DF4302</color>
+    <color name="strava_grey">#333333</color>
+
+    <!-- Light/Dark Mode adaptive semantic colors -->
+    <color name="app_background">#F5F5F5</color>
+    <color name="app_surface">#FFFFFF</color>
+    <color name="app_surface_card">#EBEBEB</color>
+    
+    <color name="app_text_primary">#121212</color>
+    <color name="app_text_secondary">#555555</color>
+    <color name="app_text_hint">#888888</color>
+    
+    <!-- Streak circle colors -->
+    <color name="circle_today_bg">#FC4C02</color> <!-- Orange circle, white shoe in light mode -->
+    <color name="circle_other_bg">#E0E0E0</color> <!-- Light grey for other days in light mode -->
+    <color name="circle_today_text">#FFFFFF</color>
+    <color name="circle_other_text">#666666</color>
+    <color name="circle_shoe_tint">#FFFFFF</color>
+    
+    <color name="app_divider">#E0E0E0</color>
+    <color name="map_btn_background">#E6FFFFFF</color>
+    <color name="map_btn_icon_tint">#121212</color>
 </resources>
