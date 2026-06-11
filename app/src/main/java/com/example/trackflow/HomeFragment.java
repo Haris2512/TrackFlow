@@ -102,13 +102,21 @@ public class HomeFragment extends Fragment {
 
         if (vpStreak != null) {
             vpStreak.setAdapter(new StreakPagerAdapter());
+            
+            // Helper untuk set warna dot
+            int activeColor = Color.parseColor("#FC4C02"); // Orange
+            android.util.TypedValue typedValue = new android.util.TypedValue();
+            int attrColorOnSurfaceVariant = requireContext().getResources().getIdentifier("colorOnSurfaceVariant", "attr", requireContext().getPackageName());
+            requireContext().getTheme().resolveAttribute(attrColorOnSurfaceVariant, typedValue, true);
+            int inactiveColor = typedValue.data; // Warna abu-abu adaptif (light/dark)
+
             vpStreak.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
                 @Override
                 public void onPageSelected(int position) {
                     super.onPageSelected(position);
-                    if (dot1 != null) dot1.setBackgroundResource(position == 0 ? R.drawable.bg_circle_white : R.drawable.bg_circle_dark);
-                    if (dot2 != null) dot2.setBackgroundResource(position == 1 ? R.drawable.bg_circle_white : R.drawable.bg_circle_dark);
-                    if (dot3 != null) dot3.setBackgroundResource(position == 2 ? R.drawable.bg_circle_white : R.drawable.bg_circle_dark);
+                    if (dot1 != null) dot1.setBackgroundTintList(android.content.res.ColorStateList.valueOf(position == 0 ? activeColor : inactiveColor));
+                    if (dot2 != null) dot2.setBackgroundTintList(android.content.res.ColorStateList.valueOf(position == 1 ? activeColor : inactiveColor));
+                    if (dot3 != null) dot3.setBackgroundTintList(android.content.res.ColorStateList.valueOf(position == 2 ? activeColor : inactiveColor));
                 }
             });
         }
@@ -238,22 +246,29 @@ public class HomeFragment extends Fragment {
             boolean isToday = (cal.get(Calendar.YEAR) == todayYear && cal.get(Calendar.DAY_OF_YEAR) == todayDayOfYear);
             
             if (tvDayName != null) {
-                String fullDayName = dayLetterFmt.format(cal.getTime()); // Cth: "Sen", "Sel"
+                String fullDayName = dayLetterFmt.format(cal.getTime());
                 String firstLetter = !fullDayName.isEmpty() ? fullDayName.substring(0, 1).toUpperCase() : "";
                 tvDayName.setText(firstLetter);
+                
+                android.util.TypedValue tvText = new android.util.TypedValue();
                 if (isToday) {
-                    tvDayName.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_today_text));
+                    // Gunakan circle_today_bg (Oranye di Light Mode, Putih di Dark Mode) agar kontras dengan background layar
+                    tvDayName.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_today_bg));
                 } else {
                     tvDayName.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_text));
                 }
             }
             
             if (flDateFrame != null) {
+                android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
+                gd.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                android.util.TypedValue tv = new android.util.TypedValue();
                 if (isToday) {
-                    flDateFrame.setBackgroundResource(R.drawable.bg_circle_white);
+                    gd.setColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_today_bg));
                 } else {
-                    flDateFrame.setBackgroundResource(R.drawable.bg_circle_dark);
+                    gd.setColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.circle_other_bg));
                 }
+                flDateFrame.setBackground(gd);
             }
             
             if (tvDateVal != null) {

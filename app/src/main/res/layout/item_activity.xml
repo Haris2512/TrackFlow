@@ -214,23 +214,25 @@
                     android:layout_toStartOf="@id/btnLihatKudos"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="12dp"
+                    android:layout_marginEnd="8dp"
                     android:text="Kudos (Apresiasi): Selamat atas pencapaian lari Anda!"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textStyle="bold"/>
 
                 <!-- Lihat Button -->
                 <Button
                     android:id="@+id/btnLihatKudos"
                     android:layout_width="wrap_content"
-                    android:layout_height="32dp"
+                    android:layout_height="28dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="4dp"
                     android:text="Lihat"
                     android:textColor="#FFFFFF"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="0dp"
                     android:background="@drawable/bg_badge_orange"
                     app:backgroundTint="#FC4C02"/>
