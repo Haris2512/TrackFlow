@@ -52,14 +52,14 @@ public class RecordFragment extends Fragment {
     private MapView mapView;
     private MyLocationNewOverlay locationOverlay;
 
-    // View Map View
+    // Overlay peta & kontrol saat aktif merekam
     private ConstraintLayout clMapOverlay;
     private CardView cvStopwatch;
     private TextView tvStopwatch;
     private FloatingActionButton fabPlay;
     private CardView cvCollapse;
 
-    // View Dashboard View (Stats)
+    // Tampilan dashboard statistik (muncul saat rekaman berjalan)
     private LinearLayout llDashboardView;
     private LinearLayout llDashStatusBar;
     private TextView tvDashStopwatch;
@@ -67,21 +67,21 @@ public class RecordFragment extends Fragment {
     private TextView tvDashDistanceVal;
     private ImageView ivDashCollapse;
 
-    // Bottom Sheet Control Views
+    // Tombol kontrol lari (Jeda, Lanjutkan, Selesaikan)
     private ConstraintLayout clActionRow;
     private Button btnJeda;
     private LinearLayout llPauseButtons;
     private Button btnLanjutkan;
     private Button btnSelesaikan;
 
-    // Sport Selector Views
+    // Pilihan jenis olahraga
     private LinearLayout llRun;
     private ImageView ivSportIcon;
     private TextView tvSportName;
     private String selectedSport = "Berlari";
     private int selectedSportIconRes = R.drawable.ic_shoe;
 
-    // Service Connection
+    // Koneksi ke TrackingService yang berjalan di background
     private TrackingService trackingService;
     private boolean isBound = false;
     private Polyline livePolyline;
@@ -247,7 +247,7 @@ public class RecordFragment extends Fragment {
         locationOverlay.setPersonHotspot(blueDot.getWidth() / 2f, blueDot.getHeight() / 2f);
         locationOverlay.setDrawAccuracyEnabled(true);
         locationOverlay.enableMyLocation();
-        locationOverlay.enableFollowLocation(); // Kamera otomatis mengikuti titik biru
+        locationOverlay.enableFollowLocation(); // Peta otomatis ikuti posisi user
 
         locationOverlay.runOnFirstFix(() -> {
             if (getActivity() != null) {
@@ -275,6 +275,7 @@ public class RecordFragment extends Fragment {
             gpsEnabled = lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
         } catch(Exception e) {}
 
+        // Tolak mulai jika GPS mati, beri tahu user dengan jelas
         if (!gpsEnabled) {
             new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setTitle("Sinyal GPS Lemah / Mati")
@@ -327,6 +328,7 @@ public class RecordFragment extends Fragment {
         
         sendServiceAction(TrackingService.ACTION_STOP);
 
+        // Format durasi ke bentuk yang ramah untuk disimpan ke form
         int totalMin = secs / 60;
         String formattedDurationForForm;
         if (totalMin <= 0) {

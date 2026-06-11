@@ -19,30 +19,30 @@ public class SplashActivity extends AppCompatActivity {
         ImageView ivLogo = findViewById(R.id.ivSplashLogo);
         TextView tvTitle = findViewById(R.id.tvSplashTitle);
 
-        // 1. Sembunyikan elemen terlebih dahulu (ukuran 50%, transparan)
+        // Sembunyikan dulu, animasi mulai dari kecil ke normal
         ivLogo.setScaleX(0.5f);
         ivLogo.setScaleY(0.5f);
         ivLogo.setAlpha(0f);
         tvTitle.setAlpha(0f);
 
-        // 2. Jalankan Animasi (Membesar dengan efek memantul / Overshoot)
+        // Logo muncul dengan efek pantul
         ivLogo.animate()
                 .scaleX(1f).scaleY(1f).alpha(1f)
                 .setInterpolator(new OvershootInterpolator())
                 .setDuration(1000)
                 .start();
 
-        // Judul muncul perlahan setelah logo setengah jalan membesar
+        // Judul menyusul 0.5 detik setelah logo
         tvTitle.animate()
                 .alpha(1f)
                 .setDuration(1000)
                 .setStartDelay(500)
                 .start();
 
-        // 3. Pindah ke MainActivity setelah 2.5 detik (Menggunakan Handler)
+        // Masuk ke halaman utama setelah 2.5 detik
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            finish(); // Tutup Splash Screen agar tidak bisa di-back
+            finish(); // Tutup agar tidak bisa kembali ke splash
         }, 2500);
     }
 }

@@ -42,7 +42,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         ActivityModel activity = listActivities.get(position);
         holder.bind(activity);
 
-        // --- KLIK ITEM UNTUK DETAIL LATIHAN ---
+        // Klik item untuk buka detail aktivitas
         holder.itemView.setOnClickListener(v -> {
             Context context = v.getContext();
             android.content.Intent intent = new android.content.Intent(context, DetailActivity.class);
@@ -55,7 +55,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             context.startActivity(intent);
         });
 
-        // ---  TEKAN LAMA (LONG CLICK) UNTUK HAPUS DATA ---
+        // Tekan lama untuk hapus data
         holder.itemView.setOnLongClickListener(v -> {
             Context context = v.getContext();
 
@@ -147,7 +147,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             // Hitung Pace dinamis
             tvPace.setText(calculatePace(item.getDistance(), item.getDuration()));
 
-            // Ambil data user dari Shared Preferences untuk melengkapi profil card feed
+            // Nama user dari SharedPreferences
             SharedPreferences prefs = itemView.getContext().getSharedPreferences("TrackFlowPrefs", Context.MODE_PRIVATE);
             String username = prefs.getString("USERNAME", "another rhiez");
             tvItemName.setText(username);
@@ -250,7 +250,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
                 mapViewItem.invalidate();
             }
 
-            // Aksi tombol Lihat Kudos
+            // Tombol Lihat Kudos juga mengarah ke halaman detail yang sama
             if (btnLihatKudos != null) {
                 btnLihatKudos.setOnClickListener(v -> {
                     Context context = v.getContext();
@@ -305,12 +305,13 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             }
         }
 
+        // Hasilkan rute organik unik berdasarkan id sebagai seed
+        // Ini hanya untuk preview visual di kartu riwayat, bukan rute GPS asli
         private List<GeoPoint> generateOrganicRoute(int id) {
             List<GeoPoint> points = new ArrayList<>();
             double centerLat = -5.1345;
             double centerLng = 119.4895;
             
-            // Seeded variation for realistic, unique loops
             double seed = (id * 17) % 100 / 100.0;
             double scale = 0.003 + (seed * 0.0015);
             
@@ -324,8 +325,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
                 double lngOffset = r * Math.sin(rotatedAngle) * 1.2;
                 points.add(new GeoPoint(centerLat + latOffset, centerLng + lngOffset));
             }
-            // Close the loop
-            points.add(points.get(0));
+            points.add(points.get(0)); // Tutup loop
             return points;
         }
     }

@@ -94,7 +94,7 @@ public class HomeFragment extends Fragment {
             );
         });
 
-        // Setup ViewPager2 untuk kartu Streak (Beruntun Anda)
+        // Slider streak (kartu beruntun lari mingguan)
         ViewPager2 vpStreak = view.findViewById(R.id.vpStreak);
         View dot1 = view.findViewById(R.id.dot1);
         View dot2 = view.findViewById(R.id.dot2);
@@ -103,12 +103,12 @@ public class HomeFragment extends Fragment {
         if (vpStreak != null) {
             vpStreak.setAdapter(new StreakPagerAdapter());
             
-            // Helper untuk set warna dot
-            int activeColor = Color.parseColor("#FC4C02"); // Orange
+            // Warna dot aktif = oranye, tidak aktif = abu-abu sesuai tema
+            int activeColor = Color.parseColor("#FC4C02");
             android.util.TypedValue typedValue = new android.util.TypedValue();
             int attrColorOnSurfaceVariant = requireContext().getResources().getIdentifier("colorOnSurfaceVariant", "attr", requireContext().getPackageName());
             requireContext().getTheme().resolveAttribute(attrColorOnSurfaceVariant, typedValue, true);
-            int inactiveColor = typedValue.data; // Warna abu-abu adaptif (light/dark)
+            int inactiveColor = typedValue.data;
 
             vpStreak.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
                 @Override
@@ -121,7 +121,7 @@ public class HomeFragment extends Fragment {
             });
         }
 
-        // Hubungkan aksi bagikan streak
+        // Tombol bagikan streak ke sosmed
         LinearLayout btnShareStreak = view.findViewById(R.id.btnShareStreak);
         if (btnShareStreak != null) {
             btnShareStreak.setOnClickListener(v -> {
@@ -133,7 +133,7 @@ public class HomeFragment extends Fragment {
             });
         }
 
-        // Hubungkan fitur pencarian dan notifikasi di Toolbar
+        // Ikon pencarian di toolbar
         View ivSearchIcon = view.findViewById(R.id.ivSearchIcon);
         if (ivSearchIcon != null) {
             ivSearchIcon.setOnClickListener(v -> showSearchDialog());

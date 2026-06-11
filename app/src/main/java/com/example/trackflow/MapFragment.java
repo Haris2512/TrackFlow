@@ -54,19 +54,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * MapFragment — "Buat Rute" seperti Strava.
- *
- * Alur:
- * 1. GPS otomatis deteksi lokasi user → tampil sebagai titik biru
- * 2. User tap peta (atau cari via Nominatim) untuk menentukan SATU titik tujuan → marker hijau
- * 3. OSRM foot API hitung rute lokasi user → tujuan
- * 4. Polyline oranye tergambar, bottom sheet tampil: jarak, estimasi waktu lari, kesulitan
- * 5. Tombol "Mulai Lari" tersedia
- */
+// MapFragment mengelola tampilan peta interaktif menggunakan OSMDroid.
+// Alur utama: GPS deteksi posisi → user tap tujuan → OSRM hitung rute → tampilkan polyline + statistik.
 public class MapFragment extends Fragment {
 
-    // ── Views ──
+    // Views
     private MapView mapView;
     private MyLocationNewOverlay locationOverlay;
     private EditText etSearchMap;
@@ -78,15 +70,15 @@ public class MapFragment extends Fragment {
     private View layoutEmpty, layoutRoute;
     private BottomSheetBehavior<View> sheetBehavior;
 
-    // ── State ──
-    private GeoPoint myLocation = null;          // Titik biru (GPS user)
-    private GeoPoint destinationPoint = null;    // Titik hijau (tujuan)
+    // State tracking
+    private GeoPoint myLocation = null;       // Lokasi GPS user saat ini
+    private GeoPoint destinationPoint = null; // Titik tujuan yang dipilih
     private Marker destinationMarker = null;
     private Polyline routeLine = null;
-    private boolean waitingForTap = false;       // Mode menunggu tap peta
+    private boolean waitingForTap = false;    // true = mode pilih tujuan aktif
     private double routeDistanceKm = 0;
 
-    // ── API ──
+    // OSRM base URL (mode kaki/lari)
     private static final String OSRM_BASE = "https://routing.openstreetmap.de/";
     private NominatimApiService osrmService;
 
@@ -96,11 +88,10 @@ public class MapFragment extends Fragment {
         Configuration.getInstance().load(ctx,
                 androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
         
-        // Konfigurasi OSMDroid agar lancar dan tidak diblokir server OSM:
-        // 1. Set User-Agent unik (Wajib bagi OSMDroid agar tidak di-throttle/blokir)
+        // User-Agent wajib diset, kalau tidak OSM bisa throttle request kita
         Configuration.getInstance().setUserAgentValue(ctx.getPackageName());
         
-        // 2. Arahkan direktori penyimpanan cache peta ke internal cache (Solusi Scoped Storage Android 10+)
+        // Cache tile ke internal storage agar kompatibel dengan scoped storage Android 10+
         java.io.File osmdroidBasePath = new java.io.File(ctx.getCacheDir(), "osmdroid");
         Configuration.getInstance().setOsmdroidBasePath(osmdroidBasePath);
         java.io.File osmdroidTileCache = new java.io.File(osmdroidBasePath, "tiles");
@@ -120,8 +111,6 @@ public class MapFragment extends Fragment {
         checkPermission();
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    // INIT
     // ─────────────────────────────────────────────────────────────────────
 
     private void bindViews(View v) {
@@ -151,7 +140,7 @@ public class MapFragment extends Fragment {
         mapView.getController().setZoom(15.0);
         mapView.getController().setCenter(new GeoPoint(-5.147665, 119.432731));
 
-        // Tap listener
+        // Overlay untuk deteksi tap dan long-press di peta
         MapEventsOverlay eventsOverlay = new MapEventsOverlay(new MapEventsReceiver() {
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
@@ -163,7 +152,6 @@ public class MapFragment extends Fragment {
             }
             @Override
             public boolean longPressHelper(GeoPoint p) {
-                // Long press juga bisa set tujuan
                 setDestination(p);
                 return true;
             }
@@ -189,14 +177,10 @@ public class MapFragment extends Fragment {
     private void setupListeners() {
         // Tombol "Tentukan Tujuan di Peta"
         btnSetTujuan.setOnClickListener(v -> activateTapMode());
-
-        // FAB kembali ke lokasi
         fabMyLocation.setOnClickListener(v -> goToMyLocation());
-
-        // FAB hapus tujuan
         fabClear.setOnClickListener(v -> clearDestination());
 
-        // FAB refresh rute (koneksi jaringan)
+        // Refresh rute setelah koneksi kembali
         fabRefresh.setOnClickListener(v -> {
             if (myLocation != null && destinationPoint != null) {
                 fabRefresh.setVisibility(View.GONE);
@@ -236,11 +220,10 @@ public class MapFragment extends Fragment {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     // TAP MODE & DESTINATION
     // ─────────────────────────────────────────────────────────────────────
 
-    /** Aktifkan mode tap — user akan pilih satu titik di peta */
+    // Cek internet dulu sebelum masuk mode tap — OSRM tidak bisa offline
     private void activateTapMode() {
         // Cek koneksi internet sebelum mengizinkan pencarian rute (OSRM butuh internet)
         android.net.ConnectivityManager cm = (android.net.ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -265,19 +248,14 @@ public class MapFragment extends Fragment {
         Toast.makeText(requireContext(), "Ketuk peta untuk menentukan tujuan larimu", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Dipanggil saat user mengetuk peta.
-     * Pasang marker hijau di titik tujuan, lalu panggil OSRM.
-     */
+    // Dipanggil saat user mengetuk titik di peta
     private void setDestination(GeoPoint destination) {
         waitingForTap = false;
         tvTapHint.setVisibility(View.GONE);
         destinationPoint = destination;
 
-        // Hapus marker lama
         if (destinationMarker != null) mapView.getOverlays().remove(destinationMarker);
 
-        // Marker hijau untuk tujuan
         destinationMarker = new Marker(mapView);
         destinationMarker.setPosition(destination);
         destinationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
@@ -286,13 +264,11 @@ public class MapFragment extends Fragment {
         mapView.getOverlays().add(destinationMarker);
         mapView.invalidate();
 
-        // Tampil FAB clear
         fabClear.setVisibility(View.VISIBLE);
 
-        // Ambil nama lokasi tujuan via Geocoder (background)
+        // Geocoding nama lokasi berjalan di background
         getLocationName(destination);
 
-        // Hitung rute via OSRM
         if (myLocation != null) {
             showLoading(true);
             fetchRoute(myLocation, destination);
@@ -321,11 +297,11 @@ public class MapFragment extends Fragment {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // OSRM API — Hitung Rute (pejalan kaki/lari)
+    // OSRM API — Kalkulasi rute mode lari (routed-foot)
     // ─────────────────────────────────────────────────────────────────────
 
     private void fetchRoute(GeoPoint from, GeoPoint to) {
-        // OSRM "routed-foot" = mode pejalan kaki/lari, bukan mobil
+        // Mode kaki/lari, bukan mobil
         String url = String.format(Locale.US,
                 "https://routing.openstreetmap.de/routed-foot/route/v1/foot/%.6f,%.6f;%.6f,%.6f?overview=full&geometries=geojson",
                 from.getLongitude(), from.getLatitude(),
@@ -336,7 +312,7 @@ public class MapFragment extends Fragment {
             public void onResponse(@NonNull Call<OsrmResponse> call,
                                    @NonNull Response<OsrmResponse> response) {
                 showLoading(false);
-                if (!isAdded()) return;
+                if (!isAdded()) return; // Fragment sudah tidak aktif, abaikan
 
                 if (response.isSuccessful() && response.body() != null
                         && response.body().getBestRoute() != null) {
@@ -346,7 +322,7 @@ public class MapFragment extends Fragment {
                     updateRouteStats(route);
                 } else {
                     if (fabRefresh != null) fabRefresh.setVisibility(View.VISIBLE);
-                    // Fallback: garis lurus + estimasi haversine
+                    // Server gagal respons, tampilkan estimasi garis lurus dulu
                     drawStraightLine(from, to);
                     updateStatsFromHaversine(from, to);
                     Toast.makeText(requireContext(),
@@ -361,7 +337,7 @@ public class MapFragment extends Fragment {
                 
                 if (fabRefresh != null) fabRefresh.setVisibility(View.VISIBLE);
                 
-                // Fallback tetap tampilkan estimasi garis lurus
+                // Koneksi putus, tetap tampilkan estimasi agar layar tidak kosong
                 drawStraightLine(from, to);
                 updateStatsFromHaversine(from, to);
                 

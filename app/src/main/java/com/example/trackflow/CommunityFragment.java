@@ -69,7 +69,7 @@ public class CommunityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Sinkronisasi foto profil secara real-time
+        // Sinkronkan avatar saat kembali ke halaman ini
         if (sharedPreferences != null && ivCommunityAvatar != null) {
             String savedAvatarUri = sharedPreferences.getString("USER_AVATAR", null);
             if (savedAvatarUri != null) {
@@ -89,7 +89,7 @@ public class CommunityFragment extends Fragment {
         call.enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                // isAdded() mencegah force close jika user pindah halaman sebelum loading selesai
+                // isAdded() dipakai supaya tidak crash jika user pindah halaman sebelum data selesai dimuat
                 if (isAdded() && response.isSuccessful() && response.body() != null) {
                     llErrorState.setVisibility(View.GONE);
                     rvUsers.setVisibility(View.VISIBLE);
