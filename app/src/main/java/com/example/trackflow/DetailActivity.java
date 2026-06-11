@@ -119,7 +119,45 @@ public class DetailActivity extends AppCompatActivity {
             tvAvatarText.setText(savedName.substring(0, 1).toLowerCase());
         }
 
-        tvSubDetails.setText(date + " · Tamalanrea Indah, South Sulawesi");
+        tvSubDetails.setText(date + " · Memuat lokasi...");
+        String extraPathStr = getIntent().getStringExtra("EXTRA_PATH");
+        if (extraPathStr != null && !extraPathStr.isEmpty()) {
+            String[] parts = extraPathStr.split(";");
+            if (parts.length > 0) {
+                String[] latLng = parts[0].split(",");
+                if (latLng.length == 2) {
+                    try {
+                        double lat = Double.parseDouble(latLng[0]);
+                        double lng = Double.parseDouble(latLng[1]);
+                        new Thread(() -> {
+                            try {
+                                android.location.Geocoder gc = new android.location.Geocoder(DetailActivity.this, java.util.Locale.getDefault());
+                                java.util.List<android.location.Address> list = gc.getFromLocation(lat, lng, 1);
+                                if (list != null && !list.isEmpty()) {
+                                    android.location.Address a = list.get(0);
+                                    String addressLine = a.getAddressLine(0);
+                                    String tempLoc = "";
+                                    if (addressLine != null && !addressLine.isEmpty()) {
+                                        String[] addressParts = addressLine.split(",");
+                                        tempLoc = addressParts[0].trim() + (addressParts.length > 1 ? ", " + addressParts[1].trim() : "");
+                                    }
+                                    final String finalLoc = tempLoc.isEmpty() ? "Lokasi Tidak Diketahui" : tempLoc;
+                                    runOnUiThread(() -> tvSubDetails.setText(finalDate + " · " + finalLoc));
+                                } else {
+                                    runOnUiThread(() -> tvSubDetails.setText(finalDate + " · Tamalanrea Indah, South Sulawesi"));
+                                }
+                            } catch (Exception e) {
+                                runOnUiThread(() -> tvSubDetails.setText(finalDate + " · Tamalanrea Indah, South Sulawesi"));
+                            }
+                        }).start();
+                    } catch (Exception e) {
+                        tvSubDetails.setText(finalDate + " · Tamalanrea Indah, South Sulawesi");
+                    }
+                }
+            }
+        } else {
+            tvSubDetails.setText(finalDate + " · Tamalanrea Indah, South Sulawesi");
+        }
 
         // Back button finish
         if (cvBack != null) {
@@ -169,7 +207,7 @@ public class DetailActivity extends AppCompatActivity {
                                 "Jarak: " + finalDistance + "\n" +
                                 "Durasi: " + finalDuration + "\n" +
                                 "Rata-rata Pace: " + finalPaceStr + "\n" +
-                                "Lokasi: Tamalanrea Indah, South Sulawesi\n\n" +
+                                "Lokasi: " + tvSubDetails.getText().toString().replace(finalDate + " · ", "") + "\n\n" +
                                 "Unduh TrackFlow sekarang untuk melacak dan membagikan aktivitas lari Anda!";
                         android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);
                         shareIntent.setType("text/plain");

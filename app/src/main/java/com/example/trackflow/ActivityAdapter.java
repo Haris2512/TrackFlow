@@ -158,6 +158,53 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             // Subtitle
             tvItemSubtitle.setText(item.getDate() + " · TrackFlow");
 
+            // Location
+            if (tvItemLocation != null) {
+                tvItemLocation.setText("Memuat lokasi...");
+                String pathStrLocation = item.getPath();
+                if (pathStrLocation != null && !pathStrLocation.isEmpty()) {
+                    String[] parts = pathStrLocation.split(";");
+                    if (parts.length > 0) {
+                        String[] latLng = parts[0].split(",");
+                        if (latLng.length == 2) {
+                            try {
+                                double lat = Double.parseDouble(latLng[0]);
+                                double lng = Double.parseDouble(latLng[1]);
+                                new Thread(() -> {
+                                    try {
+                                        android.location.Geocoder gc = new android.location.Geocoder(itemView.getContext(), java.util.Locale.getDefault());
+                                        java.util.List<android.location.Address> list = gc.getFromLocation(lat, lng, 1);
+                                        if (list != null && !list.isEmpty()) {
+                                            android.location.Address a = list.get(0);
+                                            String addressLine = a.getAddressLine(0);
+                                            String tempLoc = "";
+                                            if (addressLine != null && !addressLine.isEmpty()) {
+                                                String[] addressParts = addressLine.split(",");
+                                                tempLoc = addressParts[0].trim() + (addressParts.length > 1 ? ", " + addressParts[1].trim() : "");
+                                            }
+                                            final String finalLoc = tempLoc.isEmpty() ? "Lokasi Tidak Diketahui" : tempLoc;
+                                            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> tvItemLocation.setText(finalLoc));
+                                        } else {
+                                            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> tvItemLocation.setText("Makassar, South Sulawesi"));
+                                        }
+                                    } catch (Exception e) {
+                                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> tvItemLocation.setText("Makassar, South Sulawesi"));
+                                    }
+                                }).start();
+                            } catch (Exception ignored) {
+                                tvItemLocation.setText("Makassar, South Sulawesi");
+                            }
+                        } else {
+                            tvItemLocation.setText("Makassar, South Sulawesi");
+                        }
+                    } else {
+                        tvItemLocation.setText("Makassar, South Sulawesi");
+                    }
+                } else {
+                    tvItemLocation.setText("Makassar, South Sulawesi");
+                }
+            }
+
             // Setup MapView Item (Static Preview)
             if (mapViewItem != null) {
                 mapViewItem.setTileSource(TileSourceFactory.MAPNIK);

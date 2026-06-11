@@ -47,6 +47,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvMonthlyCount;
     private TextView tvDateDetail;
     private CalendarView calendarViewProfile;
+    private TextView tvActiveDaysList;
 
     private ActivityHelper activityHelper;
     private ArrayList<ActivityModel> allActivities = new ArrayList<>();
@@ -87,6 +88,7 @@ public class ProfileFragment extends Fragment {
         tvMonthlyCount = view.findViewById(R.id.tvMonthlyCount);
         tvDateDetail = view.findViewById(R.id.tvDateDetail);
         calendarViewProfile = view.findViewById(R.id.calendarViewProfile);
+        tvActiveDaysList = view.findViewById(R.id.tvActiveDaysList);
 
         Context context = getContext();
         if (context == null) return;
@@ -197,6 +199,8 @@ public class ProfileFragment extends Fragment {
         String currentMonthName = new SimpleDateFormat("MMMM", new Locale("id", "ID")).format(currentCal.getTime()).toLowerCase(); // cth: "juni"
         String currentYear = String.valueOf(currentCal.get(Calendar.YEAR)); // cth: "2026"
 
+        java.util.ArrayList<Integer> activeDays = new java.util.ArrayList<>();
+
         for (ActivityModel item : list) {
             if (item.getDate() != null) {
                 String savedDate = item.getDate().toLowerCase().trim();
@@ -226,6 +230,18 @@ public class ProfileFragment extends Fragment {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                    try {
+                        for (String part : parts) {
+                            if (part.matches("\\d+")) {
+                                int day = Integer.parseInt(part);
+                                if (day >= 1 && day <= 31 && !activeDays.contains(day)) {
+                                    activeDays.add(day);
+                                }
+                                break;
+                            }
+                        }
+                    } catch (Exception ignored) {}
                 }
             }
         }
@@ -233,6 +249,20 @@ public class ProfileFragment extends Fragment {
         // Tampilkan hasil filter spesifik bulan berjalan saja
         tvMonthlyCount.setText(countCurrentMonth + " Kali");
         tvMonthlyDistance.setText(String.format(Locale.US, "%.2f KM", totalDistanceCurrentMonth));
+        
+        if (tvActiveDaysList != null) {
+            if (activeDays.isEmpty()) {
+                tvActiveDaysList.setText("📅 Hari aktif bulan ini: Belum ada");
+            } else {
+                java.util.Collections.sort(activeDays);
+                StringBuilder daysStr = new StringBuilder();
+                for (int i = 0; i < activeDays.size(); i++) {
+                    daysStr.append(activeDays.get(i));
+                    if (i < activeDays.size() - 1) daysStr.append(", ");
+                }
+                tvActiveDaysList.setText("📅 Hari aktif bulan ini: Tanggal " + daysStr.toString());
+            }
+        }
     }
 
     // --- MESIN PENCARI TANGGAL SUPER CERDAS (MENCEGAH ERROR FORMAT) ---
