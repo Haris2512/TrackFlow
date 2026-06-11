@@ -73,7 +73,7 @@ public class MapFragment extends Fragment {
     private ImageView ivClearSearch;
     private TextView tvTapHint, tvRouteName, tvDistance, tvDuration, tvDifficulty, tvCurrentLocationMap;
     private ProgressBar progressRoute;
-    private FloatingActionButton fabMyLocation, fabClear;
+    private FloatingActionButton fabMyLocation, fabClear, fabRefresh;
     private MaterialButton btnSetTujuan, btnMulaiLari, btnUbahTujuan;
     private View layoutEmpty, layoutRoute;
     private BottomSheetBehavior<View> sheetBehavior;
@@ -136,6 +136,7 @@ public class MapFragment extends Fragment {
         progressRoute  = v.findViewById(R.id.progressRoute);
         fabMyLocation  = v.findViewById(R.id.fabMyLocation);
         fabClear       = v.findViewById(R.id.fabClear);
+        fabRefresh     = v.findViewById(R.id.fabRefresh);
         btnSetTujuan   = v.findViewById(R.id.btnSetTujuan);
         btnMulaiLari   = v.findViewById(R.id.btnMulaiLari);
         btnUbahTujuan  = v.findViewById(R.id.btnUbahTujuan);
@@ -195,6 +196,16 @@ public class MapFragment extends Fragment {
         // FAB hapus tujuan
         fabClear.setOnClickListener(v -> clearDestination());
 
+        // FAB refresh rute (koneksi jaringan)
+        fabRefresh.setOnClickListener(v -> {
+            if (myLocation != null && destinationPoint != null) {
+                fabRefresh.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), "Mencoba memuat ulang rute API...", Toast.LENGTH_SHORT).show();
+                showLoading(true);
+                fetchRoute(myLocation, destinationPoint);
+            }
+        });
+
         // Ubah tujuan
         btnUbahTujuan.setOnClickListener(v -> clearDestination());
 
@@ -231,6 +242,18 @@ public class MapFragment extends Fragment {
 
     /** Aktifkan mode tap — user akan pilih satu titik di peta */
     private void activateTapMode() {
+        // Cek koneksi internet sebelum mengizinkan pencarian rute (OSRM butuh internet)
+        android.net.ConnectivityManager cm = (android.net.ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        android.net.NetworkInfo activeNetwork = cm != null ? cm.getActiveNetworkInfo() : null;
+        if (activeNetwork == null || !activeNetwork.isConnected()) {
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Tidak Ada Internet")
+                .setMessage("Fitur 'Tentukan Tujuan di Peta' memerlukan koneksi internet untuk mengalkulasi rute jalan. Silakan nyalakan WiFi atau Data Seluler Anda.")
+                .setPositiveButton("Mengerti", null)
+                .show();
+            return;
+        }
+
         if (myLocation == null) {
             Toast.makeText(requireContext(),
                     "Menunggu GPS... Pastikan GPS aktif", Toast.LENGTH_SHORT).show();
@@ -292,6 +315,7 @@ public class MapFragment extends Fragment {
         mapView.invalidate();
 
         fabClear.setVisibility(View.GONE);
+        if (fabRefresh != null) fabRefresh.setVisibility(View.GONE);
         tvTapHint.setVisibility(View.GONE);
         showEmptyState();
     }
@@ -316,13 +340,17 @@ public class MapFragment extends Fragment {
 
                 if (response.isSuccessful() && response.body() != null
                         && response.body().getBestRoute() != null) {
+                    if (fabRefresh != null) fabRefresh.setVisibility(View.GONE);
                     OsrmResponse.Route route = response.body().getBestRoute();
                     drawRoute(route);
                     updateRouteStats(route);
                 } else {
+                    if (fabRefresh != null) fabRefresh.setVisibility(View.VISIBLE);
                     // Fallback: garis lurus + estimasi haversine
                     drawStraightLine(from, to);
                     updateStatsFromHaversine(from, to);
+                    Toast.makeText(requireContext(),
+                            "Server OSRM gagal. Tekan tombol 🔄 untuk mencoba lagi.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -330,11 +358,18 @@ public class MapFragment extends Fragment {
             public void onFailure(@NonNull Call<OsrmResponse> call, @NonNull Throwable t) {
                 showLoading(false);
                 if (!isAdded()) return;
+                
+                if (fabRefresh != null) fabRefresh.setVisibility(View.VISIBLE);
+                
                 // Fallback tetap tampilkan estimasi garis lurus
                 drawStraightLine(from, to);
                 updateStatsFromHaversine(from, to);
-                Toast.makeText(requireContext(),
-                        "Koneksi lambat — menampilkan estimasi langsung", Toast.LENGTH_SHORT).show();
+                
+                new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Gagal Menghitung Rute")
+                    .setMessage("Jaringan internet Anda sepertinya terputus. Untuk sementara kami menampilkan jarak lurus (estimasi burung).\n\nSilakan periksa koneksi lalu tekan tombol Refresh (🔄) untuk memuat ulang rute jalan yang akurat.")
+                    .setPositiveButton("Mengerti", null)
+                    .show();
             }
         });
     }
@@ -551,9 +586,13 @@ public class MapFragment extends Fragment {
                 List<Address> list = gc.getFromLocation(point.getLatitude(), point.getLongitude(), 1);
                 if (list != null && !list.isEmpty()) {
                     Address a = list.get(0);
-                    String city = a.getSubAdminArea();
-                    if (city == null) city = a.getLocality();
-                    String fullText = "Lokasi Anda: " + (city != null ? city : "Terlacak");
+                    String addressLine = a.getAddressLine(0);
+                    String detailLoc = "Terlacak";
+                    if (addressLine != null && !addressLine.isEmpty()) {
+                        String[] parts = addressLine.split(",");
+                        detailLoc = parts[0].trim() + (parts.length > 1 ? ", " + parts[1].trim() : "");
+                    }
+                    String fullText = "Lokasi Anda: " + detailLoc;
                     requireActivity().runOnUiThread(() -> tvCurrentLocationMap.setText(fullText));
                 }
             } catch (Exception e) { /* abaikan */ }

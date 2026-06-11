@@ -158,6 +158,22 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- FAB: Refresh Rute Jaringan -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="342dp"
+            android:src="@android:drawable/ic_popup_sync"
+            app:backgroundTint="?attr/colorSurfaceVariant"
+            app:tint="#FC4C02"
+            app:elevation="6dp"
+            app:fabSize="mini"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- ===== BOTTOM SHEET ===== -->
