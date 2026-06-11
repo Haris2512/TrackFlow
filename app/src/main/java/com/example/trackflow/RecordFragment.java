@@ -247,6 +247,7 @@ public class RecordFragment extends Fragment {
         locationOverlay.setPersonHotspot(blueDot.getWidth() / 2f, blueDot.getHeight() / 2f);
         locationOverlay.setDrawAccuracyEnabled(true);
         locationOverlay.enableMyLocation();
+        locationOverlay.enableFollowLocation(); // Kamera otomatis mengikuti titik biru
 
         locationOverlay.runOnFirstFix(() -> {
             if (getActivity() != null) {
@@ -268,6 +269,21 @@ public class RecordFragment extends Fragment {
     }
 
     private void startTracking() {
+        android.location.LocationManager lm = (android.location.LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+        boolean gpsEnabled = false;
+        try {
+            gpsEnabled = lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
+        } catch(Exception e) {}
+
+        if (!gpsEnabled) {
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Sinyal GPS Lemah / Mati")
+                .setMessage("Kami tidak dapat mendeteksi sinyal GPS. Pastikan fitur Lokasi di ponsel Anda sudah menyala dan Anda berada di luar ruangan agar pelacakan rute berjalan akurat.")
+                .setPositiveButton("Mengerti", null)
+                .show();
+            return;
+        }
+
         sendServiceAction(TrackingService.ACTION_START);
         
         tvStopwatch.setText("00:00:00");
